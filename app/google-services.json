@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "754530314416",
+    "firebase_url": "https://dumbot-3c243.firebaseio.com",
+    "project_id": "dumbot-3c243",
+    "storage_bucket": "dumbot-3c243.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:754530314416:android:e0437e2a288589b0",
+        "android_client_info": {
+          "package_name": "com.example.sophieleaver.dumbotapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "754530314416-lts78q9uik6dvmtru8bkuj0va4u7ot9l.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.sophieleaver.dumbotapp",
+            "certificate_hash": "b0f9a00315be6cf5a34bc2884f27e787c435a125"
+          }
+        },
+        {
+          "client_id": "754530314416-3fp4l9oudvm52pcisgmr3slim8gnde2p.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDqii9hBZE2Cn6SpXnQezif1BEjgHOyAcg"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "754530314416-3fp4l9oudvm52pcisgmr3slim8gnde2p.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
