@@ -33,24 +33,27 @@ class DemoFragment : Fragment(), View.OnClickListener {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle? ): View? {
+        // inflate layout for demo fragment
         val view = inflater.inflate(R.layout.fragment_demo_fragment, container, false)
+
         val b1 : Button = view!!.findViewById(R.id.button_start_motor)
-        val b2 : Button = view!!.findViewById(R.id.button_stop_motor)
         b1.setOnClickListener(this)
+        val b2 : Button = view!!.findViewById(R.id.button_stop_motor)
         b2.setOnClickListener(this)
-        // Inflate the layout for this fragment
 
         return view
     }
 
     override fun onClick(v: View?) {
         when (v?.id){
-            R.id.button_start_motor -> {
+            R.id.button_start_motor -> { //on clicking START button the database sets the motor status to ON
                 motorStatus.setValue("ON")
                 Log.d(demoTag,"Motor status set to start")
             }
-            R.id.button_stop_motor -> {
+
+            R.id.button_stop_motor -> { //on clicking STOP button the database sets the motor status to OFF
                 motorStatus.setValue("OFF")
+                Log.d(demoTag,"Motor status set to stop")
             }
         }
     }
@@ -66,22 +69,8 @@ class DemoFragment : Fragment(), View.OnClickListener {
 
 
     companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment DemoFragmenty.
-         */
-        // TODO: Rename and change types and number of parameters
         @JvmStatic
-        fun newInstance() =
-            DemoFragment().apply {
-//                arguments = Bundle().apply {
-//                    putString(ARG_PARAM1, param1)
-//                    putString(ARG_PARAM2, param2)
-                }
-            }
+        fun newInstance() = DemoFragment()
     }
+}
 
