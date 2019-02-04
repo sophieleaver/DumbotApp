@@ -13,7 +13,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.android.synthetic.main.fragment_weights.*
 import kotlinx.android.synthetic.main.fragment_weights.view.*
 import kotlinx.android.synthetic.main.item_dumbbell.view.*
 import org.jetbrains.anko.toast
@@ -90,11 +89,6 @@ class WeightsFragment : Fragment() {
         dumbbellRecyclerView.adapter = DumbbellAdapter()
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    fun onButtonPressed(uri: Uri) {
-
-    }
-
 
     interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
@@ -124,7 +118,8 @@ class WeightsFragment : Fragment() {
                 weightValue.text = getString(R.string.weight, dumbbell.weightValue)
                 currentStock.text = getString(R.string.current_stock, dumbbell.currentStock)
                 totalStock.text = getString(R.string.total_stock, dumbbell.totalStock)
-                storageLocation.text = getString(R.string.current_stock, dumbbell.storageLocation?.joinToString())
+                storageLocation.text =
+                    getString(R.string.storage_location, dumbbell.storageLocation?.joinToString())
                 editDumbbellButton.setOnClickListener { this@WeightsFragment.requireActivity().toast("edit dumbbell") }
             }
         }

@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "754530314416-947plcvurnr7p7t3asgpkeleil73695e.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.sophieleaver.dumbotapp",
+            "certificate_hash": "b9325c6e53c9064d05d51df4fb19839959876ba6"
+          }
+        },
+        {
           "client_id": "754530314416-lts78q9uik6dvmtru8bkuj0va4u7ot9l.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
