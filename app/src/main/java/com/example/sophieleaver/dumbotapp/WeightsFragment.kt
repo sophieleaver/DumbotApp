@@ -23,7 +23,12 @@ import org.jetbrains.anko.toast
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
 
-data class Dumbbell(val weightValue: Int?, val totalStock: Int?, val currentStock: Int?, val storageLocation: List<String>?)
+data class Dumbbell(
+    val weightValue: Int? = 0,
+    val totalStock: Int? = 0,
+    val currentStock: Int? = 0,
+    val storageLocation: List<String>? = emptyList()
+)
 
 /**
  * A simple [Fragment] subclass.
