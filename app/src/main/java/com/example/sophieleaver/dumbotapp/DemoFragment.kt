@@ -24,8 +24,11 @@ import kotlinx.android.synthetic.main.fragment_demo_fragment.view.*
  */
 class DemoFragment : Fragment(), View.OnClickListener {
     val demoTag = "DemoFragment"
-    val database = FirebaseFirestore.getInstance()
-    val ref = database.collection("demo1").document("motor")
+    val database = FirebaseDatabase.getInstance()
+    val ref = database.getReference()
+    val movementStatus = ref.child("demo1").child("cur_cmd")
+//    val database = FirebaseFirestore.getInstance()
+//    val ref = database.collection("demo1").document("motor")
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,12 +50,14 @@ class DemoFragment : Fragment(), View.OnClickListener {
     override fun onClick(v: View?) {
         when (v?.id){
             R.id.button_start_motor -> { //on clicking START button the database sets the motor status to ON
-                ref.update("motor_is_on", true)
+//                ref.update("motor_is_on", true)
+                movementStatus.setValue("g")
                 Log.d(demoTag,"Motor status set to start")
             }
 
             R.id.button_stop_motor -> { //on clicking STOP button the database sets the motor status to OFF
-                ref.update("motor_is_on", false)
+//                ref.update("motor_is_on", false)
+                movementStatus.setValue("h")
                 Log.d(demoTag,"Motor status set to stop")
             }
         }
