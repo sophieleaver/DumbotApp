@@ -16,6 +16,9 @@ import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.fragment_weights.view.*
 import kotlinx.android.synthetic.main.item_dumbbell.view.*
 import org.jetbrains.anko.toast
+import android.support.v7.app.AppCompatActivity
+import kotlinx.android.synthetic.main.app_bar_main.*
+
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -51,6 +54,7 @@ class WeightsFragment : Fragment() {
         arguments?.let {
 
         }
+       (activity as AppCompatActivity).setSupportActionBar(toolbar)
     }
 
     override fun onCreateView(
