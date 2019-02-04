@@ -8,6 +8,10 @@
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <!--Dumbbell strings-->
+    <string name="title_analytics">Analytics Fragment</string>
+    <string name="storage_location">Storage Location: %1$s</string>
+    <string name="current_stock">Currently Available: %1$d</string>
+    <string name="total_stock">Total Stock: %1$d</string>
+    <string name="weight">%1$d kg</string>
 </resources>
