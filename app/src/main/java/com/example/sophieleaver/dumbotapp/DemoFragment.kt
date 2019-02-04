@@ -12,6 +12,7 @@ import android.widget.Button
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.fragment_demo_fragment.view.*
 
 
@@ -23,9 +24,8 @@ import kotlinx.android.synthetic.main.fragment_demo_fragment.view.*
  */
 class DemoFragment : Fragment(), View.OnClickListener {
     val demoTag = "DemoFragment"
-    val database = FirebaseDatabase.getInstance()
-    val ref = database.getReference()
-    val motorStatus : DatabaseReference = ref.child("motor").child("status")
+    val database = FirebaseFirestore.getInstance()
+    val ref = database.collection("demo1").document("motor")
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,12 +47,12 @@ class DemoFragment : Fragment(), View.OnClickListener {
     override fun onClick(v: View?) {
         when (v?.id){
             R.id.button_start_motor -> { //on clicking START button the database sets the motor status to ON
-                motorStatus.setValue("ON")
+                ref.update("motor_is_on", true)
                 Log.d(demoTag,"Motor status set to start")
             }
 
             R.id.button_stop_motor -> { //on clicking STOP button the database sets the motor status to OFF
-                motorStatus.setValue("OFF")
+                ref.update("motor_is_on", false)
                 Log.d(demoTag,"Motor status set to stop")
             }
         }

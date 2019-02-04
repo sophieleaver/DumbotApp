@@ -15,16 +15,17 @@
             app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"/>
     <TextView
-            android:text="Analytics Fragment"
+            android:text="Analytics"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/textView4" app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="8dp"
             app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body2" android:textSize="24sp"
-            app:layout_constraintHorizontal_bias="0.502" android:layout_marginTop="8dp"
-            app:layout_constraintTop_toTopOf="@+id/textView2" app:layout_constraintVertical_bias="0.043"/>
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toTopOf="@+id/textView2" app:layout_constraintVertical_bias="0.109"
+            android:textSize="30sp"/>
 
     <Spinner
             android:id="@+id/spinner1"
@@ -32,8 +33,6 @@
             android:layout_height="31dp"
             android:background="@android:drawable/btn_dropdown"
             android:spinnerMode="dropdown"
-            android:layout_marginBottom="8dp"
-            app:layout_constraintBottom_toTopOf="@+id/textView10"
             app:layout_constraintStart_toStartOf="parent"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
@@ -41,7 +40,7 @@
             android:layout_marginTop="8dp"
             app:layout_constraintTop_toBottomOf="@+id/textView4"
             app:layout_constraintHorizontal_bias="0.481"
-            app:layout_constraintVertical_bias="1.0"/>
+    />
 
     <android.support.v7.widget.CardView
             android:layout_width="match_parent"
@@ -54,12 +53,9 @@
             android:layout_marginStart="8dp"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginEnd="8dp"
-            android:layout_marginTop="8dp"
-            app:layout_constraintTop_toBottomOf="@+id/textView4"
-            android:layout_marginBottom="8dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintVertical_bias="0.219"
-            app:layout_constraintHorizontal_bias="0.333">
+            app:layout_constraintHorizontal_bias="0.0" android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/spinner1" android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintVertical_bias="0.171">
 
         <RelativeLayout
                 android:layout_width="match_parent"
@@ -69,7 +65,7 @@
             <com.jjoe64.graphview.GraphView
                     android:layout_width="match_parent"
                     android:layout_height="150dp"
-                    android:id="@+id/graph1" />
+                    android:id="@+id/graph1"/>
 
         </RelativeLayout>
     </android.support.v7.widget.CardView>
@@ -86,12 +82,10 @@
             android:layout_marginStart="8dp"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginEnd="8dp"
-            android:layout_marginTop="8dp"
-            app:layout_constraintTop_toBottomOf="@+id/textView4"
             android:layout_marginBottom="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintVertical_bias="1.0"
-            app:layout_constraintHorizontal_bias="0.428">
+            app:layout_constraintHorizontal_bias="0.428" android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/textView9">
 
         <RelativeLayout
                 android:layout_width="match_parent"
@@ -101,7 +95,7 @@
             <com.jjoe64.graphview.GraphView
                     android:layout_width="match_parent"
                     android:layout_height="150dp"
-                    android:id="@+id/graph2" />
+                    android:id="@+id/graph2"/>
 
         </RelativeLayout>
     </android.support.v7.widget.CardView>
@@ -168,7 +162,6 @@
             android:layout_width="wrap_content"
             android:layout_height="30dp"
             android:id="@+id/textView9"
-            android:textSize="20sp"
             app:layout_constraintStart_toStartOf="parent"
             android:layout_marginStart="8dp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -176,13 +169,12 @@
             android:layout_marginBottom="188dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintHorizontal_bias="0.497"
-            android:layout_marginTop="8dp"
-            app:layout_constraintTop_toBottomOf="@+id/spinner1"
-            app:layout_constraintVertical_bias="0.88"/>
+            android:layout_marginTop="8dp" app:layout_constraintTop_toBottomOf="@+id/cardFixedFrame"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1" android:textSize="24sp"/>
     <TextView
             android:text="Weight Usage Frequency"
-            android:layout_width="236dp"
-            android:layout_height="29dp"
+            android:layout_width="235dp"
+            android:layout_height="36dp"
             android:id="@+id/textView10"
             app:layout_constraintStart_toStartOf="parent"
             android:layout_marginStart="8dp"
@@ -192,8 +184,9 @@
             app:layout_constraintTop_toBottomOf="@+id/spinner1"
             android:layout_marginTop="8dp"
             app:layout_constraintBottom_toTopOf="@+id/cardFixedFrame"
-            android:textSize="20sp"
             app:layout_constraintVertical_bias="0.068"
-            app:layout_constraintHorizontal_bias="0.496"/>
+            app:layout_constraintHorizontal_bias="0.496"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1" android:textSize="24sp"
+            android:textAlignment="center"/>
 
 </android.support.constraint.ConstraintLayout>
