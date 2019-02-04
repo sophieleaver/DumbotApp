@@ -23,6 +23,14 @@
           }
         },
         {
+          "client_id": "754530314416-en68iqfg98ubngamh4ghffg6i7h3fcje.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.sophieleaver.dumbotapp",
+            "certificate_hash": "4204403b49704ff66882ee7572751f5408eb6b77"
+          }
+        },
+        {
           "client_id": "754530314416-3fp4l9oudvm52pcisgmr3slim8gnde2p.apps.googleusercontent.com",
           "client_type": 3
         }
