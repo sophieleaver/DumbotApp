@@ -7,7 +7,6 @@
     android:layout_height="wrap_content"
     tools:context=".WeightsFragment">
 
-
     <TextView
         android:id="@+id/text_weight_value"
         android:layout_width="wrap_content"
@@ -20,10 +19,11 @@
         app:layout_constraintEnd_toStartOf="@+id/divider"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="14kg"/>
 
     <TextView
-        android:id="@+id/text_total_stock"
+        android:id="@+id/text_wait_queue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="2dp"
@@ -32,13 +32,14 @@
         android:layout_marginTop="2dp"
         android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Subtitle"
         app:layout_constraintBottom_toTopOf="@+id/text_storage_location"
-        app:layout_constraintEnd_toEndOf="@+id/text_current_stock"
+        app:layout_constraintEnd_toEndOf="@+id/text_available"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="@+id/text_current_stock"
-        app:layout_constraintTop_toBottomOf="@+id/text_current_stock" />
+        app:layout_constraintStart_toStartOf="@+id/text_available"
+        app:layout_constraintTop_toBottomOf="@+id/text_available"
+        tools:text="Total in Stock: 12"/>
 
     <TextView
-        android:id="@+id/text_current_stock"
+        android:id="@+id/text_available"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="2dp"
@@ -46,12 +47,13 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:textAppearance="@style/TextAppearance.AppCompat.Headline"
-        app:layout_constraintBottom_toTopOf="@+id/text_total_stock"
+        app:layout_constraintBottom_toTopOf="@+id/text_wait_queue"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/divider"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_chainStyle="spread" />
+        app:layout_constraintVertical_chainStyle="spread"
+        tools:text="7 Currently Available"/>
 
     <View
         android:id="@+id/divider"
@@ -92,8 +94,10 @@
         android:layout_marginTop="2dp"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/text_total_stock"
+        app:layout_constraintEnd_toEndOf="@+id/text_wait_queue"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="@+id/text_total_stock"
-        app:layout_constraintTop_toBottomOf="@+id/text_total_stock" />
+        app:layout_constraintStart_toStartOf="@+id/text_wait_queue"
+        app:layout_constraintTop_toBottomOf="@+id/text_wait_queue"
+        tools:text="Storage Location: C"
+        />
 </android.support.constraint.ConstraintLayout>

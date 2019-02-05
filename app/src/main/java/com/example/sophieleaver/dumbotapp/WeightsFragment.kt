@@ -14,11 +14,10 @@ import android.widget.TextView
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.fragment_weights.view.*
-import kotlinx.android.synthetic.main.item_dumbbell.view.*
+import kotlinx.android.synthetic.main.item_inventory_dumbbell.view.*
 import org.jetbrains.anko.toast
 import android.support.v7.app.AppCompatActivity
 import kotlinx.android.synthetic.main.app_bar_main.*
-import kotlinx.android.synthetic.main.fragment_weights.*
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -117,7 +116,7 @@ class WeightsFragment : Fragment() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
             ViewHolder(LayoutInflater.from(this@WeightsFragment.requireContext())
-                    .inflate(R.layout.item_dumbbell, parent, false))
+                    .inflate(R.layout.item_inventory_dumbbell, parent, false))
 
         override fun getItemCount(): Int = dumbbellList.size
 
@@ -137,8 +136,8 @@ class WeightsFragment : Fragment() {
         inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
             val weightValue: TextView = view.text_weight_value
-            val currentStock: TextView = view.text_current_stock
-            val totalStock: TextView = view.text_total_stock
+            val currentStock: TextView = view.text_available
+            val totalStock: TextView = view.text_wait_queue
             val storageLocation: TextView = view.text_storage_location
             val editDumbbellButton: ImageView = view.img_edit_dumbbell
         }

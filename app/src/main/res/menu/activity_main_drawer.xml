@@ -1,21 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:tools="http://schemas.android.com/tools"
-      tools:showIn="navigation_view">
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view"
+    tools:ignore="HardcodedText">
 
     <group android:checkableBehavior="single">
         <item
-                android:id="@+id/nav_demo"
-                android:icon="@drawable/ic_bot"
-                android:title="Demo 1"/>
+            android:id="@+id/nav_demo"
+            android:icon="@drawable/ic_bot"
+            android:title="Demo 1" />
         <item
-                android:id="@+id/nav_weights"
-                android:icon="@drawable/ic_barbell"
-                android:title="Order Weights"/>
+            android:id="@+id/nav_order"
+            android:icon="@drawable/ic_barbell"
+            android:title="Order Dumbbells" />
         <item
-                android:id="@+id/nav_analytics"
-                android:icon="@drawable/ic_graph"
-                android:title="Analytics"/>
+            android:id="@+id/nav_analytics"
+            android:icon="@drawable/ic_graph"
+            android:title="Analytics" />
+        <item
+            android:id="@+id/nav_weights"
+            android:icon="@drawable/ic_view_list"
+            android:title="Weight Inventory" />
+
     </group>
 
     <!--<item android:title="Communicate">-->
