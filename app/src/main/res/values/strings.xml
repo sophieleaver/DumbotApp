@@ -10,7 +10,7 @@
     <string name="nav_header_desc">Navigation header</string>
 
     <!--Dumbbell strings-->
-    <string name="title_analytics">Analytics Fragment</string>
+    <string name="title_analytics">Analytics</string>
     <string name="storage_location">Storage Location: %1$s</string>
     <string name="current_stock">Currently Available: %1$d</string>
     <string name="total_stock">Total Stock: %1$d</string>
