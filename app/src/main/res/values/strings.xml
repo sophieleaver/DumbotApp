@@ -22,4 +22,5 @@
     <string name="join_wait_queue">Join Wait Queue</string>
     <string name="wait_queue_info">%1$d/%1$d dumbbells in use\n%2$d requests in wait queue</string>
     <string name="available_dumbbells_info">%1$d/%2$d dumbbells available</string>
+    <string name="title_weight_inventory">Weight Inventory</string>
 </resources>

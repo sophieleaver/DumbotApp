@@ -120,16 +120,6 @@ class OrderFragment : Fragment() {
             holder.apply {
                 val requestedWeight = weights!![position]
                 weightValue.text = requestedWeight
-                orderButton.setOnClickListener {
-                    this@OrderFragment.requireActivity()
-                        .toast("Requested $requestedWeight dumbbell")
-                }
-                val numAvailable = Random.nextInt(1, 10)
-                availabilityInfo.text = getString(
-                    R.string.available_dumbbells_info,
-                    numAvailable,
-                    Random.nextInt(numAvailable, 10)
-                )
 
                 if ((position == 2) or (position == 5) or (position == 9)) {
                     orderButton.setOnClickListener {
@@ -143,11 +133,23 @@ class OrderFragment : Fragment() {
                             R.color.colorDumbbellUnavailable
                         )
                     )
-                    text_available.text = getString(R.string.unavailable)
+                    available.text = getString(R.string.unavailable)
                     availabilityInfo.text = getString(
                         R.string.wait_queue_info,
                         Random.nextInt(1, 10),
                         Random.nextInt(1, 10)
+                    )
+                } else {
+                    available.text = getString(R.string.available)
+                    orderButton.setOnClickListener {
+                        this@OrderFragment.requireActivity()
+                            .toast("Requested $requestedWeight dumbbell")
+                    }
+                    val numAvailable = Random.nextInt(1, 10)
+                    availabilityInfo.text = getString(
+                        R.string.available_dumbbells_info,
+                        numAvailable,
+                        Random.nextInt(numAvailable, 10)
                     )
                 }
 
@@ -157,6 +159,7 @@ class OrderFragment : Fragment() {
         inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
             val weightValue: TextView = view.text_weight_value
+            val available: TextView = view.text_available
             val availabilityInfo: TextView = view.text_wait_queue
             val orderButton: Button = view.btn_order_dumbbell
         }

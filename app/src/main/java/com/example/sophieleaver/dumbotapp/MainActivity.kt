@@ -9,6 +9,7 @@ import android.view.Menu
 import android.view.MenuItem
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
+import kotlinx.android.synthetic.main.content_main.view.*
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -68,7 +69,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 openFragment(analyticsFragment)
             }
             R.id.nav_order -> {
-                val orderFragment: OrderFragment = OrderFragment.newInstance()
+                val orderFragment = OrderFragment.newInstance()
                 openFragment(orderFragment)
             }
 
@@ -80,7 +81,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun openFragment(fragment: android.support.v4.app.Fragment) {
         val transaction = supportFragmentManager.beginTransaction()
-        transaction.replace(R.id.container, fragment)
+        transaction.replace(R.id.content_frame, fragment)
         transaction.addToBackStack(null)
         transaction.commit()
     }
