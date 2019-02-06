@@ -20,7 +20,6 @@ import org.jetbrains.anko.toast
 import android.support.v7.app.AppCompatActivity
 import kotlinx.android.parcel.Parcelize
 import kotlinx.android.synthetic.main.app_bar_main.*
-import kotlinx.android.synthetic.main.fragment_weights.*
 
 
 // TODO: Rename parameter arguments, choose names that match
