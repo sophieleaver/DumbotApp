@@ -2,6 +2,7 @@ package com.example.sophieleaver.dumbotapp
 
 import android.net.Uri
 import android.os.Bundle
+import android.os.Parcelable
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -13,10 +14,11 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.android.synthetic.main.fragment_weights.view.*
+import kotlinx.android.synthetic.main.fragment_weight_inventory.view.*
 import kotlinx.android.synthetic.main.item_inventory_dumbbell.view.*
 import org.jetbrains.anko.toast
 import android.support.v7.app.AppCompatActivity
+import kotlinx.android.parcel.Parcelize
 import kotlinx.android.synthetic.main.app_bar_main.*
 
 
@@ -25,12 +27,12 @@ import kotlinx.android.synthetic.main.app_bar_main.*
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
 
+@Parcelize
 data class Dumbbell(
     val weightValue: Int? = 0,
     val totalStock: Int? = 0,
     val currentStock: Int? = 0,
-    val storageLocation: List<String>? = emptyList()
-)
+    val storageLocation: List<String>? = emptyList()) : Parcelable
 
 /**
  * A simple [Fragment] subclass.
@@ -50,9 +52,7 @@ class WeightsFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-
-        }
+        arguments?.let {}
        (activity as AppCompatActivity).setSupportActionBar(toolbar)
     }
 
@@ -60,7 +60,7 @@ class WeightsFragment : Fragment() {
             inflater: LayoutInflater, container: ViewGroup?,
             savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_weights, container, false).apply {
+        return inflater.inflate(R.layout.fragment_weight_inventory, container, false).apply {
             dumbbell_list.let {
                 it.layoutManager = LinearLayoutManager(this@WeightsFragment.requireContext())
                 it.adapter = DumbbellAdapter()

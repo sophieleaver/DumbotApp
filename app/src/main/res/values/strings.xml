@@ -1,5 +1,4 @@
-<resources tools:ignore="ExtraTranslation"
-    xmlns:tools="http://schemas.android.com/tools">
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="ExtraTranslation">
     <string name="app_name">DumbotApp</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_main2">Main2Activity</string>
@@ -18,4 +17,7 @@
     <string name="dumbot">DumBot</string>
     <string name="text_change_station">Change Station</string>
     <string name="order">Order</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

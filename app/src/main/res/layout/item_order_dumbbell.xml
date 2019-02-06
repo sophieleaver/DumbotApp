@@ -32,6 +32,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="16dp"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/text_available"
         app:layout_constraintHorizontal_bias="0.5"
@@ -43,14 +44,16 @@
         android:id="@+id/text_available"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
+        android:layout_marginStart="32dp"
         android:layout_marginTop="16dp"
-        android:layout_marginBottom="2dp"
+        android:layout_marginBottom="16dp"
         android:fontFeatureSettings="smcp"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Headline4"
-        app:layout_constraintBottom_toTopOf="@+id/text_wait_queue"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/divider"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"
         app:layout_constraintVertical_chainStyle="spread_inside"
         tools:text="Available" />
 
@@ -74,16 +77,15 @@
         style="@style/Widget.AppCompat.Button.Colored"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="32dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
-        android:backgroundTint="@color/colorDumbbellUnavailable"
+        android:backgroundTint="@color/colorDumbbellAvailable"
         android:text="@string/order"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/text_wait_queue"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="Join Wait Queue" />
+        app:layout_constraintStart_toEndOf="@+id/text_available"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </android.support.constraint.ConstraintLayout>
