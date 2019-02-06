@@ -53,13 +53,13 @@
         android:visibility="visible"
         android:textAlignment="center"
         android:layout_marginEnd="8dp"
+        android:text="@string/available"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/divider"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0"
-        app:layout_constraintVertical_chainStyle="spread_inside"
-        tools:text="Available" />
+        app:layout_constraintVertical_chainStyle="spread_inside" />
 
     <View
         android:id="@+id/divider"
@@ -90,7 +90,6 @@
         app:layout_constraintEnd_toStartOf="@+id/divider"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_weight_value"
-        tools:text="Join Wait Queue" />
+        app:layout_constraintTop_toBottomOf="@+id/text_weight_value" />
 
 </android.support.constraint.ConstraintLayout>

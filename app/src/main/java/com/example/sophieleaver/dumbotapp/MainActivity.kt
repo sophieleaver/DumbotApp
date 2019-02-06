@@ -67,7 +67,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 val analyticsFragment = AnalyticsFragment.newInstance()
                 openFragment(analyticsFragment)
             }
-            R.id.nav_view -> {
+            R.id.nav_order -> {
                 val orderFragment: OrderFragment = OrderFragment.newInstance()
                 openFragment(orderFragment)
             }
