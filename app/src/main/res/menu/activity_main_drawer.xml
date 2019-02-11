@@ -4,37 +4,37 @@
     tools:showIn="navigation_view"
     tools:ignore="HardcodedText">
 
-    <group android:checkableBehavior="single">
-        <item
-            android:id="@+id/nav_demo"
-            android:icon="@drawable/ic_bot"
-            android:title="Demo 1" />
-        <item
+    <item android:title="User Section">
+        <menu>
+            <item
             android:id="@+id/nav_order"
             android:icon="@drawable/ic_barbell"
             android:title="Order Dumbbells" />
-        <item
-            android:id="@+id/nav_analytics"
-            android:icon="@drawable/ic_graph"
-            android:title="Analytics" />
-        <item
-            android:id="@+id/nav_weights"
-            android:icon="@drawable/ic_view_list"
-            android:title="Weight Inventory" />
 
-    </group>
+        <item
+            android:id="@+id/nav_login"
+            android:icon="@drawable/ic_menu_manage"
+            android:title="swap user/manager mode" />
+        </menu>
+    </item>
 
-    <!--<item android:title="Communicate">-->
-        <!--<menu>-->
-            <!--<item-->
-                    <!--android:id="@+id/nav_share"-->
-                    <!--android:icon="@drawable/ic_menu_share"-->
-                    <!--android:title="Share"/>-->
-            <!--<item-->
-                    <!--android:id="@+id/nav_send"-->
-                    <!--android:icon="@drawable/ic_menu_send"-->
-                    <!--android:title="Send"/>-->
-        <!--</menu>-->
-    <!--</item>-->
+    <item android:title="Manager Section">
+        <menu>
+            <item
+                android:id="@+id/nav_analytics"
+                android:icon="@drawable/ic_graph"
+                android:title="Analytics" />
+            <item
+                android:id="@+id/nav_weights"
+                android:icon="@drawable/ic_view_list"
+                android:title="Weight Inventory" />
+            <item
+                android:id="@+id/nav_demo"
+                android:icon="@drawable/ic_bot"
+                android:title="Demo 1" />
+        </menu>
+
+    </item>
+
 
 </menu>

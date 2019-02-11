@@ -11,30 +11,60 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.content_main.view.*
 
+var globalState = "user" //TODO change to dependent on login
+
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
+        getSupportActionBar()!!.setDisplayShowTitleEnabled(false)
 
-
-        val toggle = ActionBarDrawerToggle(
-            this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close
+        var toggle = ActionBarDrawerToggle(
+            this,
+            drawer_layout,
+            toolbar,
+            R.string.navigation_drawer_open,
+            R.string.navigation_drawer_close
         )
+
         drawer_layout.addDrawerListener(toggle)
         toggle.syncState()
-
         nav_view.setNavigationItemSelectedListener(this)
+
+//        if (globalState.equals("user")){
+//            setNavAsUser()
+//        }
+//        if (globalState.equals("manager")){
+//            setNavAsManager()
+//        }
         openFragment(DemoFragment.newInstance())
     }
+//
+//    fun setNavAsManager(){
+//        var toggle = ActionBarDrawerToggle(
+//            this,
+//            drawer_layout_manager,
+//            toolbar,
+//            R.string.navigation_drawer_open,
+//            R.string.navigation_drawer_close
+//        )
+//
+//        drawer_layout_manager.addDrawerListener(toggle)
+//        toggle.syncState()
+//        nav_view_manager.setNavigationItemSelectedListener(this)
+//    }
 
     override fun onBackPressed() {
-        if (drawer_layout.isDrawerOpen(GravityCompat.START)) {
-            drawer_layout.closeDrawer(GravityCompat.START)
-        } else {
-            super.onBackPressed()
-        }
+
+            if (drawer_layout.isDrawerOpen(GravityCompat.START)) {
+                drawer_layout.closeDrawer(GravityCompat.START)
+            } else {
+                super.onBackPressed()
+            }
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -56,21 +86,40 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Handle navigation view item clicks here.
         when (item.itemId) {
-            R.id.nav_demo -> {
-                val demoFragment = DemoFragment.newInstance()
-                openFragment(demoFragment)
-            }
-            R.id.nav_weights -> {
-                val weightsFragment = WeightsFragment.newInstance()
-                openFragment(weightsFragment)
-            }
-            R.id.nav_analytics -> {
-                val analyticsFragment = AnalyticsFragment.newInstance()
-                openFragment(analyticsFragment)
+            R.id.nav_login -> {
+                val modeFragment = ModeChangeFragment.newInstance()
+                openFragment(modeFragment)
             }
             R.id.nav_order -> {
                 val orderFragment = OrderFragment.newInstance()
                 openFragment(orderFragment)
+            }
+            R.id.nav_analytics -> {
+                if (globalState.equals("user")){
+                    val restrictedFragment  = RestrictedFragment.newInstance()
+                    openFragment(restrictedFragment)
+                } else {
+                    val analyticsFragment = AnalyticsFragment.newInstance()
+                    openFragment(analyticsFragment)
+                }
+            }
+            R.id.nav_weights -> {
+                if (globalState.equals("user")){
+                    val restrictedFragment  = RestrictedFragment.newInstance()
+                    openFragment(restrictedFragment)
+                } else {
+                    val weightsFragment = WeightsFragment.newInstance()
+                    openFragment(weightsFragment)
+                }
+            }
+            R.id.nav_demo -> {
+                if (globalState.equals("user")){
+                    val restrictedFragment  = RestrictedFragment.newInstance()
+                    openFragment(restrictedFragment)
+                } else {
+                    val demoFragment = DemoFragment.newInstance()
+                    openFragment(demoFragment)
+                }
             }
 
         }

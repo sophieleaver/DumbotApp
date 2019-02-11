@@ -140,7 +140,7 @@ class OrderFragment : Fragment() {
                         Random.nextInt(1, 10)
                     )
                 } else {
-                    available.text = getString(R.string.available)
+                    available.text = getString(R.string.available1)
                     orderButton.setOnClickListener {
                         this@OrderFragment.requireActivity()
                             .toast("Requested $requestedWeight dumbbell")

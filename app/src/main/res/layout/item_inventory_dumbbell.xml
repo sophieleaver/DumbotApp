@@ -15,12 +15,13 @@
         android:layout_marginStart="32dp"
         android:layout_marginTop="8dp"
         android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+        android:fontFamily="@font/muli_light"
         app:layout_constraintBottom_toTopOf="@+id/img_edit_dumbbell"
         app:layout_constraintEnd_toStartOf="@+id/divider"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="14kg"/>
+        tools:text="14kg" />
 
     <TextView
         android:id="@+id/text_wait_queue"
@@ -31,12 +32,13 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="2dp"
         android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Subtitle"
+        android:fontFamily="@font/muli_light"
         app:layout_constraintBottom_toTopOf="@+id/text_storage_location"
         app:layout_constraintEnd_toEndOf="@+id/text_available"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="@+id/text_available"
         app:layout_constraintTop_toBottomOf="@+id/text_available"
-        tools:text="Total in Stock: 12"/>
+        tools:text="Total in Stock: 12" />
 
     <TextView
         android:id="@+id/text_available"
@@ -48,13 +50,14 @@
         android:layout_marginTop="8dp"
         android:text="@string/available"
         android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+        android:fontFamily="@font/muli"
         app:layout_constraintBottom_toTopOf="@+id/text_wait_queue"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/divider"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="spread"
-        tools:text="7 Currently Available"/>
+        tools:text="7 Currently Available" />
 
     <View
         android:id="@+id/divider"
@@ -94,11 +97,11 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="2dp"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:fontFamily="@font/muli_light"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/text_wait_queue"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="@+id/text_wait_queue"
         app:layout_constraintTop_toBottomOf="@+id/text_wait_queue"
-        tools:text="Storage Location: C"
-        />
+        tools:text="Storage Location: C" />
 </android.support.constraint.ConstraintLayout>

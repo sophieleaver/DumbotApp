@@ -9,18 +9,22 @@
     <string name="nav_header_desc">Navigation header</string>
 
     <!--Dumbbell strings-->
-    <string name="title_analytics">Analytics</string>
+    <string name="title_analytics">ANALYTICS</string>
     <string name="storage_location">Storage Location: %1$s</string>
     <string name="current_stock">Currently Available: %1$d</string>
     <string name="total_stock">Total Stock: %1$d</string>
-    <string name="weight">%1$d kg</string>
+    <string name="weight">%1$d KG</string>
     <string name="dumbot">DumBot</string>
     <string name="text_change_station">Change Station</string>
     <string name="order">Order</string>
-    <string name="available">Available</string>
-    <string name="unavailable">Unavailable</string>
+    <string name="available1">AVAILABLE</string>
+    <string name="available">AVAILABLE</string>
+    <string name="unavailable">UNAVAILABLE</string>
     <string name="join_wait_queue">Join Wait Queue</string>
     <string name="wait_queue_info">%1$d/%1$d dumbbells in use\n%2$d requests in wait queue</string>
     <string name="available_dumbbells_info">%1$d/%2$d dumbbells available</string>
     <string name="title_weight_inventory">Weight Inventory</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

@@ -25,6 +25,8 @@
         android:layout_marginEnd="8dp"
         android:text="@string/title_analytics"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Headline3"
+        android:fontFamily="@font/muli"
+        android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -164,6 +166,7 @@
         android:text="Weight Usage Times"
         android:textSize="20sp"
         android:layout_marginTop="8dp"
+        android:fontFamily="@font/muli"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cardFixedFrame" />
@@ -177,6 +180,7 @@
         android:text="Weight Usage Frequency"
         android:textSize="20sp"
         android:layout_marginTop="32dp"
+        android:fontFamily="@font/muli"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/spinner1" />
