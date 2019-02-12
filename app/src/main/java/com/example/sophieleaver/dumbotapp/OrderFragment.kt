@@ -1,6 +1,7 @@
 package com.example.sophieleaver.dumbotapp
 
 
+import android.content.Intent
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -17,6 +18,7 @@ import kotlinx.android.synthetic.main.item_order_dumbbell.*
 import kotlinx.android.synthetic.main.item_order_dumbbell.view.*
 import org.jetbrains.anko.toast
 import com.example.sophieleaver.dumbotapp.R
+import java.lang.Boolean.TRUE
 import kotlin.random.Random
 
 
@@ -121,10 +123,17 @@ class OrderFragment : Fragment() {
                 val requestedWeight = weights!![position]
                 weightValue.text = requestedWeight
 
+                //dumbbell is unavailable
                 if ((position == 2) or (position == 5) or (position == 9)) {
                     orderButton.setOnClickListener {
                         this@OrderFragment.requireActivity()
                             .toast("Joined Weight Queue for $requestedWeight dumbbell")
+                        //create request and add to firebase
+                        //state of request should be IN_QUEUE
+                        //show wait queue page
+                        val intent = Intent(context, ActiveSession::class.java);
+                        intent.putExtra("Queue", true)
+                        startActivity(intent);
                     }
                     orderButton.text = getString(R.string.join_wait_queue)
                     orderButton.backgroundTintList = ColorStateList.valueOf(
@@ -139,11 +148,20 @@ class OrderFragment : Fragment() {
                         Random.nextInt(1, 10),
                         Random.nextInt(1, 10)
                     )
-                } else {
-                    available.text = getString(R.string.available1)
+                }
+                //dumbell is available
+                else {
+                    available.text = getString(R.string.available)
                     orderButton.setOnClickListener {
                         this@OrderFragment.requireActivity()
                             .toast("Requested $requestedWeight dumbbell")
+
+                        //create request and add to firebase
+                        //state of request should be WAITING_FOR_DELIVERY
+                        //show "your weights are being delivered" page
+                        val intent = Intent(context, ActiveSession::class.java);
+                        intent.putExtra("Queue", false)
+                        startActivity(intent);
                     }
                     val numAvailable = Random.nextInt(1, 10)
                     availabilityInfo.text = getString(
