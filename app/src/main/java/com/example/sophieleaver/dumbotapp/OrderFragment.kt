@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,6 +19,7 @@ import kotlinx.android.synthetic.main.item_order_dumbbell.*
 import kotlinx.android.synthetic.main.item_order_dumbbell.view.*
 import org.jetbrains.anko.toast
 import com.example.sophieleaver.dumbotapp.R
+import com.google.firebase.database.FirebaseDatabase
 import java.lang.Boolean.TRUE
 import kotlin.random.Random
 
@@ -33,10 +35,13 @@ private const val STATIONS = "STATIONS"
  */
 class OrderFragment : Fragment() {
 
+   private val TAG = "OrderFragment"
+
     private var weights: List<String>? = listOf("12kg", "14kg", "16kg", "18kg", "20kg", "22kg")
     private var stations: List<Int>? = listOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
     private var orderDumbbellRecyclerView: RecyclerView? = null
 
+    private val database = FirebaseDatabase.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -130,6 +135,7 @@ class OrderFragment : Fragment() {
                             .toast("Joined Weight Queue for $requestedWeight dumbbell")
                         //create request and add to firebase
                         //state of request should be IN_QUEUE
+
                         //show wait queue page
                         val intent = Intent(context, ActiveSession::class.java);
                         intent.putExtra("Queue", true)

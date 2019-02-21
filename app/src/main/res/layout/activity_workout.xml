@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.sophieleaver.dumbotapp.WorkoutActivity">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/timer_toolbar"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:background="?attr/colorPrimary"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"/>
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/main_area"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@+id/timer_toolbar"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent">
+
+
+    <Button
+        android:id="@+id/finish_workout_button"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:text="Done"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        android:fadingEdge="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/fab_pause" />
+
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab_stop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            app:layout_constraintStart_toEndOf="@+id/fab_pause"
+            app:layout_constraintTop_toBottomOf="@+id/progress_countdown"
+            app:srcCompat="@drawable/ic_stop" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab_pause"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginTop="20dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/progress_countdown"
+            app:srcCompat="@drawable/ic_pause" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab_start"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|start"
+            android:layout_marginEnd="20dp"
+            android:layout_marginTop="20dp"
+            app:layout_constraintEnd_toStartOf="@+id/fab_pause"
+            app:layout_constraintTop_toBottomOf="@+id/progress_countdown"
+            app:srcCompat="@drawable/ic_play_arrow" />
+
+
+
+        <me.zhanghai.android.materialprogressbar.MaterialProgressBar
+            android:id="@+id/progress_countdown"
+            style="@style/Widget.MaterialProgressBar.ProgressBar"
+
+            android:minWidth="306dp"
+            android:minHeight="306dp"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+
+            android:layout_marginEnd="30dp"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="10dp"
+            app:layout_constraintDimensionRatio="1:1"
+
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:mpb_showProgressBackground="true" />
+
+
+
+    <TextView
+        android:id="@+id/textView_countdown"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="70sp"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
+
+        app:layout_constraintBottom_toBottomOf="@+id/progress_countdown"
+        app:layout_constraintEnd_toEndOf="@+id/progress_countdown"
+        app:layout_constraintStart_toStartOf="@+id/progress_countdown"
+        app:layout_constraintTop_toTopOf="@+id/progress_countdown"
+
+        tools:text="10:00"/>
+
+
+        <LinearLayout
+            android:id="@+id/linearLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="@+id/progress_countdown"
+            app:layout_constraintEnd_toEndOf="@+id/progress_countdown"
+            app:layout_constraintStart_toStartOf="@+id/progress_countdown"
+            app:layout_constraintTop_toTopOf="@+id/progress_countdown"
+            >
+
+            <NumberPicker
+                android:id="@+id/numberPicker"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:scaleX="1"
+                android:scaleY="1"/>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/minutesTextView"
+            android:text="Minutes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toEndOf="@+id/linearLayout"
+            app:layout_constraintTop_toTopOf="@+id/progress_countdown"
+            app:layout_constraintBottom_toBottomOf="@+id/progress_countdown"
+            android:layout_marginStart="20dp"/>
+
+
+    </android.support.constraint.ConstraintLayout>
+</android.support.constraint.ConstraintLayout>
