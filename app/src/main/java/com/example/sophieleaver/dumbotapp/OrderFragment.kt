@@ -14,31 +14,20 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
-import android.widget.Toast
 import kotlinx.android.synthetic.main.fragment_order_weights.view.*
 import kotlinx.android.synthetic.main.item_order_dumbbell.view.*
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import org.jetbrains.anko.find
 import org.jetbrains.anko.toast
-import java.lang.reflect.Array.get
-import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.*
 
 
 private const val WEIGHTS = "WEIGHTS"
 private const val STATIONS = "STATIONS"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [OrderFragment.newInstance] factory method to
- * create an instance of this fragment.
- *
- */
 class OrderFragment : Fragment(){
 
     private val database = FirebaseDatabase.getInstance()
@@ -63,13 +52,9 @@ class OrderFragment : Fragment(){
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        Log.d(fragTag, "HELLO")
-        // Inflate the layout for this fragment
         val view =  inflater.inflate(R.layout.fragment_order_weights, container, false)
 
         weightList.addValueEventListener( object : ValueEventListener {
-
-            override fun onCancelled(p0: DatabaseError) {}
 
             override fun onDataChange(dataSnapshot : DataSnapshot) {
                 for ( foo : DataSnapshot in dataSnapshot.children){
@@ -78,12 +63,13 @@ class OrderFragment : Fragment(){
 
                 }
             }
+
+            override fun onCancelled(p0: DatabaseError) {}
         })
         return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        Log.d(fragTag, "HELLO")
         with(view) {
             orderDumbbellRecyclerView = order_dumbbell_list
 
@@ -115,7 +101,7 @@ class OrderFragment : Fragment(){
         getWeightData()
     }
 
-    fun changeBench(bench: Int, dialog: AlertDialog){ //function to change bench when button is clicked
+    private fun changeBench(bench: Int, dialog: AlertDialog){ //function to change bench when button is clicked
         currentBench = bench
         val text : TextView = view!!.findViewById(R.id.textview_current_bench)
         text.text = currentBench.toString()
@@ -125,7 +111,7 @@ class OrderFragment : Fragment(){
 
     private fun getWeightData() {
         weights = listOf(0.5, 1, 1.5)
-        stations = listOf(1, 2, 3, 4, 5, 6)
+        stations = listOf(1, 2, 3, 4, 5, 6) //TODO change to letters??
 
         orderDumbbellRecyclerView!!.layoutManager =
                 LinearLayoutManager(this@OrderFragment.requireContext())
@@ -151,9 +137,9 @@ class OrderFragment : Fragment(){
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             holder.apply {
                 val requestedWeight = weights!![position]
-                weightValue.text = requestedWeight.toString() + "kg"
+                weightValue.text = "${requestedWeight}kg"
 
-                val numAvailable = 1
+                val numAvailable = 1 //TODO get from firebase
                 val totalUnits = 2
 
                 if (numAvailable == totalUnits){
@@ -172,8 +158,11 @@ class OrderFragment : Fragment(){
                     available.text = getString(R.string.unavailable)
                     val queueLength = 2
                     availabilityInfo.text = getString( R.string.wait_queue_info, totalUnits, queueLength)
+
+                    //TODO add 1 to queue length of weight
                 }
-                else { //weight is available
+                else {
+                    //weight is available
                     available.text = getString(R.string.available)
 
                     orderButton.setOnClickListener {
@@ -185,14 +174,16 @@ class OrderFragment : Fragment(){
                         val requestTime  = DateTimeFormatter.ofPattern("HHmmss")
                         val formattedTime = LocalDateTime.now().format(requestTime)
 
-                        var request = ref.child("demo2").child("requests").child(formattedID)
+                        val request = ref.child("demo2").child("requests").child(formattedID)
                         request.child("bench").setValue(currentBench)
-                        request.child("time").setValue(formattedTime) // TODO set to time of request
+                        request.child("time").setValue(formattedTime)
                         request.child("type").setValue("collect")
-                        request.child("weight").setValue(requestedWeight) // TODO get weight from current weight
+                        request.child("weight").setValue(requestedWeight)
                     }
 
                     availabilityInfo.text = getString(R.string.available_dumbbells_info, numAvailable, totalUnits)
+
+                    //TODO reduce available weights by 1
                 }
             }
         }
