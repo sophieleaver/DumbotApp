@@ -15,7 +15,7 @@
         android:layout_marginEnd="32dp"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Headline4"
         android:fontFamily="@font/muli_light"
-        app:layout_constraintBottom_toTopOf="@+id/btn_order_dumbbell"
+        app:layout_constraintBottom_toTopOf="@+id/button_dumbot_information"
         app:layout_constraintEnd_toStartOf="@+id/divider"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
@@ -39,7 +39,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.48"
         app:layout_constraintStart_toEndOf="@+id/divider"
-        app:layout_constraintTop_toBottomOf="@+id/text_available"
+        app:layout_constraintTop_toBottomOf="@+id/text_dumbot"
         app:layout_constraintVertical_bias="1.0"
         tools:text="7 dumbbells in use\n3 requests in wait queue" />
 

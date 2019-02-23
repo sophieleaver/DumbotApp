@@ -11,7 +11,8 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.content_main.view.*
 
-var globalState = "user" //TODO change to dependent on login
+var globalState = "manager" //TODO change to dependent on login
+var currentBench = 1 // TODO save the value
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -34,53 +35,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         toggle.syncState()
         nav_view.setNavigationItemSelectedListener(this)
 
-//        if (globalState.equals("user")){
-//            setNavAsUser()
-//        }
-//        if (globalState.equals("manager")){
-//            setNavAsManager()
-//        }
-        openFragment(DemoFragment.newInstance())
-
-        if(!intent.equals(null)){
-
-            val fragment = intent.getStringExtra("frgToLoad")
-
-            when (fragment) {
-                "Order"-> {
-                    val orderFragment = OrderFragment.newInstance()
-                    openFragment(orderFragment)
-                }
-                "Demo"-> {
-                    val demoFragment = DemoFragment.newInstance()
-                    openFragment(demoFragment)
-                }
-                "Weights"-> {
-                    val weightsFragment = WeightsFragment.newInstance()
-                    openFragment(weightsFragment)
-                }
-                "Analytics" -> {
-                    val analyticsFragment = AnalyticsFragment.newInstance()
-                    openFragment(analyticsFragment)
-                }
-
-            }
-        }
+        openFragment(OverviewFragment.newInstance())
     }
-//
-//    fun setNavAsManager(){
-//        var toggle = ActionBarDrawerToggle(
-//            this,
-//            drawer_layout_manager,
-//            toolbar,
-//            R.string.navigation_drawer_open,
-//            R.string.navigation_drawer_close
-//        )
-//
-//        drawer_layout_manager.addDrawerListener(toggle)
-//        toggle.syncState()
-//        nav_view_manager.setNavigationItemSelectedListener(this)
-//    }
+
 
     override fun onBackPressed() {
 
@@ -118,6 +75,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.nav_order -> {
                 val orderFragment = OrderFragment.newInstance()
                 openFragment(orderFragment)
+            }
+            R.id.nav_overview -> {
+                if (globalState.equals("user")){
+                    val restrictedFragment  = RestrictedFragment.newInstance()
+                    openFragment(restrictedFragment)
+                } else {
+                    val overviewFragment = OverviewFragment.newInstance()
+                    openFragment(overviewFragment)
+                }
             }
             R.id.nav_analytics -> {
                 if (globalState.equals("user")){

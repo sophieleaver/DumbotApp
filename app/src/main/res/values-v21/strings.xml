@@ -2,8 +2,8 @@
 <resources>
     <string name="dumbot">DumBot</string>
     <string name="text_change_station">Change Station</string>
-    <string name="available">Available</string>
+    <string name="available">AVAILABLE</string>
     <string name="join_wait_queue">Join Wait Queue</string>
-    <string name="available_dumbbells_info">3/5 dumbbells available</string>
+    <string name="available_dumbbells_info2">3/5 dumbbells available</string>
     <string name="title_weight_inventory">Weight Inventory</string>
 </resources>

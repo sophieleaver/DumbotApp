@@ -20,7 +20,6 @@ import org.jetbrains.anko.toast
 import android.support.v7.app.AppCompatActivity
 import kotlinx.android.parcel.Parcelize
 import kotlinx.android.synthetic.main.app_bar_main.*
-import kotlinx.android.synthetic.main.fragment_weight_inventory.*
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -137,8 +136,8 @@ class WeightsFragment : Fragment() {
         inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
             val weightValue: TextView = view.text_weight_value
-            val currentStock: TextView = view.text_available
-            val totalStock: TextView = view.text_wait_queue
+            val currentStock: TextView = view.text_dumbot
+            val totalStock: TextView = view.text_dumbot_information
             val storageLocation: TextView = view.text_storage_location
             val editDumbbellButton: ImageView = view.img_edit_dumbbell
         }
