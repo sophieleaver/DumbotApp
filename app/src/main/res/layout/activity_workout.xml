@@ -145,6 +145,33 @@
             app:layout_constraintBottom_toBottomOf="@+id/progress_countdown"
             android:layout_marginStart="20dp"/>
 
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/floatingActionButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/fab_pause"
+            app:srcCompat="@android:drawable/ic_dialog_info"
+            app:fabSize="mini"
+            app:backgroundTint="@color/colorPrimaryDark"/>
+
+        <TextView
+            android:id="@+id/setTimer"
+            android:text="Pick timer length"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:fontFamily="@font/muli"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+            app:layout_constraintStart_toStartOf="parent"/>
+
 
     </android.support.constraint.ConstraintLayout>
 </android.support.constraint.ConstraintLayout>

@@ -38,6 +38,31 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         nav_view.setNavigationItemSelectedListener(this)
 
         openFragment(OverviewFragment.newInstance())
+
+        if(!intent.equals(null)){
+
+            val fragment = intent.getStringExtra("frgToLoad")
+
+            when (fragment) {
+                "Order"-> {
+                    val orderFragment = OrderFragment.newInstance()
+                    openFragment(orderFragment)
+                }
+                "Demo"-> {
+                    val demoFragment = DemoFragment.newInstance()
+                    openFragment(demoFragment)
+                }
+                "Weights"-> {
+                    val weightsFragment = WeightsFragment.newInstance()
+                    openFragment(weightsFragment)
+                }
+                "Analytics" -> {
+                    val analyticsFragment = AnalyticsFragment.newInstance()
+                    openFragment(analyticsFragment)
+                }
+
+            }
+        }
     }
 
 

@@ -8,7 +8,9 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.os.SystemClock
 import android.content.Intent
+import android.graphics.Color
 import android.os.CountDownTimer
+import android.util.Log
 import android.view.*
 import android.widget.Button
 import android.widget.Chronometer
@@ -22,7 +24,13 @@ import org.jetbrains.anko.yesButton
 import java.util.*
 import android.widget.NumberPicker
 import android.widget.TextView
-
+import com.google.firebase.database.FirebaseDatabase
+import java.time.LocalDateTime
+import java.time.ZoneOffset
+import android.view.Gravity
+import android.graphics.drawable.ColorDrawable
+import android.widget.PopupWindow
+import android.view.LayoutInflater
 
 
 
@@ -63,6 +71,9 @@ class WorkoutActivity : AppCompatActivity(){
 
     private var page:PagerState = PagerState.Timer
 
+    val database = FirebaseDatabase.getInstance()
+    val ref = database.reference
+    val fragTag = "WorkoutActivity"
 
 
 
@@ -110,7 +121,7 @@ class WorkoutActivity : AppCompatActivity(){
                 progress_countdown.visibility = View.VISIBLE
                 numberPicker.visibility = View.INVISIBLE
                 minutesTextView.visibility = View.INVISIBLE
-
+                setTimer.visibility = View.INVISIBLE
 
             }
             startTimer()
@@ -131,9 +142,9 @@ class WorkoutActivity : AppCompatActivity(){
             updateButtons()
 
             //show timer
-
             numberPicker.visibility = View.VISIBLE
             minutesTextView.visibility = View.VISIBLE
+            setTimer.visibility = View.VISIBLE
             textView_countdown.visibility = View.INVISIBLE
             progress_countdown.visibility = View.INVISIBLE
 
@@ -143,7 +154,21 @@ class WorkoutActivity : AppCompatActivity(){
         finish_workout_button.setOnClickListener {
             alert("Are you sure you are finished with your weights?") {
                 yesButton {
-                    // update request status to CANCELLED
+                    currentRequestExists = false // there is no longer a current request
+
+                    val now = LocalDateTime.now(ZoneOffset.UTC)
+                    val unix = now.atZone(ZoneOffset.UTC)?.toEpochSecond()
+
+                    //send request to firebase
+                    val request = ref.child("demo2").child("requests").child(unix.toString())
+                    request.child("bench").setValue(currentBench)
+                    request.child("time").setValue(unix)
+                    request.child("type").setValue("collecting")
+                    request.child("weight").setValue(currentDumbbellInUse)
+
+                    Log.d(fragTag, "Sending request $unix to server (deliver dumbbells of ${currentDumbbellInUse}kg to bench $currentBench)")
+
+                    //update layout
                     setContentView(R.layout.dumbbell_collection);
                     setSupportActionBar(collection_toolbar)
                     page = PagerState.Collection
@@ -159,6 +184,20 @@ class WorkoutActivity : AppCompatActivity(){
             }.show()
 
         }
+
+
+        floatingActionButton.setOnClickListener {
+            val inflater = this.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+            val layout:View = inflater.inflate(R.layout.fragment_current_session,null)
+            val window = PopupWindow(layout, 500, 600, true)
+
+            window.elevation = 10.0F
+            window.setBackgroundDrawable(ColorDrawable(Color.WHITE))
+            window.isOutsideTouchable = true
+            window.showAtLocation(layout, Gravity.CENTER, 0, 0)
+
+        }
+
 
         timer = object : CountDownTimer(secondsRemaining * 1000, 1000) {
             override fun onFinish() = onTimerFinished()

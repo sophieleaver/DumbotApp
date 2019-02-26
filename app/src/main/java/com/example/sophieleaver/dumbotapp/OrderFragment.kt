@@ -2,6 +2,7 @@ package com.example.sophieleaver.dumbotapp
 
 
 import android.app.AlertDialog
+import android.content.Intent
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -157,6 +158,11 @@ class OrderFragment : Fragment(){
                     orderButton.setOnClickListener {
                         this@OrderFragment.requireActivity()
                             .toast("Joined Weight Queue for $requestedWeight dumbbell")
+
+                        //show wait queue page
+                        val intent = Intent(context, ActiveSession::class.java);
+                        intent.putExtra("Queue", true)
+                        startActivity(intent);
                     }
                     orderButton.text = getString(R.string.join_wait_queue)
                     orderButton.backgroundTintList = ColorStateList.valueOf(
@@ -193,8 +199,13 @@ class OrderFragment : Fragment(){
 //                        createCurrentSessionAlertDialog()
 
                         //change fragments
-                        val currentSessionFragment = CurrentSessionFragment.newInstance()
-                        (activity as MainActivity).openFragment(currentSessionFragment)
+                        //val currentSessionFragment = CurrentSessionFragment.newInstance()
+                        //(activity as MainActivity).openFragment(currentSessionFragment)
+
+                        //show "your weights are being delivered" page
+                        val intent = Intent(context, ActiveSession::class.java);
+                        intent.putExtra("Queue", false)
+                        startActivity(intent);
                     }
 
                     availabilityInfo.text = getString(R.string.available_dumbbells_info, numAvailable, totalUnits)

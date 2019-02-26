@@ -19,7 +19,7 @@
 
     <TextView
         android:id="@+id/dumbellCollectionDescription"
-        android:text="A DumBot is on its way to collect your dumbbells. Please place your dumbbells in the pickup zone as shown below"
+        android:text="A DumBot is on its way to collect your dumbbell. Please place your dumbbell in the pickup zone as shown below"
         android:textSize="20sp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -45,22 +45,38 @@
         android:layout_marginTop="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/gifImageView" />
+        app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
-    <pl.droidsonroids.gif.GifImageView
-        android:id="@+id/gifImageView"
+    <ImageView
+        android:id="@+id/imageView"
         android:layout_width="match_parent"
         android:layout_height="150dp"
-        android:src="@drawable/android"
+        android:src="@drawable/dumbell"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/dumbellCollectionDescription"
         android:layout_marginBottom="8dp"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
         android:layout_marginTop="20dp"
         android:elevation="8dp"
-        android:background="#FFFFFFFF"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/dumbellCollectionDescription" />
+        android:background="#FFFFFFFF"/>
+
+    <!-- <pl.droidsonroids.gif.GifImageView
+         android:id="@+id/gifImageView"
+         android:layout_width="match_parent"
+         android:layout_height="150dp"
+         android:src="@drawable/android"
+         android:layout_marginBottom="8dp"
+         android:layout_marginStart="20dp"
+         android:layout_marginEnd="20dp"
+         android:layout_marginTop="20dp"
+         android:elevation="8dp"
+         android:background="#FFFFFFFF"
+         app:layout_constraintEnd_toEndOf="parent"
+         app:layout_constraintStart_toStartOf="parent"
+         app:layout_constraintTop_toBottomOf="@id/dumbellCollectionDescription" />
+ -->
 
 </android.support.constraint.ConstraintLayout>
 
