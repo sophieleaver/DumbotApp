@@ -14,8 +14,7 @@ import kotlinx.android.synthetic.main.content_main.view.*
 
 var globalState = "manager" //TODO change to dependent on login
 var currentBench = 1 // TODO save the value
-var currentRequestExists = false
-var currentDumbbellInUse = "0"
+
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
 
@@ -100,13 +99,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 openFragment(modeFragment)
             }
             R.id.nav_order -> {
-                if (!currentRequestExists) { //if the user does not have a current request open, the weight list is opened
-                    val orderFragment = OrderFragment.newInstance()
-                    openFragment(orderFragment)
-                } else {
-                    val currentSession = CurrentSessionFragment.newInstance()
-                    openFragment(currentSession)
-                }
+                val orderFragment = OrderFragment.newInstance()
+                openFragment(orderFragment)
             }
             R.id.nav_overview -> {
                 if (globalState.equals("user")){
@@ -135,15 +129,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     openFragment(weightsFragment)
                 }
             }
-//            R.id.nav_demo -> {
-//                if (globalState.equals("user")){
-//                    val restrictedFragment  = RestrictedFragment.newInstance()
-//                    openFragment(restrictedFragment)
-//                } else {
-//                    val demoFragment = DemoFragment.newInstance()
-//                    openFragment(demoFragment)
-//                }
-//            }
+            R.id.nav_demo -> {
+                if (globalState.equals("user")){
+                    val restrictedFragment  = RestrictedFragment.newInstance()
+                    openFragment(restrictedFragment)
+                } else {
+                    val demoFragment = DemoFragment.newInstance()
+                    openFragment(demoFragment)
+                }
+            }
 
         }
 
@@ -151,7 +145,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return true
     }
 
-    fun openFragment(fragment: android.support.v4.app.Fragment) {
+    private fun openFragment(fragment: android.support.v4.app.Fragment) {
         val transaction = supportFragmentManager.beginTransaction()
         transaction.replace(R.id.content_frame, fragment)
         transaction.addToBackStack(null)
