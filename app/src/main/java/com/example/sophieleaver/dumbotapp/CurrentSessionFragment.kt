@@ -52,6 +52,7 @@ class CurrentSessionFragment : Fragment(){
             currentRequestExists = false // there is no longer a current request
             //TODO inflate a new view
 
+
             val builder = AlertDialog.Builder(context)
             val dumbbellView = layoutInflater.inflate(R.layout.dumbbell_collection, null)
             builder.setView(dumbbellView)
@@ -82,6 +83,21 @@ class CurrentSessionFragment : Fragment(){
             val dialog: AlertDialog = builder.create()
             dialog.show()
             dialog.setCanceledOnTouchOutside(false)
+
+            val now = LocalDateTime.now(ZoneOffset.UTC)
+            val unixSeconds = now.atZone(ZoneOffset.UTC)?.toEpochSecond()
+            val unixMilli = now.atZone(ZoneOffset.UTC)?.toInstant()?.toEpochMilli()
+
+            //send request to firebase
+            val request = ref.child("demo2").child("requests").child(unixMilli.toString())
+            val benchID = convertBenchToID(currentBench)
+            request.child("bench").setValue(benchID)
+            request.child("time").setValue(unixSeconds)
+            request.child("type").setValue("collecting")
+            request.child("weight").setValue(currentDumbbellInUse)
+
+            Log.d(fragTag, "Sending request $unixMilli to server (deliver dumbbells of ${currentDumbbellInUse}kg to bench $currentBench)")
+
 
         }
         return view
