@@ -2,25 +2,18 @@ package com.example.sophieleaver.dumbotapp
 
 import android.content.Intent
 import android.os.Bundle
-import android.content.Intent.getIntent
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.widget.Button
 import android.widget.TextView
-import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.EventListener
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
-import kotlinx.android.synthetic.main.app_bar_main.*
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
-import org.jetbrains.anko.toast
 import org.jetbrains.anko.yesButton
-import android.content.DialogInterface
-import android.support.v7.app.AlertDialog
 import android.view.KeyEvent
-import android.view.KeyEvent.KEYCODE_BACK
 import kotlinx.android.synthetic.main.active_session.*
 
 
@@ -147,7 +140,7 @@ class ActiveSession : AppCompatActivity() {
 
     fun goToWorkoutPage() {
 
-        val intent = Intent(this, WorkoutActivity::class.java);
+        val intent = Intent(this, TimerActivity::class.java);
         startActivity(intent);
 
 

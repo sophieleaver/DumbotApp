@@ -44,10 +44,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             val fragment = intent.getStringExtra("frgToLoad")
 
             when (fragment) {
-                "Order"-> {
-                    val orderFragment = OrderFragment.newInstance()
-                    openFragment(orderFragment)
-                }
+                "CurrentSession"-> {
+                    val currentSessionFragment = CurrentSessionFragment.newInstance()
+                    openFragment(currentSessionFragment)
+                }//TODO do we need the rest?
                 "Demo"-> {
                     val demoFragment = DemoFragment.newInstance()
                     openFragment(demoFragment)

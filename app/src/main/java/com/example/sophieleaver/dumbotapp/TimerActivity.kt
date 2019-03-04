@@ -1,41 +1,18 @@
 package com.example.sophieleaver.dumbotapp
 
 import android.app.AlarmManager
-import android.app.PendingIntent
-import android.app.TimePickerDialog
 import android.content.Context
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.os.SystemClock
 import android.content.Intent
-import android.graphics.Color
 import android.os.CountDownTimer
-import android.util.Log
 import android.view.*
-import android.widget.Button
-import android.widget.Chronometer
-import android.widget.TimePicker
-import kotlinx.android.synthetic.main.activity_workout.*
-import kotlinx.android.synthetic.main.app_bar_main.*
-import kotlinx.android.synthetic.main.dumbbell_collection.*
-import org.jetbrains.anko.alert
-import org.jetbrains.anko.noButton
-import org.jetbrains.anko.yesButton
+import kotlinx.android.synthetic.main.activity_timer.*
 import java.util.*
-import android.widget.NumberPicker
-import android.widget.TextView
 import com.google.firebase.database.FirebaseDatabase
-import java.time.LocalDateTime
-import java.time.ZoneOffset
-import android.view.Gravity
-import android.graphics.drawable.ColorDrawable
-import android.widget.PopupWindow
-import android.view.LayoutInflater
 
 
-
-
-class WorkoutActivity : AppCompatActivity(){
+class TimerActivity : AppCompatActivity(){
 
     companion object{
 
@@ -71,15 +48,11 @@ class WorkoutActivity : AppCompatActivity(){
 
     private var page:PagerState = PagerState.Timer
 
-    val database = FirebaseDatabase.getInstance()
-    val ref = database.reference
-    val fragTag = "WorkoutActivity"
-
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_workout)
+        setContentView(R.layout.activity_timer)
 
         setSupportActionBar(timer_toolbar)
         supportActionBar?.setIcon(R.drawable.ic_timer)
@@ -150,53 +123,57 @@ class WorkoutActivity : AppCompatActivity(){
 
         }
 
-
-        finish_workout_button.setOnClickListener {
-            alert("Are you sure you are finished with your weights?") {
-                yesButton {
-                    currentRequestExists = false // there is no longer a current request
-
-                    val now = LocalDateTime.now(ZoneOffset.UTC)
-                    val unix = now.atZone(ZoneOffset.UTC)?.toEpochSecond()
-
-                    //send request to firebase
-                    val request = ref.child("demo2").child("requests").child(unix.toString())
-                    request.child("bench").setValue(currentBench)
-                    request.child("time").setValue(unix)
-                    request.child("type").setValue("collecting")
-                    request.child("weight").setValue(currentDumbbellInUse)
-
-                    Log.d(fragTag, "Sending request $unix to server (deliver dumbbells of ${currentDumbbellInUse}kg to bench $currentBench)")
-
-                    //update layout
-                    setContentView(R.layout.dumbbell_collection);
-                    setSupportActionBar(collection_toolbar)
-                    page = PagerState.Collection
-                    supportActionBar?.setIcon(R.drawable.ic_fitness_center)
-                    supportActionBar?.title = "      Dumbbell Collection"
-                    val buttonFinish:Button = findViewById(R.id.buttonFinish)
-                    buttonFinish.setOnClickListener {
-                        goBackToOrderPage()
-                    }
-
-                }
-                noButton { }
-            }.show()
-
+        finish_workout_button.setOnClickListener { v ->
+            returnToCurrentSession()
         }
 
 
-        floatingActionButton.setOnClickListener {
-            val inflater = this.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-            val layout:View = inflater.inflate(R.layout.fragment_current_session,null)
-            val window = PopupWindow(layout, 500, 600, true)
+//        finish_workout_button.setOnClickListener {
+//            alert("Are you sure you are finished with your weights?") {
+//                yesButton {
+//                    currentRequestExists = false // there is no longer a current request
+//
+//                    val now = LocalDateTime.now(ZoneOffset.UTC)
+//                    val unix = now.atZone(ZoneOffset.UTC)?.toEpochSecond()
+//
+//                    //send request to firebase
+//                    val request = ref.child("demo2").child("requests").child(unix.toString())
+//                    request.child("bench").setValue(currentBench)
+//                    request.child("time").setValue(unix)
+//                    request.child("type").setValue("collecting")
+//                    request.child("weight").setValue(currentDumbbellInUse)
+//
+//                    Log.d(fragTag, "Sending request $unix to server (deliver dumbbells of ${currentDumbbellInUse}kg to bench $currentBench)")
+//
+//                    //update layout
+//                    setContentView(R.layout.dumbbell_collection);
+//                    setSupportActionBar(collection_toolbar)
+//                    page = PagerState.Collection
+//                    supportActionBar?.setIcon(R.drawable.ic_fitness_center)
+//                    supportActionBar?.title = "      Dumbbell Collection"
+//                    val buttonFinish:Button = findViewById(R.id.buttonFinish)
+//                    buttonFinish.setOnClickListener {
+//                        goBackToOrderPage()
+//                    }
+//
+//                }
+//                noButton { }
+//            }.show()
+//
+//        }
 
-            window.elevation = 10.0F
-            window.setBackgroundDrawable(ColorDrawable(Color.WHITE))
-            window.isOutsideTouchable = true
-            window.showAtLocation(layout, Gravity.CENTER, 0, 0)
 
-        }
+//        floatingActionButton.setOnClickListener {
+//            val inflater = this.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+//            val layout:View = inflater.inflate(R.layout.fragment_current_session,null)
+//            val window = PopupWindow(layout, 500, 600, true)
+//
+//            window.elevation = 10.0F
+//            window.setBackgroundDrawable(ColorDrawable(Color.WHITE))
+//            window.isOutsideTouchable = true
+//            window.showAtLocation(layout, Gravity.CENTER, 0, 0)
+//
+//        }
 
 
         timer = object : CountDownTimer(secondsRemaining * 1000, 1000) {
@@ -212,11 +189,10 @@ class WorkoutActivity : AppCompatActivity(){
 
     }
 
-    fun goBackToOrderPage(){
-
+    fun returnToCurrentSession(){
         val intent = Intent(this, MainActivity::class.java);
-        intent.putExtra("frgToLoad", "Order")
-        startActivity(intent);
+        intent.putExtra("frgToLoad", "CurrentSession")
+        startActivity(intent)
     }
 
     override fun onResume() {
@@ -329,40 +305,40 @@ class WorkoutActivity : AppCompatActivity(){
 
     //handle back-key presses
 
-    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            exitByBackKey()
+//    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
+//        if (keyCode == KeyEvent.KEYCODE_BACK) {
+//            exitByBackKey()
+//
+//            return true
+//        }
+//        return super.onKeyDown(keyCode, event)
+//    }
 
-            return true
-        }
-        return super.onKeyDown(keyCode, event)
-    }
-
-    protected fun exitByBackKey() {
-
-        if(page.equals(PagerState.Timer)) {
-
-            alert("Are you sure you are finished with your weights?") {
-                yesButton {
-                    // update request status to CANCELLED
-                    setContentView(R.layout.dumbbell_collection);
-                    setSupportActionBar(collection_toolbar)
-                    page = PagerState.Collection
-                    supportActionBar?.setIcon(R.drawable.ic_fitness_center)
-                    supportActionBar?.title = "      Dumbbell Collection"
-                    val buttonFinish: Button = findViewById(R.id.buttonFinish)
-                    buttonFinish.setOnClickListener {
-                        goBackToOrderPage()
-                    }
-
-                }
-                noButton { }
-            }.show()
-
-        }else{
-            goBackToOrderPage()
-        }
-    }
+//    protected fun exitByBackKey() {
+//
+//        if(page.equals(PagerState.Timer)) {
+//
+//            alert("Are you sure you are finished with your weights?") {
+//                yesButton {
+//                    // update request status to CANCELLED
+//                    setContentView(R.layout.dumbbell_collection);
+//                    setSupportActionBar(collection_toolbar)
+//                    page = PagerState.Collection
+//                    supportActionBar?.setIcon(R.drawable.red_circle)
+//                    supportActionBar?.title = "      Dumbbell Collection"
+//                    val buttonFinish: Button = findViewById(R.id.buttonFinish)
+//                    buttonFinish.setOnClickListener {
+//                        goBackToOrderPage()
+//                    }
+//
+//                }
+//                noButton { }
+//            }.show()
+//
+//        }else{
+//            goBackToOrderPage()
+//        }
+//    }
 
 
 

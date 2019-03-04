@@ -24,7 +24,7 @@
             android:name=".ActiveSession"
             android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
-            android:name=".WorkoutActivity"
+            android:name=".TimerActivity"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 

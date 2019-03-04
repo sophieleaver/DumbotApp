@@ -2,7 +2,6 @@ package com.example.sophieleaver.dumbotapp
 
 
 import android.app.AlertDialog
-import android.content.Intent
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -47,38 +46,13 @@ class OrderFragment : Fragment(){
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view =  inflater.inflate(R.layout.fragment_order_weights, container, false)
-//        if (currentRequestExists) {
-//            createCurrentSessionAlertDialog()
-//        }
+
         val currentBenchTextView :TextView = view.findViewById(R.id.textview_current_bench)
         currentBenchTextView.text = currentBench.toString()
         return view
     }
 
-//    fun createCurrentSessionAlertDialog(){
-//        val builder = AlertDialog.Builder(context)
-//        val requestView = layoutInflater.inflate(R.layout.current_request_layout, null)
-//        builder.setView(requestView)
-//        val dialog : AlertDialog = builder.create()
-//        dialog.show()
-//        dialog.setCanceledOnTouchOutside(false)
-//
-//        val button : Button = requestView.findViewById(R.id.button_return_dumbbell)
-//        button.setOnClickListener {
-//            currentRequestExists = false // there is no longer a current request
-//            dialog.cancel() // close the alert dialog
-//
-//            val now = LocalDateTime.now(ZoneOffset.UTC)
-//            val unix = now.atZone(ZoneOffset.UTC)?.toEpochSecond()
-//
-//            //send request to firebase
-//            val request = ref.child("demo2").child("requests").child(unix.toString())
-//            request.child("bench").setValue(currentBench)
-//            request.child("time").setValue(unix)
-//            request.child("type").setValue("collecting")
-//            request.child("weight").setValue(currentDumbbellInUse)
-//        }
-//    }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         with(view) {
@@ -125,7 +99,7 @@ class OrderFragment : Fragment(){
         stations = listOf(1, 2, 3, 4, 5, 6)
 
         orderDumbbellRecyclerView!!.layoutManager =
-                LinearLayoutManager(this@OrderFragment.requireContext())
+            LinearLayoutManager(this@OrderFragment.requireContext())
         orderDumbbellRecyclerView!!.adapter = DumbbellRequestAdapter()
     }
 
@@ -153,16 +127,11 @@ class OrderFragment : Fragment(){
                 val numAvailable = 1 //TODO get from firebase
                 val totalUnits = 2
 
-                if (numAvailable == totalUnits){
+                if (numAvailable == 0){
                     //weight is unavailable
                     orderButton.setOnClickListener {
                         this@OrderFragment.requireActivity()
                             .toast("Joined Weight Queue for $requestedWeight dumbbell")
-
-                        //show wait queue page
-                        val intent = Intent(context, ActiveSession::class.java);
-                        intent.putExtra("Queue", true)
-                        startActivity(intent);
                     }
                     orderButton.text = getString(R.string.join_wait_queue)
                     orderButton.backgroundTintList = ColorStateList.valueOf(
@@ -183,29 +152,28 @@ class OrderFragment : Fragment(){
 
                     orderButton.setOnClickListener {
                         this@OrderFragment.requireActivity()
-                            .toast("Requested $requestedWeight dumbbell")
+                        //.toast("Requested $requestedWeight dumbbell")
                         val now = LocalDateTime.now(ZoneOffset.UTC)
-                        val unix = now.atZone(ZoneOffset.UTC)?.toEpochSecond()
 
-                        val request = ref.child("demo2").child("requests").child(unix.toString())
-                        request.child("bench").setValue(currentBench)
-                        request.child("time").setValue(unix)
+                        val unixSeconds = now.atZone(ZoneOffset.UTC)?.toEpochSecond()
+                        val unixMilli = now.atZone(ZoneOffset.UTC)?.toInstant()?.toEpochMilli()
+
+                        val request = ref.child("demo2").child("requests").child(unixMilli.toString())
+                        val benchID = convertBenchToID(currentBench) //convert the bench number to the corresponding bench ID for firebase
+
+                        request.child("bench").setValue(benchID)
+                        request.child("time").setValue(unixSeconds)
                         request.child("type").setValue("delivering")
                         request.child("weight").setValue("$requestedWeight")
 
                         currentDumbbellInUse = requestedWeight.toString()
                         currentRequestExists = true
-                        Log.d(fragTag, "Sending request $unix to server (deliver dumbbells of ${requestedWeight}kg to bench $currentBench)")
+                        Log.d(fragTag, "Sending request $unixMilli to server (deliver dumbbells of ${requestedWeight}kg to bench $currentBench)")
 //                        createCurrentSessionAlertDialog()
 
                         //change fragments
-                        //val currentSessionFragment = CurrentSessionFragment.newInstance()
-                        //(activity as MainActivity).openFragment(currentSessionFragment)
-
-                        //show "your weights are being delivered" page
-                        val intent = Intent(context, ActiveSession::class.java);
-                        intent.putExtra("Queue", false)
-                        startActivity(intent);
+                        val currentSessionFragment = CurrentSessionFragment.newInstance()
+                        (activity as MainActivity).openFragment(currentSessionFragment)
                     }
 
                     availabilityInfo.text = getString(R.string.available_dumbbells_info, numAvailable, totalUnits)
@@ -213,6 +181,18 @@ class OrderFragment : Fragment(){
                     //TODO reduce available weights by 1
                 }
             }
+        }
+
+        fun convertBenchToID(bench : Int) : String{
+            var id = "B7"
+            when (bench){
+                2 -> id = "B10"
+                3 -> id = "B13"
+                4 -> id = "B9"
+                5 -> id = "B12"
+                6 -> id = "B15"
+            }
+            return id
         }
 
         inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {

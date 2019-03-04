@@ -1,6 +1,7 @@
 package com.example.sophieleaver.dumbotapp
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.util.Log
@@ -28,30 +29,56 @@ class CurrentSessionFragment : Fragment(){
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(R.layout.fragment_current_session, container, false)
-//        val currentBenchTextView : TextView = view.findViewById(R.id.textview_current_bench)
-//        currentBenchTextView.text = currentBench.toString()
 
+        var view = inflater.inflate(R.layout.fragment_current_session, container, false)
+
+        //set displayed bench to bench weight was ordered to
+        val currentBenchTextView : TextView = view.findViewById(R.id.textview_current_bench)
+        currentBenchTextView.text = currentBench.toString()
+
+        //user can start a timer by clicking button -> takes you to activity
+        val timer : Button = view.findViewById(R.id.button_start_timer)
+        timer.setOnClickListener {
+            val intent = Intent(view.context, TimerActivity::class.java)
+            view.context.startActivity(intent)
+        }
+
+        //when returning the dumbbell
         val button : Button = view.findViewById(R.id.button_return_dumbbell)
         button.setOnClickListener {
             currentRequestExists = false // there is no longer a current request
-
+            //TODO inflate a new view
+            //view = inflater.inflate(R.layout.dumbbell_collection, container, false)
             val now = LocalDateTime.now(ZoneOffset.UTC)
-            val unix = now.atZone(ZoneOffset.UTC)?.toEpochSecond()
+            val unixSeconds = now.atZone(ZoneOffset.UTC)?.toEpochSecond()
+            val unixMilli = now.atZone(ZoneOffset.UTC)?.toInstant()?.toEpochMilli()
 
             //send request to firebase
-            val request = ref.child("demo2").child("requests").child(unix.toString())
-            request.child("bench").setValue(currentBench)
-            request.child("time").setValue(unix)
+            val request = ref.child("demo2").child("requests").child(unixMilli.toString())
+            val benchID = convertBenchToID(currentBench)
+            request.child("bench").setValue(benchID)
+            request.child("time").setValue(unixSeconds)
             request.child("type").setValue("collecting")
             request.child("weight").setValue(currentDumbbellInUse)
 
-            Log.d(fragTag, "Sending request $unix to server (deliver dumbbells of ${currentDumbbellInUse}kg to bench $currentBench)")
+            Log.d(fragTag, "Sending request $unixMilli to server (deliver dumbbells of ${currentDumbbellInUse}kg to bench $currentBench)")
 
             val orderFragment = OrderFragment.newInstance()
             (activity as MainActivity).openFragment(orderFragment)
         }
         return view
+    }
+
+    fun convertBenchToID(bench : Int) : String{
+        var id = "B7"
+        when (bench){
+            2 -> id = "B10"
+            3 -> id = "B13"
+            4 -> id = "B9"
+            5 -> id = "B12"
+            6 -> id = "B15"
+        }
+        return id
     }
 
     override fun onAttach(context: Context) {
