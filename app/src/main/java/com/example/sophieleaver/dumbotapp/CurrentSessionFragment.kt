@@ -1,5 +1,6 @@
 package com.example.sophieleaver.dumbotapp
 
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -10,7 +11,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 import com.google.firebase.database.FirebaseDatabase
+import org.jetbrains.anko.find
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 
@@ -48,23 +51,38 @@ class CurrentSessionFragment : Fragment(){
         button.setOnClickListener {
             currentRequestExists = false // there is no longer a current request
             //TODO inflate a new view
-            //view = inflater.inflate(R.layout.dumbbell_collection, container, false)
-            val now = LocalDateTime.now(ZoneOffset.UTC)
-            val unixSeconds = now.atZone(ZoneOffset.UTC)?.toEpochSecond()
-            val unixMilli = now.atZone(ZoneOffset.UTC)?.toInstant()?.toEpochMilli()
 
-            //send request to firebase
-            val request = ref.child("demo2").child("requests").child(unixMilli.toString())
-            val benchID = convertBenchToID(currentBench)
-            request.child("bench").setValue(benchID)
-            request.child("time").setValue(unixSeconds)
-            request.child("type").setValue("collecting")
-            request.child("weight").setValue(currentDumbbellInUse)
+            val builder = AlertDialog.Builder(context)
+            val dumbbellView = layoutInflater.inflate(R.layout.dumbbell_collection, null)
+            builder.setView(dumbbellView)
+            builder.setTitle("Dumbbell Collection")
+            builder.setNegativeButton("CANCEL") { dialog , _ ->
+                //cancel the collection request
+                Toast.makeText(context, "Cancelling dumbbell collection", Toast.LENGTH_SHORT).show()
+                dialog.cancel()
+            }
+            builder.setPositiveButton("CONFIRM COLLECTION") { dialog, _ ->
+                val now = LocalDateTime.now(ZoneOffset.UTC)
+                val unixSeconds = now.atZone(ZoneOffset.UTC)?.toEpochSecond()
+                val unixMilli = now.atZone(ZoneOffset.UTC)?.toInstant()?.toEpochMilli()
 
-            Log.d(fragTag, "Sending request $unixMilli to server (deliver dumbbells of ${currentDumbbellInUse}kg to bench $currentBench)")
+                //send request to firebase
+                val request = ref.child("demo2").child("requests").child(unixMilli.toString())
+                val benchID = convertBenchToID(currentBench)
+                request.child("bench").setValue(benchID)
+                request.child("time").setValue(unixSeconds)
+                request.child("type").setValue("collecting")
+                request.child("weight").setValue(currentDumbbellInUse)
 
-            val orderFragment = OrderFragment.newInstance()
-            (activity as MainActivity).openFragment(orderFragment)
+                Log.d(fragTag, "Sending request $unixMilli to server (deliver dumbbells of ${currentDumbbellInUse}kg to bench $currentBench)")
+
+                val orderFragment = OrderFragment.newInstance()
+                (activity as MainActivity).openFragment(orderFragment)
+            }
+            val dialog: AlertDialog = builder.create()
+            dialog.show()
+            dialog.setCanceledOnTouchOutside(false)
+
         }
         return view
     }

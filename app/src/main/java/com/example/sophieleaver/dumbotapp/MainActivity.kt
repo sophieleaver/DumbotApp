@@ -37,7 +37,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         toggle.syncState()
         nav_view.setNavigationItemSelectedListener(this)
 
-        openFragment(OverviewFragment.newInstance())
+        openFragment(OrderFragment.newInstance())
 
         if(!intent.equals(null)){
 
