@@ -1,8 +1,8 @@
 package com.example.sophieleaver.dumbotapp
 
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.support.design.widget.NavigationView
+import android.support.v4.app.Fragment
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
@@ -10,7 +10,6 @@ import android.view.Menu
 import android.view.MenuItem
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
-import kotlinx.android.synthetic.main.content_main.view.*
 
 var globalState = "manager" //TODO change to dependent on login
 var currentBench = 1 // TODO save the value
@@ -23,9 +22,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
-        getSupportActionBar()!!.setDisplayShowTitleEnabled(false)
+        supportActionBar!!.setDisplayShowTitleEnabled(false)
 
-        var toggle = ActionBarDrawerToggle(
+        val toggle = ActionBarDrawerToggle(
             this,
             drawer_layout,
             toolbar,
@@ -39,7 +38,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         openFragment(OrderFragment.newInstance())
 
-        if(!intent.equals(null)){
+        if (intent != null) {
 
             val fragment = intent.getStringExtra("frgToLoad")
 
@@ -109,7 +108,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 }
             }
             R.id.nav_overview -> {
-                if (globalState.equals("user")){
+                if (globalState == "user") {
                     val restrictedFragment  = RestrictedFragment.newInstance()
                     openFragment(restrictedFragment)
                 } else {
@@ -118,7 +117,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 }
             }
             R.id.nav_analytics -> {
-                if (globalState.equals("user")){
+                if (globalState == "user") {
                     val restrictedFragment  = RestrictedFragment.newInstance()
                     openFragment(restrictedFragment)
                 } else {
@@ -127,7 +126,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 }
             }
             R.id.nav_weights -> {
-                if (globalState.equals("user")){
+                if (globalState == "user") {
                     val restrictedFragment  = RestrictedFragment.newInstance()
                     openFragment(restrictedFragment)
                 } else {
@@ -151,7 +150,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return true
     }
 
-    fun openFragment(fragment: android.support.v4.app.Fragment) {
+    fun openFragment(fragment: Fragment) {
         val transaction = supportFragmentManager.beginTransaction()
         transaction.replace(R.id.content_frame, fragment)
         transaction.addToBackStack(null)

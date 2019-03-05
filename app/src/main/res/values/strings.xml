@@ -5,11 +5,11 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="nav_header_title">Android Studio</string>
-    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_subtitle">dumbot@team7even.com</string>
     <string name="nav_header_desc">Navigation header</string>
 
     <!--Dumbbell strings-->
-    <string name="title_analytics">ANALYTICS</string>
+    <string name="title_analytics">Analytics</string>
     <string name="storage_location">Storage Location: %1$s</string>
     <string name="current_stock">Currently Available: %1$d</string>
     <string name="total_stock">Total Stock: %1$d</string>
@@ -21,13 +21,10 @@
     <string name="available">AVAILABLE</string>
     <string name="unavailable">UNAVAILABLE</string>
     <string name="join_wait_queue">Join Wait Queue</string>
-    <string name="wait_queue_info">%1$d/%1$d dumbbells in use\n%2$d requests in wait queue</string>
+    <string name="wait_queue_info">0/%1$d dumbbells available, %2$d requests in wait queue</string>
     <string name="available_dumbbells_info">%1$d/%2$d dumbbells available</string>
     <string name="title_weight_inventory">Weight Inventory</string>
     <string name="question_mark">\?</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="minutes">Minutes</string>
     <string name="set_timer">Pick timer length</string>
     <string name="back">Back</string>
