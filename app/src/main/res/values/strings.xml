@@ -24,7 +24,13 @@
     <string name="wait_queue_info">%1$d/%1$d dumbbells in use\n%2$d requests in wait queue</string>
     <string name="available_dumbbells_info">%1$d/%2$d dumbbells available</string>
     <string name="title_weight_inventory">Weight Inventory</string>
+    <string name="question_mark">\?</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="minutes">Minutes</string>
+    <string name="set_timer">Pick timer length</string>
+    <string name="back">Back</string>
+    <string name="cancel">Cancel</string>
+    <string name="title_active_session">Active Session Page</string>
 </resources>

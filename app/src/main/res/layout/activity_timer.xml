@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -11,26 +10,26 @@
         android:id="@+id/timer_toolbar"
         android:layout_width="0dp"
         android:layout_height="56dp"
-        android:background="?attr/colorPrimary"
+        android:background="@color/colorPrimary"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/main_area"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@+id/timer_toolbar"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent">
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/timer_toolbar">
 
 
         <Button
             android:id="@+id/finish_workout_button"
             style="@style/Widget.AppCompat.Button.Colored"
-            android:text="Back"
+            android:text="@string/back"
             android:layout_width="115dp"
             android:layout_height="49dp"
             android:layout_marginBottom="20dp"
@@ -82,7 +81,6 @@
             app:srcCompat="@drawable/ic_play_arrow" />
 
 
-
         <me.zhanghai.android.materialprogressbar.MaterialProgressBar
             android:id="@+id/progress_countdown"
             style="@style/Widget.MaterialProgressBar.ProgressBar"
@@ -103,20 +101,19 @@
             app:mpb_showProgressBackground="true" />
 
 
+        <TextView
+            android:id="@+id/textView_countdown"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="70sp"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
 
-    <TextView
-        android:id="@+id/textView_countdown"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="70sp"
-        android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
+            app:layout_constraintBottom_toBottomOf="@+id/progress_countdown"
+            app:layout_constraintEnd_toEndOf="@+id/progress_countdown"
+            app:layout_constraintStart_toStartOf="@+id/progress_countdown"
+            app:layout_constraintTop_toTopOf="@+id/progress_countdown"
 
-        app:layout_constraintBottom_toBottomOf="@+id/progress_countdown"
-        app:layout_constraintEnd_toEndOf="@+id/progress_countdown"
-        app:layout_constraintStart_toStartOf="@+id/progress_countdown"
-        app:layout_constraintTop_toTopOf="@+id/progress_countdown"
-
-        tools:text="10:00"/>
+            tools:text="10:00" />
 
 
         <LinearLayout
@@ -126,32 +123,29 @@
             app:layout_constraintBottom_toBottomOf="@+id/progress_countdown"
             app:layout_constraintEnd_toEndOf="@+id/progress_countdown"
             app:layout_constraintStart_toStartOf="@+id/progress_countdown"
-            app:layout_constraintTop_toTopOf="@+id/progress_countdown"
-            >
+            app:layout_constraintTop_toTopOf="@+id/progress_countdown">
 
             <NumberPicker
                 android:id="@+id/numberPicker"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_centerHorizontal="true"
                 android:scaleX="1"
-                android:scaleY="1"/>
+                android:scaleY="1" />
         </LinearLayout>
 
         <TextView
             android:id="@+id/minutesTextView"
-            android:text="Minutes"
+            android:text="@string/minutes"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintStart_toEndOf="@+id/linearLayout"
-            app:layout_constraintTop_toTopOf="@+id/progress_countdown"
+            android:layout_marginStart="20dp"
             app:layout_constraintBottom_toBottomOf="@+id/progress_countdown"
-            android:layout_marginStart="20dp"/>
+            app:layout_constraintStart_toEndOf="@+id/linearLayout"
+            app:layout_constraintTop_toTopOf="@+id/progress_countdown" />
 
         <TextView
             android:id="@+id/setTimer"
-            android:text="Pick timer length"
+            android:text="@string/set_timer"
             android:textSize="18sp"
             android:textStyle="bold"
             android:fontFamily="@font/muli"
@@ -159,7 +153,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             app:layout_constraintBottom_toTopOf="@+id/linearLayout"
-            app:layout_constraintStart_toStartOf="parent"/>
+            app:layout_constraintStart_toStartOf="parent" />
 
 
     </android.support.constraint.ConstraintLayout>

@@ -34,7 +34,7 @@
         android:fontFeatureSettings="smcp"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
         android:visibility="visible"
-        android:text="DUMBOT"
+        android:text="@string/dumbot"
         android:fontFamily="@font/muli_extralight"
         android:layout_marginTop="24dp"
         android:textSize="36sp"
@@ -54,7 +54,6 @@
         android:fontFeatureSettings="smcp"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
         android:visibility="visible"
-        android:text="#1"
         android:fontFamily="@font/muli_extralight"
         android:textSize="36sp"
         android:layout_marginBottom="8dp"
@@ -65,7 +64,8 @@
         app:layout_constraintEnd_toStartOf="@+id/divider"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/text_dumbot"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintVertical_bias="0.0"
+        tools:text="#1" />
 
     <View
         android:id="@+id/divider"
@@ -87,7 +87,7 @@
         style="@style/Widget.AppCompat.Button.Colored"
         android:layout_width="56dp"
         android:layout_height="55dp"
-        android:text="?"
+        android:text="@string/question_mark"
         android:fontFamily="@font/muli_extralight"
         android:textSize="24sp"
         android:layout_marginStart="8dp"
