@@ -17,7 +17,7 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Headline"
         android:fontFamily="@font/muli_light"
         app:layout_constraintBottom_toTopOf="@+id/img_edit_dumbbell"
-        app:layout_constraintEnd_toStartOf="@+id/divider"
+        app:layout_constraintEnd_toStartOf="@+id/divider_queued"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -54,13 +54,13 @@
         app:layout_constraintBottom_toTopOf="@+id/text_dumbot_information"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/divider"
+        app:layout_constraintStart_toEndOf="@+id/divider_queued"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="spread"
         tools:text="7 Currently Available" />
 
     <View
-        android:id="@+id/divider"
+        android:id="@+id/divider_queued"
         android:layout_width="1dp"
         android:layout_height="0dp"
         android:layout_marginBottom="16dp"

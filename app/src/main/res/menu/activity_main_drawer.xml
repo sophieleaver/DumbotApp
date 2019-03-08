@@ -9,7 +9,19 @@
             <item
             android:id="@+id/nav_order"
             android:icon="@drawable/ic_barbell"
-            android:title="Order Dumbbells" />
+            android:title="Order More Dumbbells" />
+
+            <item
+            android:id="@+id/nav_current_sessions"
+            android:icon="@drawable/ic_barbell"
+            android:title="Current Workout Session"
+                />
+
+            <item
+                android:id="@+id/nav_timer"
+                android:icon="@drawable/ic_barbell"
+                android:title="Workout Timer"
+                />
 
         <item
             android:id="@+id/nav_login"
@@ -27,15 +39,11 @@
             <item
                 android:id="@+id/nav_weights"
                 android:icon="@drawable/ic_view_list"
-                android:title="Weight Inventory" />
+                android:title="Dumbbell Inventory" />
             <item
                 android:id="@+id/nav_overview"
                 android:icon="@drawable/ic_menu_manage"
-                android:title="Overview"/>
-            <item
-                android:id="@+id/nav_demo"
-                android:icon="@drawable/ic_bot"
-                android:title="Demo 1" />
+                android:title="Dumbot Overview"/>
         </menu>
 
     </item>

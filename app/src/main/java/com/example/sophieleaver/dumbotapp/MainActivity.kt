@@ -36,7 +36,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         toggle.syncState()
         nav_view.setNavigationItemSelectedListener(this)
 
-        openFragment(OrderFragment.newInstance())
+        openFragment(CurrentOrdersFragment.newInstance()) //TODO change
 
         if (intent != null) {
 
@@ -47,10 +47,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     val currentSessionFragment = CurrentSessionFragment.newInstance()
                     openFragment(currentSessionFragment)
                 }//TODO do we need the rest?
-                "Demo"-> {
-                    val demoFragment = DemoFragment.newInstance()
-                    openFragment(demoFragment)
-                }
                 "Weights"-> {
                     val weightsFragment = WeightsFragment.newInstance()
                     openFragment(weightsFragment)
@@ -106,6 +102,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     val currentSession = CurrentSessionFragment.newInstance()
                     openFragment(currentSession)
                 }
+            }
+            R.id.nav_current_sessions -> {
+                val currentWorkoutFragment = CurrentOrdersFragment.newInstance()
+                openFragment(currentWorkoutFragment)
+
             }
             R.id.nav_overview -> {
                 if (globalState == "user") {
