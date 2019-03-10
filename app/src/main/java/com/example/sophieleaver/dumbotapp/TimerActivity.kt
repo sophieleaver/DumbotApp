@@ -67,10 +67,10 @@ class TimerActivity : AppCompatActivity(){
 
         //Number picker
 
-        input_weight_value.minValue = 0
-        input_weight_value.maxValue = 15
-        input_weight_value.value = 1
-        input_weight_value.setOnValueChangedListener { picker, oldVal, newVal ->
+        input_total_stock.minValue = 0
+        input_total_stock.maxValue = 15
+        input_total_stock.value = 1
+        input_total_stock.setOnValueChangedListener { picker, oldVal, newVal ->
 
             if (newVal.toString() != "") {
                 timer.cancel()
@@ -92,7 +92,7 @@ class TimerActivity : AppCompatActivity(){
 
                 textView_countdown.visibility = View.VISIBLE
                 progress_countdown.visibility = View.VISIBLE
-                input_weight_value.visibility = View.INVISIBLE
+                input_total_stock.visibility = View.INVISIBLE
                 minutesTextView.visibility = View.INVISIBLE
                 setTimer.visibility = View.INVISIBLE
 
@@ -115,7 +115,7 @@ class TimerActivity : AppCompatActivity(){
             updateButtons()
 
             //show timer
-            input_weight_value.visibility = View.VISIBLE
+            input_total_stock.visibility = View.VISIBLE
             minutesTextView.visibility = View.VISIBLE
             setTimer.visibility = View.VISIBLE
             textView_countdown.visibility = View.INVISIBLE

@@ -1,5 +1,6 @@
 package com.example.sophieleaver.dumbotapp
 
+import android.content.Context
 import android.os.Bundle
 import android.support.design.widget.NavigationView
 import android.support.v4.app.Fragment
@@ -12,13 +13,19 @@ import android.view.MenuItem
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 
+//todo - be able to see what mode we are in
+//todo - string resources everywhere
+
 var globalState = "manager" //TODO change to dependent on login
 var currentBench = 1 // TODO save the value
 var currentRequestExists = false
 var currentDumbbellInUse = "0"
+var userMode = false
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
+
+    lateinit var navigationView: NavigationView
     private lateinit var mainToolbar: Toolbar
 
 
@@ -26,8 +33,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         mainToolbar = toolbar
+        navigationView = nav_view
         setSupportActionBar(toolbar)
-//        supportActionBar!!.setDisplayShowTitleEnabled(false)
 
         val toggle = ActionBarDrawerToggle(
             this,
@@ -40,6 +47,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         drawer_layout.addDrawerListener(toggle)
         toggle.syncState()
         nav_view.setNavigationItemSelectedListener(this)
+        nav_view.menu.findItem(R.id.menu_manager).isVisible = !userMode
         mainToolbar.title = "Order Dumbells"
         openFragment(OrderFragment.newInstance())
 
@@ -58,6 +66,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 }
             )
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        userMode = getSharedPreferences("prefs", Context.MODE_PRIVATE).getBoolean("mode", true)
+        globalState = if (userMode) "user" else "manager"
     }
 
 
@@ -86,6 +100,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             else -> super.onOptionsItemSelected(item)
         }
     }
+
+    //TODO - fixe bug where it crashes if you go onto analytics in user mode using back button
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Handle navigation view item clicks here.
@@ -161,5 +177,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         transaction.replace(R.id.content_frame, fragment)
         transaction.addToBackStack(null)
         transaction.commit()
+    }
+
+    fun changeMode(isUserMode: Boolean) {
+        userMode = isUserMode
+        globalState = if (userMode) "user" else "manager"
+        getSharedPreferences("prefs", Context.MODE_PRIVATE)
+            .edit()
+            .putBoolean("mode", isUserMode)
+            .apply()
+        navigationView.menu.findItem(R.id.menu_manager).isVisible = !userMode
     }
 }

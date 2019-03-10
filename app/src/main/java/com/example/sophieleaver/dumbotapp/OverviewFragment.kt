@@ -201,7 +201,7 @@ class OverviewFragment : Fragment() {
 
         inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             var dumbot: TextView = view.text_dumbot_number
-            val dumbotStatus: TextView = view.text_total_stock
+            val dumbotStatus: TextView = view.text_weight_value
             val overviewButton: Button = view.button_dumbot_information
         }
     }

@@ -28,7 +28,7 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <android.support.design.widget.TextInputLayout
-            android:id="@+id/input_weight_value"
+            android:id="@+id/input_total_stock"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -40,7 +40,7 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <android.support.design.widget.TextInputEditText
-                android:id="@+id/text_weight_value"
+                android:id="@+id/text_total_stock"
                 style="@style/TextAppearance.MaterialComponents.Headline5"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -52,7 +52,7 @@
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
-            android:id="@+id/input_total_stock"
+            android:id="@+id/input_weight_value"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -62,10 +62,10 @@
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintHorizontal_chainStyle="packed"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/input_weight_value">
+            app:layout_constraintTop_toBottomOf="@+id/input_total_stock">
 
             <android.support.design.widget.TextInputEditText
-                android:id="@+id/text_total_stock"
+                android:id="@+id/text_weight_value"
                 style="@style/TextAppearance.MaterialComponents.Headline5"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -84,11 +84,11 @@
             android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
             android:layout_marginStart="4dp"
             android:layout_marginEnd="40dp"
-            app:layout_constraintBottom_toBottomOf="@+id/input_weight_value"
+            app:layout_constraintBottom_toBottomOf="@+id/input_total_stock"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/input_weight_value"
-            app:layout_constraintTop_toTopOf="@+id/input_weight_value"
+            app:layout_constraintStart_toEndOf="@+id/input_total_stock"
+            app:layout_constraintTop_toTopOf="@+id/input_total_stock"
             app:layout_constraintVertical_bias="0.68" />
 
         <TextView
@@ -100,11 +100,11 @@
             android:layout_marginTop="8dp"
             android:layout_marginStart="4dp"
             android:layout_marginEnd="32dp"
-            app:layout_constraintBottom_toBottomOf="@+id/input_total_stock"
+            app:layout_constraintBottom_toBottomOf="@+id/input_weight_value"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/input_total_stock"
-            app:layout_constraintTop_toTopOf="@+id/input_total_stock"
+            app:layout_constraintStart_toEndOf="@+id/input_weight_value"
+            app:layout_constraintTop_toTopOf="@+id/input_weight_value"
             app:layout_constraintVertical_bias="0.56" />
 
         <TextView
@@ -159,7 +159,7 @@
             android:layout_marginTop="16dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/input_total_stock" />
+            app:layout_constraintTop_toBottomOf="@+id/input_weight_value" />
 
 
     </android.support.constraint.ConstraintLayout>

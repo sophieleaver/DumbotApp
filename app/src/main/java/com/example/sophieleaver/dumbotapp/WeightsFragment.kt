@@ -29,6 +29,7 @@ data class Dumbbell(
     val storageLocation: MutableList<String> = mutableListOf()
 )
 
+//todo - delete (only if none are currently rented out or in wait queue)
 
 class WeightsFragment : Fragment() {
     private val database = FirebaseDatabase.getInstance().reference
@@ -120,7 +121,7 @@ class WeightsFragment : Fragment() {
                 holder.storageLocation.text =
                     getString(R.string.storage_location, it.storageLocation.joinToString())
                 holder.editDumbbellButton.setOnClickListener {
-                    this@WeightsFragment.requireActivity().toast("edit dumbbell")
+                    NewWeightDialog.display(fragmentManager!!, dumbbell)
                 }
             }
         }
@@ -128,11 +129,11 @@ class WeightsFragment : Fragment() {
 
         inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
-            val weightValue: TextView = view.text_weight_value
+            val weightValue: TextView = view.text_total_stock
             val currentStock: TextView = view.text_current_stock
-            val totalStock: TextView = view.text_total_stock
+            val totalStock: TextView = view.text_weight_value
             val storageLocation: TextView = view.text_storage_location
-            val editDumbbellButton: ImageView = view.img_edit_dumbbell
+            val editDumbbellButton: ImageView = view.img_remove_weight
         }
     }
 }

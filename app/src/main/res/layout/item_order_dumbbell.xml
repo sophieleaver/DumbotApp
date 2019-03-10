@@ -7,7 +7,7 @@
     tools:context=".WeightsFragment">
 
     <TextView
-        android:id="@+id/text_weight_value"
+        android:id="@+id/text_total_stock"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
@@ -15,7 +15,7 @@
         android:layout_marginEnd="32dp"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Headline4"
         android:fontFamily="@font/muli_light"
-        app:layout_constraintBottom_toTopOf="@+id/button_dumbot_information"
+        app:layout_constraintBottom_toTopOf="@+id/btn_order_dumbbell"
         app:layout_constraintEnd_toStartOf="@+id/divider"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
@@ -24,10 +24,10 @@
 
     <TextView
         android:id="@+id/text_wait_queue"
-        android:layout_width="169dp"
-        android:layout_height="42dp"
-        android:layout_marginTop="2dp"
-        android:layout_marginBottom="16dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
         android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
         android:visibility="visible"
         android:layout_marginEnd="16dp"
@@ -35,30 +35,32 @@
         android:fontFamily="@font/muli"
         android:textSize="14sp"
         android:textAlignment="center"
+        android:gravity="center"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.48"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/divider"
-        app:layout_constraintTop_toBottomOf="@+id/text_current_stock"
-        app:layout_constraintVertical_bias="1.0"
+        app:layout_constraintTop_toBottomOf="@+id/text_available"
         tools:text="7 dumbbells in use\n3 requests in wait queue" />
 
     <TextView
         android:id="@+id/text_available"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:fontFeatureSettings="smcp"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
         android:visibility="visible"
-        android:text="@string/available1"
         android:fontFamily="@font/muli_extralight"
-        android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginTop="16dp"
-        android:textSize="22sp"
+        android:textSize="26sp"
+        android:layout_marginStart="8dp"
+        android:textAlignment="center"
+        android:text="@string/available1"
+        app:layout_constraintBottom_toTopOf="@+id/text_wait_queue"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.597"
-        app:layout_constraintStart_toEndOf="@+id/text_weight_value"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/divider"
         app:layout_constraintTop_toTopOf="parent" />
 
     <View
@@ -91,6 +93,6 @@
         app:layout_constraintEnd_toStartOf="@+id/divider"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_weight_value" />
+        app:layout_constraintTop_toBottomOf="@+id/text_total_stock" />
 
 </android.support.constraint.ConstraintLayout>

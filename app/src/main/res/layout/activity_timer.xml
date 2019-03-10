@@ -126,7 +126,7 @@
             app:layout_constraintTop_toTopOf="@+id/progress_countdown">
 
             <NumberPicker
-                android:id="@+id/input_weight_value"
+                android:id="@+id/input_total_stock"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:scaleX="1"

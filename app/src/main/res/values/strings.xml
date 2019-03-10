@@ -38,4 +38,15 @@
         to allow a new class of dumbbell to be ordered by gym users and delivered by DumBots.\n
         If you are ready to allow up to %2$s people to order %1$s kg dumbbells, press Save to confirm.
     </string>
+    <string name="confirm_edited_weight">Confirm Edited Weight</string>
+    <string name="detail_edit_weight">
+        Are you ready to save your edited weight inventory entry?\n
+        Your new entry states you have %1$d pairs of
+        %2$d kg dumbbells in storage location(s) %3$s.
+        If this is correct, press Save to confirm.
+    </string>
+    <string name="detail_delete_weight">
+        Are you sure you want to remove %1$dkg weights from your inventory?
+        Once it is removed, users will no longer be able to order this type of weight.
+    </string>
 </resources>

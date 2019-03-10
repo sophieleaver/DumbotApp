@@ -226,7 +226,7 @@ class OrderFragment : Fragment() {
             }
 
         inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-            val weightValue: TextView = view.text_weight_value
+            val weightValue: TextView = view.text_total_stock
             val available: TextView = view.text_available
             val availabilityInfo: TextView = view.text_wait_queue
             val orderButton: Button = view.btn_order_dumbbell
