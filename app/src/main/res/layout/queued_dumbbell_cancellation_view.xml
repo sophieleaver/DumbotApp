@@ -4,32 +4,33 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="200dp">
+    android:layout_height="230dp">
 
     <TextView
-        android:id="@+id/text_collection_cancel"
-        android:text="Are you sure you would like to cancel collection of the 15kg dumbbell?"
-        android:layout_width="302dp"
-        android:layout_height="92dp"
-        android:textSize="22sp"
+        android:id="@+id/text_queued_cancellation"
+        android:text="Are you sure you would like to cancel your request of the 15kg dumbbells? \n(You are currently nth in the queue)"
+        android:layout_width="357dp"
+        android:layout_height="91dp"
+        android:textSize="20sp"
         android:fontFamily="@font/muli_light"
         android:textAlignment="center"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="24dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.494"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/button_confirm_col"
+        android:id="@+id/button_confirm_que"
         style="@style/Widget.AppCompat.Button.Colored"
         android:text="Confirm"
-        android:layout_width="130dp"
+        android:layout_width="127dp"
         android:layout_height="50dp"
-        android:layout_marginEnd="28dp"
+        android:layout_marginEnd="16dp"
         android:textSize="20sp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="4dp"
         android:layout_marginTop="8dp"
         android:fontFamily="@font/muli"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -38,15 +39,15 @@
         app:layout_constraintVertical_bias="1.0" />
 
     <Button
-        android:id="@+id/button_return_col"
+        android:id="@+id/button_return_que"
         style="@style/Widget.AppCompat.Button"
         android:text="Back"
         android:layout_width="115dp"
         android:layout_height="50dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="16dp"
         android:textSize="20sp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginBottom="4dp"
         android:layout_marginTop="8dp"
         android:fontFamily="@font/muli"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -55,4 +56,23 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/text_collection_cancel"
         app:layout_constraintVertical_bias="0.764" />
+
+    <TextView
+        android:id="@+id/textView27"
+        android:text="Leaving the queue cannot be undone"
+        android:layout_width="wrap_content"
+        android:layout_height="27dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:textSize="20sp"
+        android:textStyle="italic"
+        android:fontFamily="@font/muli_light"
+        app:layout_constraintBottom_toTopOf="@+id/button_return_que"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.49"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/text_queued_cancellation"
+        app:layout_constraintVertical_bias="0.242" />
 </android.support.constraint.ConstraintLayout>

@@ -104,7 +104,7 @@
         app:layout_constraintVertical_bias="0.68" />
 
     <Button
-        android:id="@+id/button_cancel_delivery"
+        android:id="@+id/button_confirm_del"
         style="@style/Widget.AppCompat.Button.Colored"
         android:text="Cancel Order"
         android:layout_width="wrap_content"

@@ -9,7 +9,7 @@
     <TextView
         android:id="@+id/text_delivery_cancel"
         android:text="Are you sure you would like to cancel delivery of the 15kg dumbbell?"
-        android:layout_width="314dp"
+        android:layout_width="320dp"
         android:layout_height="92dp"
         android:textSize="22sp"
         android:fontFamily="@font/muli_light"
@@ -22,15 +22,16 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/button_cancel_delivery"
+        android:id="@+id/button_confirm_del"
         style="@style/Widget.AppCompat.Button.Colored"
         android:text="Confirm"
-        android:layout_width="115dp"
+        android:layout_width="126dp"
         android:layout_height="50dp"
         android:layout_marginEnd="28dp"
         android:textSize="20sp"
         android:layout_marginBottom="16dp"
         android:layout_marginTop="8dp"
+        android:fontFamily="@font/muli"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/text_delivery_cancel"
@@ -38,7 +39,7 @@
 
     <Button
         android:id="@+id/button_return_del"
-        style="@style/Widget.AppCompat.Button.Colored"
+        style="@style/Widget.AppCompat.Button"
         android:text="Back"
         android:layout_width="115dp"
         android:layout_height="50dp"
@@ -47,8 +48,9 @@
         android:textSize="20sp"
         android:layout_marginBottom="8dp"
         android:layout_marginTop="8dp"
+        android:fontFamily="@font/muli"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/button_cancel_delivery"
+        app:layout_constraintEnd_toStartOf="@+id/button_confirm_del"
         app:layout_constraintHorizontal_bias="0.145"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/text_delivery_cancel"

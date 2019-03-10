@@ -22,6 +22,10 @@ var currentRequestExists = false
 var currentDumbbellInUse = "0"
 var userMode = false
 
+//var currentRequestExists = false
+//var currentDumbbellInUse = "0"
+var requests = HashMap<String, Request>() // id and request
+
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
 
@@ -51,29 +55,32 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         mainToolbar.title = "Order Dumbells"
         openFragment(OrderFragment.newInstance())
 
-        if (intent != null) {
-
-            val fragment = intent.getStringExtra("frgToLoad")
-
-            openFragment(
-                when (fragment) {
-                    //TODO do we need the rest?
-                    //"CurrentSession" -> CurrentSessionFragment.newInstance()
-                    "Demo" -> DemoFragment.newInstance()
-                    "Weights" -> WeightsFragment.newInstance()
-                    "Analytics" -> AnalyticsFragment.newInstance()
-                    else -> OrderFragment.newInstance()
-                }
-            )
-        }
+//        if (intent != null) {
+//
+//            val fragment = intent.getStringExtra("frgToLoad")
+//
+//            when (fragment) {
+//                "CurrentSession"-> {
+//                    val currentSessionFragment = CurrentSessionFragment.newInstance()
+//                    openFragment(currentSessionFragment)
+//                }//TODO do we need the rest?
+//                "Weights"-> {
+//                    val weightsFragment = WeightsFragment.newInstance()
+//                    openFragment(weightsFragment)
+//                }
+//                "Analytics" -> {
+//                    val analyticsFragment = AnalyticsFragment.newInstance()
+//                    openFragment(analyticsFragment)
+//                }
+//
+//            }
+//        }
     }
-
     override fun onStart() {
         super.onStart()
         userMode = getSharedPreferences("prefs", Context.MODE_PRIVATE).getBoolean("mode", true)
         globalState = if (userMode) "user" else "manager"
     }
-
 
     override fun onBackPressed() {
 
@@ -159,6 +166,16 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     openFragment(weightsFragment)
                 }
             }
+            R.id.nav_settings -> {
+                if (globalState == "user") {
+                    val restrictedFragment  = RestrictedFragment.newInstance()
+                    openFragment(restrictedFragment)
+                } else {
+                    val settingsFragment = SettingsFragment.newInstance()
+                    openFragment(settingsFragment)
+                }
+            }
+
 //            R.id.nav_demo -> {
 //                if (globalState.equals("user")){
 //                    val restrictedFragment  = RestrictedFragment.newInstance()
@@ -193,4 +210,16 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             .apply()
         navigationView.menu.findItem(R.id.menu_manager).isVisible = !userMode
     }
+}
+
+open class Request(id : String, time : Long , type : String, weight : String, bench : String){
+    val id = id
+    var time = time
+    var type = type
+    val weight = weight
+    val benchID = bench
+
+//    fun setType(newType : String){
+//        type = newType
+//    }
 }

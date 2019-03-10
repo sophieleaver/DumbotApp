@@ -4,6 +4,7 @@ package com.example.sophieleaver.dumbotapp
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.res.ColorStateList
+import android.graphics.Color
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
@@ -15,6 +16,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -22,6 +24,8 @@ import com.google.firebase.database.ValueEventListener
 import kotlinx.android.synthetic.main.fragment_order_weights.view.*
 import kotlinx.android.synthetic.main.item_order_dumbbell.view.*
 import org.jetbrains.anko.toast
+import java.time.LocalDateTime
+import java.time.ZoneOffset
 import java.util.*
 
 
@@ -42,56 +46,62 @@ class OrderFragment : Fragment() {
 
     private val fragTag = "OrderFragment"
 
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? =
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
         inflater.inflate(R.layout.fragment_order_weights, container, false)
 
     @SuppressLint("InflateParams")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         with(view) {
             orderDumbbellRecyclerView = order_dumbbell_list
+
             findViewById<TextView>(R.id.textview_current_bench).text = currentBench.toString()
 
             //when button pressed, alert dialog opened to change the bench
-            btn_change_station.setOnClickListener {
-                val builder = AlertDialog.Builder(context)
-                val alertView = layoutInflater.inflate(R.layout.change_bench_layout, null)
-                builder.setView(alertView)
-                builder.setTitle("Change Workout Station")
-                builder.setNegativeButton("Cancel") { dialog, _ -> dialog.cancel() }
-                val dialog: AlertDialog = builder.create()
-                dialog.show()
+//            btn_change_station.setOnClickListener {
+//                val builder = AlertDialog.Builder(context)
+//                val alertView = layoutInflater.inflate(R.layout.change_bench_layout, null)
+//                builder.setView(alertView)
+//                builder.setTitle("Change Workout Station")
+//                builder.setNegativeButton("Cancel") { dialog, _ -> dialog.cancel() }
+//                val dialog: AlertDialog = builder.create()
+//                dialog.show()
 
                 //on click listeners for when a new bench is selected
-                val b1: Button = alertView.findViewById(R.id.button_bench_1)
-                b1.setOnClickListener { changeBench(1, dialog) }
-                val b2: Button = alertView.findViewById(R.id.button_bench_2)
-                b2.setOnClickListener { changeBench(2, dialog) }
-                val b3: Button = alertView.findViewById(R.id.button_bench_3)
-                b3.setOnClickListener { changeBench(3, dialog) }
-                val b4: Button = alertView.findViewById(R.id.button_bench_4)
-                b4.setOnClickListener { changeBench(4, dialog) }
-                val b5: Button = alertView.findViewById(R.id.button_bench_5)
-                b5.setOnClickListener { changeBench(5, dialog) }
-                val b6: Button = alertView.findViewById(R.id.button_bench_6)
-                b6.setOnClickListener { changeBench(6, dialog) }
-            }
+//            }
+//            btn_change_station.setOnClickListener {
+//                val builder = AlertDialog.Builder(context)
+//                val alertView = layoutInflater.inflate(R.layout.change_bench_layout, null)
+//                builder.setView(alertView)
+//                builder.setTitle("Change Workout Station")
+//                builder.setNegativeButton("Cancel") { dialog, _ -> dialog.cancel() } //if cancel then dialog is closed
+//                val dialog: AlertDialog = builder.create()
+//                dialog.show()
+//
+//                //on click listeners for when a new bench is selected
+//                val b1: Button = alertView.findViewById(R.id.button_bench_1)
+//                b1.setOnClickListener { changeBench(1, dialog) }
+//                val b2: Button = alertView.findViewById(R.id.button_bench_2)
+//                b2.setOnClickListener { changeBench(2, dialog) }
+//                val b3: Button = alertView.findViewById(R.id.button_bench_3)
+//                b3.setOnClickListener { changeBench(3, dialog) }
+//                val b4: Button = alertView.findViewById(R.id.button_bench_4)
+//                b4.setOnClickListener { changeBench(4, dialog) }
+//                val b5: Button = alertView.findViewById(R.id.button_bench_5)
+//                b5.setOnClickListener { changeBench(5, dialog) }
+//                val b6: Button = alertView.findViewById(R.id.button_bench_6)
+//                b6.setOnClickListener { changeBench(6, dialog) }
+//            }
         }
         setupRecyclerView()
     }
 
-
-    private fun changeBench(bench: Int, dialog: AlertDialog) {
-        currentBench = bench
-        val text: TextView = view!!.findViewById(R.id.textview_current_bench)
-        text.text = currentBench.toString()
-        dialog.cancel()
-        Log.d(fragTag, "currentBench = $currentBench, set bench is $bench")
-    }
+//    private fun changeBench(bench: Int, dialog: AlertDialog) {
+//        currentBench = bench
+//        val text: TextView = view!!.findViewById(R.id.textview_current_bench)
+//        text.text = currentBench.toString()
+//        dialog.cancel()
+//        Log.d(fragTag, "currentBench = $currentBench, set bench is $bench")
+//    }
 
     private fun getWeightData() {
 
@@ -138,6 +148,19 @@ class OrderFragment : Fragment() {
         override fun getItemCount(): Int = weights.size
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+            if (maximumWeightLimitReached()) {
+                holder.orderButton.isEnabled = false
+                holder.orderButton.backgroundTintList = ColorStateList.valueOf(
+                    Color.GRAY
+                )
+            } else {
+                holder.orderButton.backgroundTintList = ColorStateList.valueOf(
+                    ContextCompat.getColor(
+                        requireContext(),
+                        R.color.colorDumbbellAvailable
+                    )
+                )
+            }
             val requestedWeight = weights[position]
 
             holder.apply {
@@ -178,39 +201,42 @@ class OrderFragment : Fragment() {
                     )
                 )
                 orderButton.setOnClickListener {
-                    createRequest(dumbbellAvailable, requestedWeight.weightValue.toString())
-//                    toastz
-                    if (dumbbellAvailable) {
-                        (activity as MainActivity).openFragment(CurrentSessionFragment.newInstance())
+                    val builder = AlertDialog.Builder(context)
+                    builder.setTitle("Confirm order")
+                    builder.setMessage("Are you sure you would like to order the ${holder.weightValue.text}kg dumbbells?")
+                    builder.setPositiveButton("CONFIRM") { dialog, which ->
+                        createRequest(dumbbellAvailable, requestedWeight.weightValue.toString())
                     }
+                    builder.setNeutralButton("CANCEL") { dialog, _ ->
+                        dialog.cancel()
+                    }
+
+                    val dialog = builder.create()
+                    dialog.show()
+//                    toastz
                 }
-
-
             }
         }
 
         private fun createRequest(dumbbellAvailable: Boolean, weightValue: String) {
 
-            val requestID = requestReference.push().key
-            if (requestID != null) {
+            val now = LocalDateTime.now(ZoneOffset.UTC)
+            val seconds = now.atZone(ZoneOffset.UTC)?.toEpochSecond() //request time is always in seconds
+            val milliseconds = now.atZone(ZoneOffset.UTC)?.toInstant()?.toEpochMilli() //request ID is in milli seconds
 
-                val status = if (dumbbellAvailable) "delivering" else "waiting"
-                val path = if (dumbbellAvailable) "activeRequests" else "waitQueue"
-                val benchID = benchNumberToFirebaseID(currentBench)
-                val time = Date().time
+            val requestID = milliseconds.toString()
+            val status = if (dumbbellAvailable) "delivering" else "waiting"
+            val path = if (dumbbellAvailable) "activeRequests" else "waitQueue"
+            val benchID = benchNumberToFirebaseID(currentBench)
 
-                requestReference.child(requestID)
-                    .setValue(DumbbellRequest(weightValue, status, benchID, time))
-                weightReference.child("$weightValue/$path/$benchID").setValue("$status|$time")
+            requestReference.child(requestID)
+                .setValue(DumbbellRequest(weightValue, status, benchID, seconds!!))
+            weightReference.child("$weightValue/$path/$benchID").setValue("$status|$seconds")
 
-                Log.d(
-                    fragTag,
-                    "Sending request $requestID to server (deliver dumbbells of $weightValue kg to bench $currentBench)"
-                )
-
-            } else {
-                requireActivity().toast("Problem sending dumbbell request. Please try again")
-            }
+            Log.d(
+                fragTag,
+                "Sending request $requestID to server (deliver dumbbells of $weightValue kg to bench $currentBench)"
+            )
 
         }
 
@@ -224,6 +250,22 @@ class OrderFragment : Fragment() {
                 5 -> "B12"
                 else -> "B15"
             }
+
+
+        private fun maximumWeightLimitReached() : Boolean {
+            var currentDeliveries = 0
+            var currentSessions = 0
+
+            for (request in requests.values){
+                when (request.type) {
+                    "delivering" -> currentDeliveries++
+                    "current" -> currentSessions++
+                }
+            }
+
+            val limitReached = (currentDeliveries + currentSessions >= 2)
+            return limitReached
+        }
 
         inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             val weightValue: TextView = view.text_total_stock
