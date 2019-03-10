@@ -22,25 +22,22 @@ import com.google.firebase.database.ValueEventListener
 import kotlinx.android.synthetic.main.fragment_order_weights.view.*
 import kotlinx.android.synthetic.main.item_order_dumbbell.view.*
 import org.jetbrains.anko.toast
-import java.time.LocalDateTime
-import java.time.ZoneOffset
+import java.util.*
 
 
-private const val WEIGHTS = "WEIGHTS"
-private const val STATIONS = "STATIONS"
+data class DumbbellRequest(val weight: String, val type: String, val bench: String, val time: Long)
 
 
 class OrderFragment : Fragment() {
 
-    private val database = FirebaseDatabase.getInstance()
-    private val ref = database.reference
+    private val ref = FirebaseDatabase.getInstance().reference
 
     private val requestReference = ref.child("demo2").child("requests")
-    private val weightReference = ref.child("demo2").child("weights").orderByKey()
+    private val weightReference = ref.child("demo2").child("weights")
 
     private var weights: MutableList<Dumbbell> =
         mutableListOf() //= listOf("12kg", "14kg", "16kg", "18kg", "20kg", "22kg")
-    private var stations: List<Int>? = null //= listOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+
     private var orderDumbbellRecyclerView: RecyclerView? = null
 
     private val fragTag = "OrderFragment"
@@ -65,7 +62,7 @@ class OrderFragment : Fragment() {
                 val alertView = layoutInflater.inflate(R.layout.change_bench_layout, null)
                 builder.setView(alertView)
                 builder.setTitle("Change Workout Station")
-                builder.setNegativeButton("Cancel") { dialog, _ -> dialog.cancel() } //if cancel then dialog is closed
+                builder.setNegativeButton("Cancel") { dialog, _ -> dialog.cancel() }
                 val dialog: AlertDialog = builder.create()
                 dialog.show()
 
@@ -86,6 +83,7 @@ class OrderFragment : Fragment() {
         }
         setupRecyclerView()
     }
+
 
     private fun changeBench(bench: Int, dialog: AlertDialog) {
         currentBench = bench
@@ -143,83 +141,81 @@ class OrderFragment : Fragment() {
             val requestedWeight = weights[position]
 
             holder.apply {
+                val currentStock = requestedWeight.totalStock - requestedWeight.activeRequests.size
+                val dumbbellAvailable = currentStock > 0
+
+                val availableTextResId =
+                    if (dumbbellAvailable) R.string.available else R.string.unavailable
+                val orderButtonTextResId =
+                    if (dumbbellAvailable) R.string.order else R.string.join_wait_queue
+                val orderButtonColorResId =
+                    if (dumbbellAvailable) R.color.colorDumbbellAvailable else R.color.colorDumbbellUnavailable
+                val dumbbellDetails =
+                    if (dumbbellAvailable) Triple(
+                        R.string.available_dumbbells_info,
+                        currentStock,
+                        requestedWeight.totalStock
+                    )
+                    else Triple(
+                        R.string.wait_queue_info,
+                        requestedWeight.totalStock,
+                        requestedWeight.waitQueue.size
+                    )
+
+
                 weightValue.text = getString(R.string.weight, requestedWeight.weightValue)
-                val isAvailable = requestedWeight.currentStock!! > 0
-
-                if (!isAvailable) {
-                    available.text = getString(R.string.unavailable)
-                    availabilityInfo.text =
-                        getString(
-                            R.string.wait_queue_info,
-                            requestedWeight.totalStock,
-                            requestedWeight.queueLength
-                        )
-                    orderButton.setOnClickListener {
-                        this@OrderFragment.requireActivity()
-                            .toast("Joined Weight Queue for $requestedWeight dumbbell")
-                        //TODO add 1 to queue length of weight
-                    }
-                    orderButton.text = getString(R.string.join_wait_queue)
-                    orderButton.backgroundTintList = ColorStateList.valueOf(
-                        ContextCompat.getColor(
-                            requireContext(),
-                            R.color.colorDumbbellUnavailable
-                        )
+                available.text = getString(availableTextResId)
+                orderButton.text = getString(orderButtonTextResId)
+                availabilityInfo.text = getString(
+                    dumbbellDetails.first,
+                    dumbbellDetails.second,
+                    dumbbellDetails.third
+                )
+                orderButton.backgroundTintList = ColorStateList.valueOf(
+                    ContextCompat.getColor(
+                        requireContext(),
+                        orderButtonColorResId
                     )
-
-                } else {
-                    //weight is available
-                    available.text = getString(R.string.available)
-                    availabilityInfo.text =
-                        getString(
-                            R.string.available_dumbbells_info,
-                            requestedWeight.currentStock,
-                            requestedWeight.totalStock
-                        )
-                    orderButton.text = getString(R.string.order)
-                    orderButton.backgroundTintList = ColorStateList.valueOf(
-                        ContextCompat.getColor(
-                            requireContext(),
-                            R.color.colorDumbbellAvailable
-                        )
-                    )
-                    orderButton.setOnClickListener {
-                        // this@OrderFragment.requireActivity().toast("Requested $requestedWeight dumbbell")
-                        val now = LocalDateTime.now(ZoneOffset.UTC)
-
-                        val unixSeconds = now.atZone(ZoneOffset.UTC)?.toEpochSecond()
-                        val unixMilli = now.atZone(ZoneOffset.UTC)?.toInstant()?.toEpochMilli()
-
-                        val request = requestReference.child(unixMilli.toString())
-                        val benchID =
-                            convertBenchToID(currentBench) //convert the bench number to the corresponding bench ID for firebase
-
-                        request.child("bench").setValue(benchID)
-                        request.child("time").setValue(unixSeconds)
-                        request.child("type").setValue("delivering")
-                        request.child("weight").setValue("$requestedWeight")
-
-                        currentDumbbellInUse = requestedWeight.toString()
-                        currentRequestExists = true
-
-                        //TODO reduce available weights by 1
-                        Log.d(
-                            fragTag,
-                            "Sending request $unixMilli to server (deliver dumbbells of ${requestedWeight}kg to bench $currentBench)"
-                        )
-//                        createCurrentSessionAlertDialog()
-
-                        //change fragments
-                        val currentSessionFragment = CurrentSessionFragment.newInstance()
-                        (activity as MainActivity).openFragment(currentSessionFragment)
+                )
+                orderButton.setOnClickListener {
+                    createRequest(dumbbellAvailable, requestedWeight.weightValue.toString())
+//                    toastz
+                    if (dumbbellAvailable) {
+                        (activity as MainActivity).openFragment(CurrentSessionFragment.newInstance())
                     }
-
                 }
+
 
             }
         }
 
-        private fun convertBenchToID(bench: Int): String =
+        private fun createRequest(dumbbellAvailable: Boolean, weightValue: String) {
+
+            val requestID = requestReference.push().key
+            if (requestID != null) {
+
+                val status = if (dumbbellAvailable) "delivering" else "waiting"
+                val path = if (dumbbellAvailable) "activeRequests" else "waitQueue"
+                val benchID = benchNumberToFirebaseID(currentBench)
+                val time = Date().time
+
+                requestReference.child(requestID)
+                    .setValue(DumbbellRequest(weightValue, status, benchID, time))
+                weightReference.child("$weightValue/$path/$benchID").setValue("$status|$time")
+
+                Log.d(
+                    fragTag,
+                    "Sending request $requestID to server (deliver dumbbells of $weightValue kg to bench $currentBench)"
+                )
+
+            } else {
+                requireActivity().toast("Problem sending dumbbell request. Please try again")
+            }
+
+        }
+
+
+        private fun benchNumberToFirebaseID(bench: Int): String =
             when (bench) {
                 1 -> "B7"
                 2 -> "B10"
@@ -230,7 +226,7 @@ class OrderFragment : Fragment() {
             }
 
         inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-            val weightValue: TextView = view.text_weight_value
+            val weightValue: TextView = view.text_total_stock
             val available: TextView = view.text_available
             val availabilityInfo: TextView = view.text_wait_queue
             val orderButton: Button = view.btn_order_dumbbell

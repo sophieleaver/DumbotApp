@@ -1,28 +1,40 @@
 package com.example.sophieleaver.dumbotapp
 
+import android.content.Context
 import android.os.Bundle
 import android.support.design.widget.NavigationView
 import android.support.v4.app.Fragment
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 
+//todo - be able to see what mode we are in
+//todo - string resources everywhere
+
 var globalState = "manager" //TODO change to dependent on login
 var currentBench = 1 // TODO save the value
 var currentRequestExists = false
 var currentDumbbellInUse = "0"
+var userMode = false
+
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+
+
+    lateinit var navigationView: NavigationView
+    private lateinit var mainToolbar: Toolbar
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        mainToolbar = toolbar
+        navigationView = nav_view
         setSupportActionBar(toolbar)
-        supportActionBar!!.setDisplayShowTitleEnabled(false)
 
         val toggle = ActionBarDrawerToggle(
             this,
@@ -35,29 +47,31 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         drawer_layout.addDrawerListener(toggle)
         toggle.syncState()
         nav_view.setNavigationItemSelectedListener(this)
-
-        openFragment(CurrentOrdersFragment.newInstance()) //TODO change
+        nav_view.menu.findItem(R.id.menu_manager).isVisible = !userMode
+        mainToolbar.title = "Order Dumbells"
+        openFragment(OrderFragment.newInstance())
 
         if (intent != null) {
 
             val fragment = intent.getStringExtra("frgToLoad")
 
-            when (fragment) {
-                "CurrentSession"-> {
-                    val currentSessionFragment = CurrentSessionFragment.newInstance()
-                    openFragment(currentSessionFragment)
-                }//TODO do we need the rest?
-                "Weights"-> {
-                    val weightsFragment = WeightsFragment.newInstance()
-                    openFragment(weightsFragment)
+            openFragment(
+                when (fragment) {
+                    //TODO do we need the rest?
+                    //"CurrentSession" -> CurrentSessionFragment.newInstance()
+                    "Demo" -> DemoFragment.newInstance()
+                    "Weights" -> WeightsFragment.newInstance()
+                    "Analytics" -> AnalyticsFragment.newInstance()
+                    else -> OrderFragment.newInstance()
                 }
-                "Analytics" -> {
-                    val analyticsFragment = AnalyticsFragment.newInstance()
-                    openFragment(analyticsFragment)
-                }
-
-            }
+            )
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        userMode = getSharedPreferences("prefs", Context.MODE_PRIVATE).getBoolean("mode", true)
+        globalState = if (userMode) "user" else "manager"
     }
 
 
@@ -87,6 +101,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
+    //TODO - fixe bug where it crashes if you go onto analytics in user mode using back button
+
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Handle navigation view item clicks here.
         when (item.itemId) {
@@ -95,13 +111,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 openFragment(modeFragment)
             }
             R.id.nav_order -> {
-                if (!currentRequestExists) { //if the user does not have a current request open, the weight list is opened
+//                if (!currentRequestExists) { //if the user does not have a current request open, the weight list is opened
                     val orderFragment = OrderFragment.newInstance()
+                    mainToolbar.title = "Order Dumbbells"
                     openFragment(orderFragment)
-                } else {
-                    val currentSession = CurrentSessionFragment.newInstance()
-                    openFragment(currentSession)
-                }
+//                } else {
+//                    val currentSession = CurrentSessionFragment.newInstance()
+//                    mainToolbar.title = "Active Workout Session"
+//                    openFragment(currentSession)
+//                }
             }
             R.id.nav_current_sessions -> {
                 val currentWorkoutFragment = CurrentOrdersFragment.newInstance()
@@ -110,37 +128,45 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
             R.id.nav_overview -> {
                 if (globalState == "user") {
-                    val restrictedFragment  = RestrictedFragment.newInstance()
+                    val restrictedFragment = RestrictedFragment.newInstance()
+                    mainToolbar.title = "Cannot access page"
                     openFragment(restrictedFragment)
                 } else {
                     val overviewFragment = OverviewFragment.newInstance()
+                    mainToolbar.title = "DumBot Overview"
                     openFragment(overviewFragment)
                 }
             }
             R.id.nav_analytics -> {
                 if (globalState == "user") {
-                    val restrictedFragment  = RestrictedFragment.newInstance()
+                    val restrictedFragment = RestrictedFragment.newInstance()
+                    mainToolbar.title = "Cannot access page"
                     openFragment(restrictedFragment)
                 } else {
                     val analyticsFragment = AnalyticsFragment.newInstance()
+                    mainToolbar.title = "Analytics"
                     openFragment(analyticsFragment)
                 }
             }
             R.id.nav_weights -> {
                 if (globalState == "user") {
-                    val restrictedFragment  = RestrictedFragment.newInstance()
+                    val restrictedFragment = RestrictedFragment.newInstance()
+                    mainToolbar.title = "Cannot access page"
                     openFragment(restrictedFragment)
                 } else {
                     val weightsFragment = WeightsFragment.newInstance()
+                    mainToolbar.title = "Weight Inventory"
                     openFragment(weightsFragment)
                 }
             }
 //            R.id.nav_demo -> {
 //                if (globalState.equals("user")){
 //                    val restrictedFragment  = RestrictedFragment.newInstance()
+//                    mainToolbar.title = "Cannot access page"
 //                    openFragment(restrictedFragment)
 //                } else {
 //                    val demoFragment = DemoFragment.newInstance()
+//                    supportActionBar!!.title = "Demo"
 //                    openFragment(demoFragment)
 //                }
 //            }
@@ -156,5 +182,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         transaction.replace(R.id.content_frame, fragment)
         transaction.addToBackStack(null)
         transaction.commit()
+    }
+
+    fun changeMode(isUserMode: Boolean) {
+        userMode = isUserMode
+        globalState = if (userMode) "user" else "manager"
+        getSharedPreferences("prefs", Context.MODE_PRIVATE)
+            .edit()
+            .putBoolean("mode", isUserMode)
+            .apply()
+        navigationView.menu.findItem(R.id.menu_manager).isVisible = !userMode
     }
 }

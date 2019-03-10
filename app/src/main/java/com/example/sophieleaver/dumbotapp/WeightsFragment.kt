@@ -1,7 +1,6 @@
 package com.example.sophieleaver.dumbotapp
 
 import android.os.Bundle
-import android.os.Parcelable
 import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
@@ -16,28 +15,27 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import kotlinx.android.parcel.Parcelize
 import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.fragment_weight_inventory.view.*
 import kotlinx.android.synthetic.main.item_inventory_dumbbell.view.*
 import org.jetbrains.anko.toast
 
 
-@Parcelize
 data class Dumbbell(
-    val weightValue: Int? = 0,
-    val totalStock: Int? = 0,
-    val currentStock: Int? = 0,
-    val queueLength: Int? = 0,
-    val storageLocation: List<String>? = emptyList()
-) : Parcelable
+    var weightValue: Int = 0,
+    var totalStock: Int = 0,
+    val activeRequests: MutableMap<String, String> = mutableMapOf(),
+    val waitQueue: MutableMap<String, String> = mutableMapOf(),
+    val storageLocation: MutableList<String> = mutableListOf()
+)
 
+//todo - delete (only if none are currently rented out or in wait queue)
 
 class WeightsFragment : Fragment() {
     private val database = FirebaseDatabase.getInstance().reference
     private val weightReference = database.child("demo2").child("weights")
 
-    private var dumbbellList: MutableList<Dumbbell> = mutableListOf()
+    private var dumbbellList: List<Dumbbell> = emptyList()
     private lateinit var dumbbellRecyclerView: RecyclerView
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,7 +54,7 @@ class WeightsFragment : Fragment() {
                 layoutManager = LinearLayoutManager(this@WeightsFragment.requireContext())
                 adapter = DumbbellAdapter()
             }
-            fab_edit_dumbbells.setOnClickListener { requireActivity().toast("add new dumbbell") }
+            fab_edit_dumbbells.setOnClickListener { NewWeightDialog.display(fragmentManager!!) }
         }
     }
 
@@ -117,12 +115,13 @@ class WeightsFragment : Fragment() {
             val dumbbell: Dumbbell? = dumbbellList[position]
             dumbbell?.let {
                 holder.weightValue.text = getString(R.string.weight, it.weightValue)
-                holder.currentStock.text = getString(R.string.current_stock, it.currentStock)
+                holder.currentStock.text =
+                    getString(R.string.current_stock, it.totalStock - it.activeRequests.size)
                 holder.totalStock.text = getString(R.string.total_stock, it.totalStock)
                 holder.storageLocation.text =
-                    getString(R.string.storage_location, it.storageLocation?.joinToString())
+                    getString(R.string.storage_location, it.storageLocation.joinToString())
                 holder.editDumbbellButton.setOnClickListener {
-                    this@WeightsFragment.requireActivity().toast("edit dumbbell")
+                    NewWeightDialog.display(fragmentManager!!, dumbbell)
                 }
             }
         }
@@ -130,11 +129,11 @@ class WeightsFragment : Fragment() {
 
         inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
-            val weightValue: TextView = view.text_weight_value
-            val currentStock: TextView = view.text_dumbot
-            val totalStock: TextView = view.text_dumbot_information
+            val weightValue: TextView = view.text_total_stock
+            val currentStock: TextView = view.text_current_stock
+            val totalStock: TextView = view.text_weight_value
             val storageLocation: TextView = view.text_storage_location
-            val editDumbbellButton: ImageView = view.img_edit_dumbbell
+            val editDumbbellButton: ImageView = view.img_remove_weight
         }
     }
 }

@@ -1,7 +1,6 @@
 package com.example.sophieleaver.dumbotapp
 
 import android.app.AlertDialog
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -13,7 +12,6 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import com.google.firebase.database.FirebaseDatabase
-import org.jetbrains.anko.find
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 
@@ -26,10 +24,6 @@ class CurrentSessionFragment : Fragment(){
     val database = FirebaseDatabase.getInstance()
     val ref = database.reference
     val fragTag = "CurrentSessionFragment"
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
@@ -103,7 +97,7 @@ class CurrentSessionFragment : Fragment(){
         return view
     }
 
-    fun convertBenchToID(bench : Int) : String{
+    private fun convertBenchToID(bench: Int): String {
         var id = "B7"
         when (bench){
             2 -> id = "B10"
@@ -115,13 +109,6 @@ class CurrentSessionFragment : Fragment(){
         return id
     }
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-    }
 
     companion object {
         @JvmStatic

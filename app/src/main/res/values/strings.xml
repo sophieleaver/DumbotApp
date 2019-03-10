@@ -30,7 +30,23 @@
     <string name="back">Back</string>
     <string name="cancel">Cancel</string>
     <string name="title_active_session">Active Session Page</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="save">Save</string>
+    <string name="item_storage_location">Storage Location %1$s</string>
+    <string name="text_confirm_add_new_dumbbell">
+        Are you sure you want to add %1$s kg dumbbells to your weight inventory?\n
+        Adding a new weight type to your Weight Inventory implies that you are ready
+        to allow a new class of dumbbell to be ordered by gym users and delivered by DumBots.\n
+        If you are ready to allow up to %2$s people to order %1$s kg dumbbells, press Save to confirm.
+    </string>
+    <string name="confirm_edited_weight">Confirm Edited Weight</string>
+    <string name="detail_edit_weight">
+        Are you ready to save your edited weight inventory entry?\n
+        Your new entry states you have %1$d pairs of
+        %2$d kg dumbbells in storage location(s) %3$s.
+        If this is correct, press Save to confirm.
+    </string>
+    <string name="detail_delete_weight">
+        Are you sure you want to remove %1$dkg weights from your inventory?
+        Once it is removed, users will no longer be able to order this type of weight.
+    </string>
 </resources>

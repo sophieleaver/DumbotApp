@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:elevation="0dp">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar_add_new_dumbbell"
+            android:layout_width="match_parent"
+            android:layout_height="?android:attr/actionBarSize"
+            android:paddingEnd="16dp"
+            android:paddingStart="6dp"
+            app:contentInsetStartWithNavigation="0dp"
+            app:navigationIcon="@drawable/ic_close_white_24dp"
+            app:titleTextColor="@android:color/white" />
+
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/input_total_stock"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/kilograms"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/text_total_stock"
+                style="@style/TextAppearance.MaterialComponents.Headline5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
+                android:inputType="number"
+                android:hint="Total Stock"
+                android:textAlignment="viewEnd"
+                tools:text="250" />
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/input_weight_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:gravity="center"
+            app:layout_constraintEnd_toStartOf="@+id/textView22"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/input_total_stock">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/text_weight_value"
+                style="@style/TextAppearance.MaterialComponents.Headline5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Weight Value"
+                android:inputType="number"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
+                android:textAlignment="viewEnd"
+                tools:text="200" />
+        </android.support.design.widget.TextInputLayout>
+
+        <TextView
+            android:id="@+id/kilograms"
+            android:text="new pairs of"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="40dp"
+            app:layout_constraintBottom_toBottomOf="@+id/input_total_stock"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/input_total_stock"
+            app:layout_constraintTop_toTopOf="@+id/input_total_stock"
+            app:layout_constraintVertical_bias="0.68" />
+
+        <TextView
+            android:id="@+id/textView22"
+            android:text="kg dumbbells"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="32dp"
+            app:layout_constraintBottom_toBottomOf="@+id/input_weight_value"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/input_weight_value"
+            app:layout_constraintTop_toTopOf="@+id/input_weight_value"
+            app:layout_constraintVertical_bias="0.56" />
+
+        <TextView
+            android:id="@+id/textView21"
+            android:text="Storage Location(s)"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
+            android:layout_marginTop="8dp"
+            android:textAlignment="center"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/divider4" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/storage_location_list"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            app:layoutManager="android.support.v7.widget.GridLayoutManager"
+            app:layout_constraintBottom_toTopOf="@+id/btn_confirm_new_weight"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView21"
+            tools:listitem="@layout/item_storage_location" />
+
+        <Button
+            android:id="@+id/btn_confirm_new_weight"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:text="Confirm new weight"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <View
+            android:id="@+id/divider4"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginTop="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/input_weight_value" />
+
+
+    </android.support.constraint.ConstraintLayout>
+
+</android.support.design.widget.CoordinatorLayout>
