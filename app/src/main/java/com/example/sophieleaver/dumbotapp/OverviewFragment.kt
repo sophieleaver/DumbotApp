@@ -1,8 +1,6 @@
 package com.example.sophieleaver.dumbotapp
 
 import android.app.AlertDialog
-import android.content.Context
-import android.graphics.Color
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
@@ -30,13 +28,10 @@ class OverviewFragment : Fragment() {
     val database = FirebaseDatabase.getInstance()
     var ref = database.reference.child("demo2")
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
+
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(R.layout.fragment_overview, container, false)
-        return view
+        return inflater.inflate(R.layout.fragment_overview, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -47,14 +42,6 @@ class OverviewFragment : Fragment() {
     }
 
 
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-    }
 
     companion object {
         @JvmStatic
@@ -77,14 +64,14 @@ class OverviewFragment : Fragment() {
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             holder.apply {
-                dumbot.setText("#${position+1}")
+                dumbot.text = "#${position + 1}"
 
                 if (position == 0){ //only changing dumbot #1 status
 
                     val alertListener = object : ValueEventListener {
                         override fun onDataChange(snap : DataSnapshot) {
                             //if there is an alert then set the dumbots status to error
-                            if (snap.value!!.equals("True")){
+                            if (snap.value!! == "True") {
                                 setErrorStatus(holder, 1)
                             }
                             //else get information on the current request
@@ -137,7 +124,7 @@ class OverviewFragment : Fragment() {
 
         fun setErrorStatus(holder: ViewHolder, dumbotNo: Int) {
             holder.apply {
-                dumbotStatus.setText("EMERGENCY STOP")
+                dumbotStatus.text = "EMERGENCY STOP"
                 //set button to red with ! logo
                 overviewButton.text = "!"
                 overviewButton.setBackgroundResource(R.drawable.red_circle)
@@ -145,9 +132,9 @@ class OverviewFragment : Fragment() {
                 //button can reset the dumbot
                 overviewButton.setOnClickListener {
                     val builder = AlertDialog.Builder(itemView.context)
-                    builder.setTitle("Dumbot #$dumbotNo")
-                    builder.setMessage("Dumbot #$dumbotNo has come to emergency stop due to obstruction or manual override. Please click the button below to reset the Dumbot.")
-                    builder.setPositiveButton("RESET") { dialog, which ->
+                    builder.setTitle("DumBot #$dumbotNo")
+                    builder.setMessage("DumBot #$dumbotNo has come to emergency stop due to obstruction or manual override. Please click the button below to reset the Dumbot.")
+                    builder.setPositiveButton("RESET") { _, _ ->
                         ref.child("alert").setValue("False")
                         checkRequests(holder, 1)
                     }
@@ -171,9 +158,9 @@ class OverviewFragment : Fragment() {
                 overviewButton.setOnClickListener {
                     val builder = AlertDialog.Builder(itemView.context)
                     builder.setTitle("Dumbot #$dumbotNo")
-                    builder.setMessage("Dumbot #$dumbotNo is currently ${requestType} a ${weight}kg weight for Bench $bench")
+                    builder.setMessage("Dumbot #$dumbotNo is currently $requestType a ${weight}kg weight for Bench $bench")
                     builder.setNeutralButton("OKAY") { dialog, _ -> dialog.cancel()}
-                    builder.setPositiveButton("EMERGENCY STOP") { dialog, which ->
+                    builder.setPositiveButton("EMERGENCY STOP") { _, _ ->
                         setErrorStatus(holder, 1)
                         ref.child("alert").setValue("True")
                     }
@@ -214,7 +201,7 @@ class OverviewFragment : Fragment() {
 
         inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             var dumbot: TextView = view.text_dumbot_number
-            val dumbotStatus: TextView = view.text_dumbot_information
+            val dumbotStatus: TextView = view.text_total_stock
             val overviewButton: Button = view.button_dumbot_information
         }
     }

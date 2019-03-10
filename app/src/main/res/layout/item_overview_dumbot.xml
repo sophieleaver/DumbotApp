@@ -7,7 +7,7 @@
     tools:context=".WeightsFragment">
 
     <TextView
-        android:id="@+id/text_dumbot_information"
+        android:id="@+id/text_total_stock"
         android:layout_width="180dp"
         android:layout_height="65dp"
         android:layout_marginBottom="16dp"
@@ -28,7 +28,7 @@
         tools:text="Collecting Dumbbell" />
 
     <TextView
-        android:id="@+id/text_dumbot"
+        android:id="@+id/text_current_stock"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFeatureSettings="smcp"
@@ -63,7 +63,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/divider"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_dumbot"
+        app:layout_constraintTop_toBottomOf="@+id/text_current_stock"
         app:layout_constraintVertical_bias="0.0"
         tools:text="#1" />
 
@@ -99,7 +99,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.503"
         app:layout_constraintStart_toEndOf="@+id/divider"
-        app:layout_constraintTop_toBottomOf="@+id/text_dumbot_information"
+        app:layout_constraintTop_toBottomOf="@+id/text_total_stock"
         app:layout_constraintVertical_bias="0.0" />
 
 </android.support.constraint.ConstraintLayout>

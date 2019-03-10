@@ -2,14 +2,14 @@ package com.example.sophieleaver.dumbotapp
 
 import android.app.AlarmManager
 import android.content.Context
-import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import android.content.Intent
+import android.os.Bundle
 import android.os.CountDownTimer
-import android.view.*
+import android.support.v7.app.AppCompatActivity
+import android.view.MenuItem
+import android.view.View
 import kotlinx.android.synthetic.main.activity_timer.*
 import java.util.*
-import com.google.firebase.database.FirebaseDatabase
 
 
 class TimerActivity : AppCompatActivity(){
@@ -67,12 +67,12 @@ class TimerActivity : AppCompatActivity(){
 
         //Number picker
 
-        numberPicker.setMinValue(0)
-        numberPicker.setMaxValue(15)
-        numberPicker.value = 1
-        numberPicker.setOnValueChangedListener { picker, oldVal, newVal ->
+        input_weight_value.minValue = 0
+        input_weight_value.maxValue = 15
+        input_weight_value.value = 1
+        input_weight_value.setOnValueChangedListener { picker, oldVal, newVal ->
 
-            if(!newVal.equals(null) and !newVal.toString().equals("")) {
+            if (newVal.toString() != "") {
                 timer.cancel()
                 timerState = TimerState.Stopped
                 timerLengthSeconds = newVal * 60L
@@ -92,7 +92,7 @@ class TimerActivity : AppCompatActivity(){
 
                 textView_countdown.visibility = View.VISIBLE
                 progress_countdown.visibility = View.VISIBLE
-                numberPicker.visibility = View.INVISIBLE
+                input_weight_value.visibility = View.INVISIBLE
                 minutesTextView.visibility = View.INVISIBLE
                 setTimer.visibility = View.INVISIBLE
 
@@ -115,7 +115,7 @@ class TimerActivity : AppCompatActivity(){
             updateButtons()
 
             //show timer
-            numberPicker.visibility = View.VISIBLE
+            input_weight_value.visibility = View.VISIBLE
             minutesTextView.visibility = View.VISIBLE
             setTimer.visibility = View.VISIBLE
             textView_countdown.visibility = View.INVISIBLE
@@ -189,8 +189,8 @@ class TimerActivity : AppCompatActivity(){
 
     }
 
-    fun returnToCurrentSession(){
-        val intent = Intent(this, MainActivity::class.java);
+    private fun returnToCurrentSession() {
+        val intent = Intent(this, MainActivity::class.java)
         intent.putExtra("frgToLoad", "CurrentSession")
         startActivity(intent)
     }
@@ -209,7 +209,7 @@ class TimerActivity : AppCompatActivity(){
 
         if (timerState == TimerState.Running){
             timer.cancel()
-            val wakeUpTime = setAlarm(this, nowSeconds, secondsRemaining)
+            setAlarm(this, nowSeconds, secondsRemaining)
         }
         else if (timerState == TimerState.Paused){
 

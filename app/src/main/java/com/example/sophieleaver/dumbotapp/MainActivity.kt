@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
 import kotlinx.android.synthetic.main.activity_main.*
@@ -15,14 +16,18 @@ var globalState = "manager" //TODO change to dependent on login
 var currentBench = 1 // TODO save the value
 var currentRequestExists = false
 var currentDumbbellInUse = "0"
+
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+
+    private lateinit var mainToolbar: Toolbar
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        mainToolbar = toolbar
         setSupportActionBar(toolbar)
-        supportActionBar!!.setDisplayShowTitleEnabled(false)
+//        supportActionBar!!.setDisplayShowTitleEnabled(false)
 
         val toggle = ActionBarDrawerToggle(
             this,
@@ -35,32 +40,23 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         drawer_layout.addDrawerListener(toggle)
         toggle.syncState()
         nav_view.setNavigationItemSelectedListener(this)
-
+        mainToolbar.title = "Order Dumbells"
         openFragment(OrderFragment.newInstance())
 
         if (intent != null) {
 
             val fragment = intent.getStringExtra("frgToLoad")
 
-            when (fragment) {
-                "CurrentSession"-> {
-                    val currentSessionFragment = CurrentSessionFragment.newInstance()
-                    openFragment(currentSessionFragment)
-                }//TODO do we need the rest?
-                "Demo"-> {
-                    val demoFragment = DemoFragment.newInstance()
-                    openFragment(demoFragment)
+            openFragment(
+                when (fragment) {
+                    //TODO do we need the rest?
+                    "CurrentSession" -> CurrentSessionFragment.newInstance()
+                    "Demo" -> DemoFragment.newInstance()
+                    "Weights" -> WeightsFragment.newInstance()
+                    "Analytics" -> AnalyticsFragment.newInstance()
+                    else -> OrderFragment.newInstance()
                 }
-                "Weights"-> {
-                    val weightsFragment = WeightsFragment.newInstance()
-                    openFragment(weightsFragment)
-                }
-                "Analytics" -> {
-                    val analyticsFragment = AnalyticsFragment.newInstance()
-                    openFragment(analyticsFragment)
-                }
-
-            }
+            )
         }
     }
 
@@ -101,45 +97,55 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.nav_order -> {
                 if (!currentRequestExists) { //if the user does not have a current request open, the weight list is opened
                     val orderFragment = OrderFragment.newInstance()
+                    mainToolbar.title = "Order Dumbbells"
                     openFragment(orderFragment)
                 } else {
                     val currentSession = CurrentSessionFragment.newInstance()
+                    mainToolbar.title = "Active Workout Session"
                     openFragment(currentSession)
                 }
             }
             R.id.nav_overview -> {
                 if (globalState == "user") {
-                    val restrictedFragment  = RestrictedFragment.newInstance()
+                    val restrictedFragment = RestrictedFragment.newInstance()
+                    mainToolbar.title = "Cannot access page"
                     openFragment(restrictedFragment)
                 } else {
                     val overviewFragment = OverviewFragment.newInstance()
+                    mainToolbar.title = "DumBot Overview"
                     openFragment(overviewFragment)
                 }
             }
             R.id.nav_analytics -> {
                 if (globalState == "user") {
-                    val restrictedFragment  = RestrictedFragment.newInstance()
+                    val restrictedFragment = RestrictedFragment.newInstance()
+                    mainToolbar.title = "Cannot access page"
                     openFragment(restrictedFragment)
                 } else {
                     val analyticsFragment = AnalyticsFragment.newInstance()
+                    mainToolbar.title = "Analytics"
                     openFragment(analyticsFragment)
                 }
             }
             R.id.nav_weights -> {
                 if (globalState == "user") {
-                    val restrictedFragment  = RestrictedFragment.newInstance()
+                    val restrictedFragment = RestrictedFragment.newInstance()
+                    mainToolbar.title = "Cannot access page"
                     openFragment(restrictedFragment)
                 } else {
                     val weightsFragment = WeightsFragment.newInstance()
+                    mainToolbar.title = "Weight Inventory"
                     openFragment(weightsFragment)
                 }
             }
 //            R.id.nav_demo -> {
 //                if (globalState.equals("user")){
 //                    val restrictedFragment  = RestrictedFragment.newInstance()
+//                    mainToolbar.title = "Cannot access page"
 //                    openFragment(restrictedFragment)
 //                } else {
 //                    val demoFragment = DemoFragment.newInstance()
+//                    supportActionBar!!.title = "Demo"
 //                    openFragment(demoFragment)
 //                }
 //            }

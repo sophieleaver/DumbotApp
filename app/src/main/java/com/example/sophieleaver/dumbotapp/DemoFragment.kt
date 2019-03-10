@@ -1,20 +1,18 @@
 package com.example.sophieleaver.dumbotapp
 
 import android.content.Context
-import android.graphics.Color
-import android.net.Uri
 import android.os.Bundle
-import android.renderscript.Sampler
 import android.support.v4.app.Fragment
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.View 
+import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Toast
-import com.google.firebase.database.*
-import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.android.synthetic.main.fragment_demo_fragment.view.*
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 
 
 /**
@@ -112,8 +110,6 @@ class DemoFragment : Fragment(), View.OnClickListener {
             }
         })
     }
-
-
 
     companion object {
         @JvmStatic
