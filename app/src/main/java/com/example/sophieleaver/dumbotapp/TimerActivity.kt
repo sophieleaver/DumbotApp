@@ -131,6 +131,10 @@ class TimerActivity : Fragment(){
         }
 
 
+
+
+
+
 //        finish_workout_button.setOnClickListener {
 //            alert("Are you sure you are finished with your weights?") {
 //                yesButton {
