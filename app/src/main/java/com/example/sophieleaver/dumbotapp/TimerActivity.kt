@@ -5,14 +5,17 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
+import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
 import kotlinx.android.synthetic.main.activity_timer.*
 import java.util.*
 
 
-class TimerActivity : AppCompatActivity(){
+class TimerActivity : Fragment(){
 
     companion object{
 
@@ -50,14 +53,14 @@ class TimerActivity : AppCompatActivity(){
 
 
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_timer)
+        val view = inflater.inflate(R.layout.activity_timer, container, false)
 
-        setSupportActionBar(timer_toolbar)
-        supportActionBar?.setIcon(R.drawable.ic_timer)
-        supportActionBar?.title = "      Timer"
 
+        (activity as AppCompatActivity).setSupportActionBar(timer_toolbar)
+        (activity as AppCompatActivity).supportActionBar?.setIcon(R.drawable.ic_timer)
+        (activity as AppCompatActivity).supportActionBar?.title = "      Timer"
 
 
         textView_countdown.bringToFront()
@@ -185,12 +188,12 @@ class TimerActivity : AppCompatActivity(){
             }
         }
 
-
+        return view
 
     }
 
     private fun returnToCurrentSession() {
-        val intent = Intent(this, MainActivity::class.java)
+        val intent = Intent(requireActivity(), MainActivity::class.java)
         intent.putExtra("frgToLoad", "CurrentSession")
         startActivity(intent)
     }
@@ -200,7 +203,7 @@ class TimerActivity : AppCompatActivity(){
 
         initTimer()
 
-        removeAlarm(this)
+        removeAlarm(requireContext())
 
     }
 
@@ -209,7 +212,7 @@ class TimerActivity : AppCompatActivity(){
 
         if (timerState == TimerState.Running){
             timer.cancel()
-            setAlarm(this, nowSeconds, secondsRemaining)
+            setAlarm(requireContext(), nowSeconds, secondsRemaining)
         }
         else if (timerState == TimerState.Paused){
 
