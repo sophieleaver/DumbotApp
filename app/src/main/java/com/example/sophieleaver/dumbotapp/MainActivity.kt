@@ -54,27 +54,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         nav_view.menu.findItem(R.id.menu_manager).isVisible = !userMode
         mainToolbar.title = "Order Dumbells"
         openFragment(OrderFragment.newInstance())
-
-//        if (intent != null) {
-//
-//            val fragment = intent.getStringExtra("frgToLoad")
-//
-//            when (fragment) {
-//                "CurrentSession"-> {
-//                    val currentSessionFragment = CurrentSessionFragment.newInstance()
-//                    openFragment(currentSessionFragment)
-//                }//TODO do we need the rest?
-//                "Weights"-> {
-//                    val weightsFragment = WeightsFragment.newInstance()
-//                    openFragment(weightsFragment)
-//                }
-//                "Analytics" -> {
-//                    val analyticsFragment = AnalyticsFragment.newInstance()
-//                    openFragment(analyticsFragment)
-//                }
-//
-//            }
-//        }
     }
     override fun onStart() {
         super.onStart()
@@ -174,6 +153,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     val settingsFragment = SettingsFragment.newInstance()
                     openFragment(settingsFragment)
                 }
+            }
+            R.id.nav_timer -> {
+                val timerFragment = TimerFragment.newInstance()
+                openFragment(timerFragment)
             }
 
 //            R.id.nav_demo -> {

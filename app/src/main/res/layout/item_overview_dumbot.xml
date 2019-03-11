@@ -35,7 +35,7 @@
         android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
         android:visibility="visible"
         android:text="@string/dumbot"
-        android:fontFamily="@font/muli_extralight"
+        android:fontFamily="@font/muli_light"
         android:layout_marginTop="24dp"
         android:textSize="36sp"
         android:layout_marginBottom="8dp"
@@ -54,7 +54,7 @@
         android:fontFeatureSettings="smcp"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
         android:visibility="visible"
-        android:fontFamily="@font/muli_extralight"
+        android:fontFamily="@font/muli_light"
         android:textSize="36sp"
         android:layout_marginBottom="8dp"
         android:layout_marginStart="8dp"
@@ -84,22 +84,21 @@
 
     <Button
         android:id="@+id/button_dumbot_information"
-        style="@style/Widget.AppCompat.Button.Colored"
-        android:layout_width="56dp"
-        android:layout_height="55dp"
-        android:text="@string/question_mark"
+        style="@style/Widget.AppCompat.Button"
+        android:layout_width="161dp"
+        android:layout_height="67dp"
+        android:text="More Information"
         android:fontFamily="@font/muli_extralight"
-        android:textSize="24sp"
+        android:textSize="18sp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:background="@drawable/orange_circle"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.503"
+        app:layout_constraintHorizontal_bias="0.509"
         app:layout_constraintStart_toEndOf="@+id/divider"
         app:layout_constraintTop_toBottomOf="@+id/text_weight_value"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintVertical_bias="0.333" />
 
 </android.support.constraint.ConstraintLayout>

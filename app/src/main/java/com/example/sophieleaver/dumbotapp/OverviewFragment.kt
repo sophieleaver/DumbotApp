@@ -1,6 +1,7 @@
 package com.example.sophieleaver.dumbotapp
 
 import android.app.AlertDialog
+import android.graphics.Color
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
@@ -126,8 +127,9 @@ class OverviewFragment : Fragment() {
             holder.apply {
                 dumbotStatus.text = "EMERGENCY STOP"
                 //set button to red with ! logo
-                overviewButton.text = "!"
-                overviewButton.setBackgroundResource(R.drawable.red_circle)
+                overviewButton.text = "Reset DumBot"
+                overviewButton.setBackgroundColor(Color.rgb(179, 0, 0))
+                //overviewButton.setBackgroundResource(R.drawable.red_circle)
 
                 //button can reset the dumbot
                 overviewButton.setOnClickListener {
@@ -148,8 +150,9 @@ class OverviewFragment : Fragment() {
         fun setActiveRequestStatus(holder : ViewHolder, dumbotNo: Int, requestType : String, weight : String, bench : String){
             holder.apply {
                 //set button to ? and orange
-                overviewButton.text = "?"
-                overviewButton.setBackgroundResource(R.drawable.orange_circle)
+                overviewButton.text = "More Information"
+                overviewButton.setBackgroundColor(Color.rgb(214, 215, 215))
+                //overviewButton.setBackgroundResource(R.drawable.orange_circle)
 
                 //set text to about the request
                 dumbotStatus.text = "${requestType.toUpperCase()} DUMBBELL"
@@ -173,8 +176,9 @@ class OverviewFragment : Fragment() {
         fun setIdleRequestStatus(holder : ViewHolder, dumbotNo: Int){
             holder.apply {
                 dumbotStatus.text = "IDLE"
-                overviewButton.text = "?"
-                overviewButton.setBackgroundResource(R.drawable.orange_circle)
+                overviewButton.text = "More Information"
+                overviewButton.setBackgroundColor(Color.rgb(214, 215, 215))
+                //overviewButton.setBackgroundResource(R.drawable.orange_circle)
 
                 overviewButton.setOnClickListener {
                     val builder = AlertDialog.Builder(itemView.context)

@@ -11,11 +11,12 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import kotlinx.android.synthetic.main.activity_timer.*
+import kotlinx.android.synthetic.main.fragment_timer.*
+import kotlinx.android.synthetic.main.fragment_timer.view.*
 import java.util.*
 
 
-class TimerActivity : Fragment(){
+class TimerFragment : Fragment(){
 
     companion object{
 
@@ -30,6 +31,8 @@ class TimerActivity : Fragment(){
 
         }
 
+        fun newInstance() = TimerFragment()
+
         val nowSeconds: Long
             get() = Calendar.getInstance().timeInMillis / 1000
     }
@@ -41,6 +44,7 @@ class TimerActivity : Fragment(){
     enum class PagerState{
         Timer, Collection
     }
+
 
 
     private lateinit var timer: CountDownTimer
@@ -55,25 +59,26 @@ class TimerActivity : Fragment(){
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreate(savedInstanceState)
-        val view = inflater.inflate(R.layout.activity_timer, container, false)
+        val view = inflater.inflate(R.layout.fragment_timer, container, false)
 
 
         (activity as AppCompatActivity).setSupportActionBar(timer_toolbar)
         (activity as AppCompatActivity).supportActionBar?.setIcon(R.drawable.ic_timer)
         (activity as AppCompatActivity).supportActionBar?.title = "      Timer"
 
-
-        textView_countdown.bringToFront()
-        textView_countdown.visibility = View.INVISIBLE
-        progress_countdown.visibility = View.INVISIBLE
+        view.textView_countdown.bringToFront()
+        view.textView_countdown.visibility = View.INVISIBLE
+        view.progress_countdown.visibility = View.INVISIBLE
 
 
         //Number picker
 
-        input_total_stock.minValue = 0
-        input_total_stock.maxValue = 15
-        input_total_stock.value = 1
-        input_total_stock.setOnValueChangedListener { picker, oldVal, newVal ->
+        view.input_total_stock.minValue = 0
+        view.input_total_stock.maxValue = 15
+        view.input_total_stock.value = 1
+
+
+        view.input_total_stock.setOnValueChangedListener { picker, oldVal, newVal ->
 
             if (newVal.toString() != "") {
                 timer.cancel()
@@ -89,7 +94,7 @@ class TimerActivity : Fragment(){
         }
 
 
-        fab_start.setOnClickListener{v ->
+        view.fab_start.setOnClickListener{v ->
 
             if(timerState == TimerState.Stopped){
 
@@ -105,13 +110,13 @@ class TimerActivity : Fragment(){
             updateButtons()
         }
 
-        fab_pause.setOnClickListener { v ->
+        view.fab_pause.setOnClickListener { v ->
             timer.cancel()
             timerState = TimerState.Paused
             updateButtons()
         }
 
-        fab_stop.setOnClickListener { v ->
+        view.fab_stop.setOnClickListener { v ->
             timer.cancel()
             timerState = TimerState.Stopped
             onTimerFinished()
@@ -126,62 +131,9 @@ class TimerActivity : Fragment(){
 
         }
 
-        finish_workout_button.setOnClickListener { v ->
+        view.finish_workout_button.setOnClickListener { v ->
             returnToCurrentSession()
         }
-
-
-
-
-
-
-//        finish_workout_button.setOnClickListener {
-//            alert("Are you sure you are finished with your weights?") {
-//                yesButton {
-//                    currentRequestExists = false // there is no longer a current request
-//
-//                    val now = LocalDateTime.now(ZoneOffset.UTC)
-//                    val unix = now.atZone(ZoneOffset.UTC)?.toEpochSecond()
-//
-//                    //send request to firebase
-//                    val request = ref.child("demo2").child("requests").child(unix.toString())
-//                    request.child("bench").setValue(currentBench)
-//                    request.child("time").setValue(unix)
-//                    request.child("type").setValue("collecting")
-//                    request.child("weight").setValue(currentDumbbellInUse)
-//
-//                    Log.d(fragTag, "Sending request $unix to server (deliver dumbbells of ${currentDumbbellInUse}kg to bench $currentBench)")
-//
-//                    //update layout
-//                    setContentView(R.layout.dumbbell_collection);
-//                    setSupportActionBar(collection_toolbar)
-//                    page = PagerState.Collection
-//                    supportActionBar?.setIcon(R.drawable.ic_fitness_center)
-//                    supportActionBar?.title = "      Dumbbell Collection"
-//                    val buttonFinish:Button = findViewById(R.id.buttonFinish)
-//                    buttonFinish.setOnClickListener {
-//                        goBackToOrderPage()
-//                    }
-//
-//                }
-//                noButton { }
-//            }.show()
-//
-//        }
-
-
-//        floatingActionButton.setOnClickListener {
-//            val inflater = this.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-//            val layout:View = inflater.inflate(R.layout.fragment_current_session,null)
-//            val window = PopupWindow(layout, 500, 600, true)
-//
-//            window.elevation = 10.0F
-//            window.setBackgroundDrawable(ColorDrawable(Color.WHITE))
-//            window.isOutsideTouchable = true
-//            window.showAtLocation(layout, Gravity.CENTER, 0, 0)
-//
-//        }
-
 
         timer = object : CountDownTimer(secondsRemaining * 1000, 1000) {
             override fun onFinish() = onTimerFinished()
@@ -197,9 +149,7 @@ class TimerActivity : Fragment(){
     }
 
     private fun returnToCurrentSession() {
-        val intent = Intent(requireActivity(), MainActivity::class.java)
-        intent.putExtra("frgToLoad", "CurrentSession")
-        startActivity(intent)
+        (activity as MainActivity).openFragment(CurrentOrdersFragment.newInstance())
     }
 
     override fun onResume() {
@@ -308,44 +258,6 @@ class TimerActivity : Fragment(){
             else -> super.onOptionsItemSelected(item)
         }
     }
-
-
-    //handle back-key presses
-
-//    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
-//        if (keyCode == KeyEvent.KEYCODE_BACK) {
-//            exitByBackKey()
-//
-//            return true
-//        }
-//        return super.onKeyDown(keyCode, event)
-//    }
-
-//    protected fun exitByBackKey() {
-//
-//        if(page.equals(PagerState.Timer)) {
-//
-//            alert("Are you sure you are finished with your weights?") {
-//                yesButton {
-//                    // update request status to CANCELLED
-//                    setContentView(R.layout.dumbbell_collection);
-//                    setSupportActionBar(collection_toolbar)
-//                    page = PagerState.Collection
-//                    supportActionBar?.setIcon(R.drawable.red_circle)
-//                    supportActionBar?.title = "      Dumbbell Collection"
-//                    val buttonFinish: Button = findViewById(R.id.buttonFinish)
-//                    buttonFinish.setOnClickListener {
-//                        goBackToOrderPage()
-//                    }
-//
-//                }
-//                noButton { }
-//            }.show()
-//
-//        }else{
-//            goBackToOrderPage()
-//        }
-//    }
 
 
 

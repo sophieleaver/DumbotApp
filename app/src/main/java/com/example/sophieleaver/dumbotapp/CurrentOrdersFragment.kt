@@ -62,6 +62,10 @@ class CurrentOrdersFragment : Fragment() {
 //            QueuedDumbbellAdapter().notifyDataSetChanged()
         }
 
+        view.fab_timer.setOnClickListener {
+            (activity as MainActivity).openFragment(TimerFragment.newInstance())
+        }
+
         val cancelButton : Button = view.findViewById(R.id.button_reset_workout_session)
         cancelButton.setOnClickListener {
             val builder = AlertDialog.Builder(context)

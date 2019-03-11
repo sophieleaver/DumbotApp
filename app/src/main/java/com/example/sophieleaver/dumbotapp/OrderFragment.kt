@@ -57,40 +57,9 @@ class OrderFragment : Fragment() {
             findViewById<TextView>(R.id.textview_current_bench).text = currentBench.toString()
 
             //when button pressed, alert dialog opened to change the bench
-//            btn_change_station.setOnClickListener {
-//                val builder = AlertDialog.Builder(context)
-//                val alertView = layoutInflater.inflate(R.layout.change_bench_layout, null)
-//                builder.setView(alertView)
-//                builder.setTitle("Change Workout Station")
-//                builder.setNegativeButton("Cancel") { dialog, _ -> dialog.cancel() }
-//                val dialog: AlertDialog = builder.create()
-//                dialog.show()
-
-                //on click listeners for when a new bench is selected
-//            }
-//            btn_change_station.setOnClickListener {
-//                val builder = AlertDialog.Builder(context)
-//                val alertView = layoutInflater.inflate(R.layout.change_bench_layout, null)
-//                builder.setView(alertView)
-//                builder.setTitle("Change Workout Station")
-//                builder.setNegativeButton("Cancel") { dialog, _ -> dialog.cancel() } //if cancel then dialog is closed
-//                val dialog: AlertDialog = builder.create()
-//                dialog.show()
-//
-//                //on click listeners for when a new bench is selected
-//                val b1: Button = alertView.findViewById(R.id.button_bench_1)
-//                b1.setOnClickListener { changeBench(1, dialog) }
-//                val b2: Button = alertView.findViewById(R.id.button_bench_2)
-//                b2.setOnClickListener { changeBench(2, dialog) }
-//                val b3: Button = alertView.findViewById(R.id.button_bench_3)
-//                b3.setOnClickListener { changeBench(3, dialog) }
-//                val b4: Button = alertView.findViewById(R.id.button_bench_4)
-//                b4.setOnClickListener { changeBench(4, dialog) }
-//                val b5: Button = alertView.findViewById(R.id.button_bench_5)
-//                b5.setOnClickListener { changeBench(5, dialog) }
-//                val b6: Button = alertView.findViewById(R.id.button_bench_6)
-//                b6.setOnClickListener { changeBench(6, dialog) }
-//            }
+            button_see_workout.setOnClickListener {
+                (activity as MainActivity).openFragment(CurrentOrdersFragment.newInstance())
+            }
         }
         setupRecyclerView()
     }
@@ -203,7 +172,7 @@ class OrderFragment : Fragment() {
                 orderButton.setOnClickListener {
                     val builder = AlertDialog.Builder(context)
                     builder.setTitle("Confirm order")
-                    builder.setMessage("Are you sure you would like to order the ${holder.weightValue.text}kg dumbbells?")
+                    builder.setMessage("Are you sure you would like to order the ${holder.weightValue.text} dumbbells?")
                     builder.setPositiveButton("CONFIRM") { dialog, which ->
                         createRequest(dumbbellAvailable, requestedWeight.weightValue.toString())
                     }
@@ -221,7 +190,7 @@ class OrderFragment : Fragment() {
         private fun createRequest(dumbbellAvailable: Boolean, weightValue: String) {
 
             val now = LocalDateTime.now(ZoneOffset.UTC)
-            val seconds = now.atZone(ZoneOffset.UTC)?.toEpochSecond() //request time is always in seconds
+            val seconds = now.atZone(ZoneOffset.UTC).toEpochSecond() //request time is always in seconds
             val milliseconds = now.atZone(ZoneOffset.UTC)?.toInstant()?.toEpochMilli() //request ID is in milli seconds
 
             val requestID = milliseconds.toString()
@@ -229,8 +198,9 @@ class OrderFragment : Fragment() {
             val path = if (dumbbellAvailable) "activeRequests" else "waitQueue"
             val benchID = benchNumberToFirebaseID(currentBench)
 
+            requests.put(requestID, Request(requestID, seconds, status, weightValue, benchID))
             requestReference.child(requestID)
-                .setValue(DumbbellRequest(weightValue, status, benchID, seconds!!))
+                .setValue(DumbbellRequest(weightValue, status, benchID, seconds))
             weightReference.child("$weightValue/$path/$benchID").setValue("$status|$seconds")
 
             Log.d(
