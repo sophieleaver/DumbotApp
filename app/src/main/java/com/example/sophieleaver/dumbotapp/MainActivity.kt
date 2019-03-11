@@ -154,10 +154,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     openFragment(settingsFragment)
                 }
             }
-            R.id.nav_timer -> {
-                val timerFragment = TimerFragment.newInstance()
-                openFragment(timerFragment)
-            }
+//            R.id.nav_timer -> {
+//                val timerFragment = TimerFragment.newInstance()
+//                openFragment(timerFragment)
+//            }
 
 //            R.id.nav_demo -> {
 //                if (globalState.equals("user")){
