@@ -26,9 +26,6 @@ import java.time.ZoneOffset
 //TODO create a login
 class AnalyticsFragment : Fragment() {
 
-    //get from firestore
-    private var MAX_WEIGHT = 20
-
     //stores the datapoints for the bargraphs
     private var mSeries1: BarGraphSeries<DataPoint>? = null
     private var mSeries2: BarGraphSeries<DataPoint>? = null
@@ -39,23 +36,16 @@ class AnalyticsFragment : Fragment() {
     private var mSeries7: BarGraphSeries<DataPoint>? = null
     //key: weight maps to usage and place in dataPoints
     private var weightUsage: HashMap<Int, Int> = HashMap()
-    //    private var dataPoints: Array<DataPoint> = Array(MAX_WEIGHT) { DataPoint(it.toDouble(), 0.0) }
-//    private var dataPoints: MutableList<DataPoint> = mutableListOf()
-    private var alreadyAdded: MutableList<String> = mutableListOf()
 
     private lateinit var graph1: GraphView
     private lateinit var graph2: GraphView
-
 
     //variable if we want to make hourly updates on dumbbell and station usages
     private var time = 6
     private val TAG = "AnalyticsFragment"
 
-
     //firebase variables
-    private val database = FirebaseDatabase.getInstance()
-    private val ref = database.reference
-
+    private val ref = FirebaseDatabase.getInstance().reference
     private val requestReference = ref.child("demo2").child("requests")
 
 
@@ -71,13 +61,12 @@ class AnalyticsFragment : Fragment() {
         graph2 = view.findViewById(R.id.graph2)
 
         //create spinner to hold selection box for period of time for graph
-        val items: Array<String> = arrayOf("Today", "Last Week", "Last Month", "Last Year")
         val dropdown: Spinner = view.findViewById(R.id.spinner1)
 
         dropdown.apply {
             adapter = ArrayAdapter(this@AnalyticsFragment.requireContext(),
                     android.R.layout.simple_spinner_dropdown_item,
-                    items)
+                    arrayOf("Today", "Last Week", "Last Month", "Last Year"))
 
             // Set an on item selected listener for spinner object
             onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -98,13 +87,13 @@ class AnalyticsFragment : Fragment() {
                             if (mSeries1 == null) {
                                 mSeries1 = BarGraphSeries(arrayOf(
 
-                                    //should be initialised to zero every day
-                                    //should be imported from firestore
-                                    //updated everytime a request is issued in the requests page
-                                    DataPoint(5.0, 12.0),
-                                    DataPoint(10.0, 14.0),
-                                    DataPoint(15.0, 17.0),
-                                    DataPoint(20.0, 11.0),
+                                        //should be initialised to zero every day
+                                        //should be imported from firestore
+                                        //updated everytime a request is issued in the requests page
+                                        DataPoint(5.0, 12.0),
+                                        DataPoint(10.0, 14.0),
+                                        DataPoint(15.0, 17.0),
+                                        DataPoint(20.0, 11.0),
                                         DataPoint(25.0, 12.0)))
                             }
 
@@ -131,13 +120,13 @@ class AnalyticsFragment : Fragment() {
                             if (mSeries2 == null) {
                                 mSeries2 = BarGraphSeries(arrayOf(
 
-                                    //should be initialised to zero every day
-                                    //should be imported from firestore
-                                    //updated everytime a request is issued in the requests page
-                                    DataPoint(1.0, 12.0),
-                                    DataPoint(2.0, 14.0),
-                                    DataPoint(3.0, 17.0),
-                                    DataPoint(4.0, 11.0),
+                                        //should be initialised to zero every day
+                                        //should be imported from firestore
+                                        //updated everytime a request is issued in the requests page
+                                        DataPoint(1.0, 12.0),
+                                        DataPoint(2.0, 14.0),
+                                        DataPoint(3.0, 17.0),
+                                        DataPoint(4.0, 11.0),
                                         DataPoint(5.0, 12.0)))
                             }
 
@@ -169,13 +158,13 @@ class AnalyticsFragment : Fragment() {
                             if (mSeries3 == null) {
                                 mSeries3 = BarGraphSeries(arrayOf(
 
-                                    //should be initialised to zero every month
-                                    //should be imported from firestore
-                                    //updated everytime a request is issued in the requests page
-                                    DataPoint(5.0, 120.0),
-                                    DataPoint(10.0, 140.0),
-                                    DataPoint(15.0, 170.0),
-                                    DataPoint(20.0, 110.0),
+                                        //should be initialised to zero every month
+                                        //should be imported from firestore
+                                        //updated everytime a request is issued in the requests page
+                                        DataPoint(5.0, 120.0),
+                                        DataPoint(10.0, 140.0),
+                                        DataPoint(15.0, 170.0),
+                                        DataPoint(20.0, 110.0),
                                         DataPoint(25.0, 120.0)))
                             }
                             graph1.addSeries(mSeries3)
@@ -201,13 +190,13 @@ class AnalyticsFragment : Fragment() {
                             if (mSeries4 == null) {
                                 mSeries4 = BarGraphSeries(arrayOf(
 
-                                    //should be initialised to zero every month
-                                    //should be imported from firestore
-                                    //updated everytime a request is issued in the requests page
-                                    DataPoint(1.0, 120.0),
-                                    DataPoint(2.0, 140.0),
-                                    DataPoint(3.0, 170.0),
-                                    DataPoint(4.0, 110.0),
+                                        //should be initialised to zero every month
+                                        //should be imported from firestore
+                                        //updated everytime a request is issued in the requests page
+                                        DataPoint(1.0, 120.0),
+                                        DataPoint(2.0, 140.0),
+                                        DataPoint(3.0, 170.0),
+                                        DataPoint(4.0, 110.0),
                                         DataPoint(5.0, 120.0)))
                             }
                             graph2.addSeries(mSeries4)
@@ -237,13 +226,13 @@ class AnalyticsFragment : Fragment() {
                             if (mSeries5 == null) {
                                 mSeries5 = BarGraphSeries(arrayOf(
 
-                                    //should be initialised to zero every year
-                                    //should be imported from firestore
-                                    //updated everytime a request is issued in the requests page
-                                    DataPoint(5.0, 1200.0),
-                                    DataPoint(10.0, 1400.0),
-                                    DataPoint(15.0, 1700.0),
-                                    DataPoint(20.0, 1100.0),
+                                        //should be initialised to zero every year
+                                        //should be imported from firestore
+                                        //updated everytime a request is issued in the requests page
+                                        DataPoint(5.0, 1200.0),
+                                        DataPoint(10.0, 1400.0),
+                                        DataPoint(15.0, 1700.0),
+                                        DataPoint(20.0, 1100.0),
                                         DataPoint(25.0, 1200.0)))
                             }
                             graph1.addSeries(mSeries5)
@@ -269,13 +258,13 @@ class AnalyticsFragment : Fragment() {
                             if (mSeries6 == null) {
                                 mSeries6 = BarGraphSeries(arrayOf(
 
-                                    //should be initialised to zero every year
-                                    //should be imported from firestore
-                                    //updated everytime a request is issued in the requests page
-                                    DataPoint(1.0, 1200.0),
-                                    DataPoint(2.0, 1400.0),
-                                    DataPoint(3.0, 1700.0),
-                                    DataPoint(4.0, 1100.0),
+                                        //should be initialised to zero every year
+                                        //should be imported from firestore
+                                        //updated everytime a request is issued in the requests page
+                                        DataPoint(1.0, 1200.0),
+                                        DataPoint(2.0, 1400.0),
+                                        DataPoint(3.0, 1700.0),
+                                        DataPoint(4.0, 1100.0),
                                         DataPoint(5.0, 1200.0)))
                             }
 

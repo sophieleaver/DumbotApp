@@ -57,4 +57,11 @@
         You have successfully ordered a pair of %1$s kg dumbbells. \n\n
         Would you like to go to your current workout session or order more dumbbells?
     </string>
+    <string name="no_dumbbells_in_use">You currently have no dumbbells in use. Order dumbbells from the Order Dumbbells Section</string>
+    <string name="dumbbell_being_delivered">This dumbbell is being delivered now</string>
+    <string name="dumbbell_being_collected">Dumbbell is being collected now</string>
+    <string name="current_dumbbell">Your current dumbbell. Press the button below to return.</string>
+    <string name="more_info">More Info</string>
+    <string name="dumbbell">%1$s dumbbell</string>
+    <string name="cancel_dumbbell">Are you sure you would like to %1$s delivery of the %2$s dumbbell?</string>
 </resources>

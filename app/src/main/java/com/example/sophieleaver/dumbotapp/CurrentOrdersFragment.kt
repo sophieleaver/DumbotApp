@@ -4,16 +4,14 @@ import android.app.ActionBar
 import android.app.AlertDialog
 import android.graphics.Color
 import android.os.Bundle
+import android.os.SystemClock
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.LinearLayout
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.cancel_collection_view.view.*
 import kotlinx.android.synthetic.main.cancel_delivery_view.view.*
@@ -38,9 +36,9 @@ class CurrentOrdersFragment : Fragment() {
     val ref = FirebaseDatabase.getInstance().reference
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater,
+            container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_current_orders, container, false).apply {
@@ -58,8 +56,14 @@ class CurrentOrdersFragment : Fragment() {
         view.fab_timer.setOnClickListener {
             (activity as MainActivity).openFragment(TimerFragment.newInstance())
         }
+        view.btn_debug.setOnClickListener {
+            requests.forEach {
+                it.value.type = if (it.value.type == "delivering") "current" else "delivering"
+            }
+            currentDBRecyclerView.adapter?.notifyDataSetChanged()
+        }
 
-        val cancelButton : Button = view.findViewById(R.id.button_reset_workout_session)
+        val cancelButton: Button = view.findViewById(R.id.button_reset_workout_session)
         cancelButton.setOnClickListener {
             val builder = AlertDialog.Builder(context)
             val warningView = layoutInflater.inflate(R.layout.reset_warning_view, null)
@@ -129,10 +133,10 @@ class CurrentOrdersFragment : Fragment() {
     inner class CurrentDumbbellAdapter : RecyclerView.Adapter<CurrentDumbbellAdapter.ViewHolder>() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
-            ViewHolder(
-                LayoutInflater.from(this@CurrentOrdersFragment.requireContext())
-                    .inflate(R.layout.item_current_dumbbell, parent, false)
-            )
+                ViewHolder(
+                        LayoutInflater.from(this@CurrentOrdersFragment.requireContext())
+                                .inflate(R.layout.item_current_dumbbell, parent, false)
+                )
 
         override fun getItemCount(): Int = requests.size + 1 //change
 
@@ -150,6 +154,8 @@ class CurrentOrdersFragment : Fragment() {
                 if (position < itemCount - 1) {
 
                     val request: Request = requests.toList()[position].second
+                    val now = LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneOffset.UTC)!!.toInstant()!!.toEpochMilli()
+                    val baseTime = SystemClock.elapsedRealtime() - (now - (request.time * 1000))
 
                     val type = request.type
                     holder.id = request.id
@@ -159,16 +165,16 @@ class CurrentOrdersFragment : Fragment() {
                     holder.background.setBackgroundColor(Color.WHITE)
 
                     if (type == "delivering") {
-                        holder.description.text = "Dumbbell is being delivered now"
+                        holder.description.text = getString(R.string.dumbbell_being_delivered)
                         holder.button.text = getString(R.string.cancel)
                         holder.button.setOnClickListener {
                             val builder = AlertDialog.Builder(context)
                             val cancelDeliveryView =
-                                layoutInflater.inflate(R.layout.cancel_delivery_view, null)
+                                    layoutInflater.inflate(R.layout.cancel_delivery_view, null)
                             builder.setView(cancelDeliveryView)
 
                             cancelDeliveryView.text_delivery_cancel.text =
-                                "Are you sure you would like to cancel delivery of the ${holder.weight.text} dumbbell?"
+                                    getString(R.string.cancel_dumbbell, "delivery", holder.weight.text)
 
                             val dialog: AlertDialog = builder.create()
                             dialog.show()
@@ -181,7 +187,7 @@ class CurrentOrdersFragment : Fragment() {
                                 val unixSeconds = now.atZone(ZoneOffset.UTC)?.toEpochSecond()
 
                                 ref.child("demo2").child("cancelledRequests").child(request.id)
-                                    .setValue(unixSeconds)
+                                        .setValue(unixSeconds)
 
                                 requests.remove(holder.id)
                                 recyclerView_current_dumbbells.removeViewAt(position)
@@ -192,17 +198,16 @@ class CurrentOrdersFragment : Fragment() {
                         }
                     }
                     if (type == "collecting") {
-                        holder.description.text = "Dumbbell is being collected now"
-                        holder.button.text = "Cancel"
-
+                        holder.description.text = getString(R.string.dumbbell_being_collected)
+                        holder.button.text = getString(R.string.cancel)
                         holder.button.setOnClickListener {
                             val builder = AlertDialog.Builder(context)
                             val cancelCollectionView =
-                                layoutInflater.inflate(R.layout.cancel_collection_view, null)
+                                    layoutInflater.inflate(R.layout.cancel_collection_view, null)
                             builder.setView(cancelCollectionView)
 
                             cancelCollectionView.text_collection_cancel.text =
-                                "Are you sure you would like to cancel collection of the ${holder.weight.text} dumbbell?"
+                                    getString(R.string.cancel_dumbbell, "collection", holder.weight.text)
 
                             val dialog: AlertDialog = builder.create()
                             dialog.show()
@@ -215,7 +220,7 @@ class CurrentOrdersFragment : Fragment() {
                                 val unixSeconds = now.atZone(ZoneOffset.UTC)?.toEpochSecond()
 
                                 ref.child("demo2").child("cancelledRequests").child(request.id)
-                                    .setValue(unixSeconds)
+                                        .setValue(unixSeconds)
 
                                 requests[holder.id]!!.type = "current"
 //                                todo - why?
@@ -224,23 +229,22 @@ class CurrentOrdersFragment : Fragment() {
                             }
 //
                         }
+
                     }
                     if (type == "current") {
-                        holder.description.text =
-                            "Your current dumbbell. Press the button below to return."
-                        //holder.description.textSize("16sp")
-                        holder.button.text = "More Info"
-
+                        holder.description.text = getString(R.string.current_dumbbell)
+                        holder.button.text = getString(R.string.more_info)
+                        holder.timer.base = baseTime
+                        holder.timer.start()
                         holder.button.setOnClickListener {
                             val builder = AlertDialog.Builder(context)
                             val currentSessionView =
-                                layoutInflater.inflate(R.layout.current_dumbbell_view, null)
+                                    layoutInflater.inflate(R.layout.current_dumbbell_view, null)
                             builder.setView(currentSessionView)
-                            currentSessionView.text_title_currentDB.text =
-                                "${holder.weight.text} DUMBBELL"
+                            currentSessionView.text_title_currentDB.text = getString(R.string.dumbbell, holder.weight.text)
                             //todo set timer -> set it as time from request??
-                            //SystemClock.elapsedRealtime().
-                            //currentSessionView.text_timer.text = SystemClock.elapsedRealtime().toString()
+                            currentSessionView.text_session_time.base = baseTime
+                            currentSessionView.text_session_time.start()
                             val dialog = builder.create()
                             dialog.show()
 
@@ -257,7 +261,7 @@ class CurrentOrdersFragment : Fragment() {
 
                                 //send request to firebase
                                 val newRequest =
-                                    ref.child("demo2").child("requests").child(request.id)
+                                        ref.child("demo2").child("requests").child(request.id)
                                 newRequest.child("bench").setValue(request.bench)
                                 newRequest.child("time").setValue(unixSeconds)
                                 newRequest.child("type").setValue("collecting")
@@ -273,7 +277,7 @@ class CurrentOrdersFragment : Fragment() {
 //                    todo - why?
                     //give final holder a height of zero to make invisible?
                     holder.background.layoutParams =
-                        LinearLayout.LayoutParams(ActionBar.LayoutParams.MATCH_PARENT, 0)
+                            LinearLayout.LayoutParams(ActionBar.LayoutParams.MATCH_PARENT, 0)
                 }
             }
         }
@@ -285,6 +289,7 @@ class CurrentOrdersFragment : Fragment() {
             val emptyText: TextView = view.text_no_current_dumbbells
             val button: Button = view.button_cancel_curr
             val divider: View = view.divider_current
+            var timer: Chronometer = view.text_dumbbell_timer
             var background = view
         }
 
