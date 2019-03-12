@@ -1,5 +1,8 @@
 package com.example.sophieleaver.dumbotapp
 
+//todo - fix workout timer
+//todo - fix current sessions title
+//todo - fix keeping the same fragment on rotation (or just lock portrait mode)
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
@@ -16,7 +19,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
-import android.widget.Toast
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -26,25 +28,20 @@ import kotlinx.android.synthetic.main.item_order_dumbbell.view.*
 import org.jetbrains.anko.toast
 import java.time.LocalDateTime
 import java.time.ZoneOffset
-import java.util.*
-
-
-data class DumbbellRequest(val weight: String, val type: String, val bench: String, val time: Long)
 
 
 class OrderFragment : Fragment() {
+
+    private val fragTag = "OrderFragment"
 
     private val ref = FirebaseDatabase.getInstance().reference
 
     private val requestReference = ref.child("demo2").child("requests")
     private val weightReference = ref.child("demo2").child("weights")
 
-    private var weights: MutableList<Dumbbell> =
-        mutableListOf() //= listOf("12kg", "14kg", "16kg", "18kg", "20kg", "22kg")
-
+    private var weights: MutableList<Dumbbell> = mutableListOf()
     private var orderDumbbellRecyclerView: RecyclerView? = null
 
-    private val fragTag = "OrderFragment"
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
         inflater.inflate(R.layout.fragment_order_weights, container, false)
@@ -53,8 +50,8 @@ class OrderFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         with(view) {
             orderDumbbellRecyclerView = order_dumbbell_list
-
-            findViewById<TextView>(R.id.textview_current_bench).text = currentBench.toString()
+            findViewById<TextView>(R.id.text_workout_station).text =
+                getString(R.string.workout_station, currentBench)
 
             //when button pressed, alert dialog opened to change the bench
             button_see_workout.setOnClickListener {
@@ -64,13 +61,6 @@ class OrderFragment : Fragment() {
         setupRecyclerView()
     }
 
-//    private fun changeBench(bench: Int, dialog: AlertDialog) {
-//        currentBench = bench
-//        val text: TextView = view!!.findViewById(R.id.textview_current_bench)
-//        text.text = currentBench.toString()
-//        dialog.cancel()
-//        Log.d(fragTag, "currentBench = $currentBench, set bench is $bench")
-//    }
 
     private fun getWeightData() {
 
@@ -87,7 +77,7 @@ class OrderFragment : Fragment() {
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
-                Log.w("WeightFragment", "loadDumbbells:onCancelled", databaseError.toException())
+                Log.w(fragTag, "loadDumbbells:onCancelled", databaseError.toException())
                 requireActivity().toast("Failed getting weights, please try again")
             }
 
@@ -154,7 +144,6 @@ class OrderFragment : Fragment() {
                         requestedWeight.waitQueue.size
                     )
 
-
                 weightValue.text = getString(R.string.weight, requestedWeight.weightValue)
                 available.text = getString(availableTextResId)
                 orderButton.text = getString(orderButtonTextResId)
@@ -171,18 +160,15 @@ class OrderFragment : Fragment() {
                 )
                 orderButton.setOnClickListener {
                     val builder = AlertDialog.Builder(context)
-                    builder.setTitle("Confirm order")
+                    builder.setTitle("Confirm Order")
                     builder.setMessage("Are you sure you would like to order the ${holder.weightValue.text} dumbbells?")
-                    builder.setPositiveButton("CONFIRM") { dialog, which ->
+                    builder.setPositiveButton("CONFIRM") { _, _ ->
                         createRequest(dumbbellAvailable, requestedWeight.weightValue.toString())
                     }
-                    builder.setNeutralButton("CANCEL") { dialog, _ ->
-                        dialog.cancel()
-                    }
+                    builder.setNeutralButton("CANCEL") { dialog, _ -> dialog.cancel() }
 
                     val dialog = builder.create()
                     dialog.show()
-//                    toastz
                 }
             }
         }
@@ -198,27 +184,31 @@ class OrderFragment : Fragment() {
             val path = if (dumbbellAvailable) "activeRequests" else "waitQueue"
             val benchID = benchNumberToFirebaseID(currentBench)
 
-            requests.put(requestID, Request(requestID, seconds, status, weightValue, benchID))
-            requestReference.child(requestID)
-                .setValue(DumbbellRequest(weightValue, status, benchID, seconds))
-            weightReference.child("$weightValue/$path/$benchID").setValue("$status|$seconds")
+            val newRequest = Request(requestID, seconds, status, weightValue, benchID)
+            requests[requestID] = newRequest
+            requestReference.child(requestID).setValue(newRequest)
+            weightReference.child("$weightValue/$path/$benchID")
+                .setValue("$status|$seconds")
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        (activity as MainActivity).onSuccessfulOrder(weightValue)
+                    } else {
+                        Log.w(fragTag, "Failed to send request $requestID", task.exception)
+                        requireActivity().toast("There was an error sending your dumbbell request. Please try again later.")
+                    }
+                }
 
             Log.d(
                 fragTag,
                 "Sending request $requestID to server (deliver dumbbells of $weightValue kg to bench $currentBench)"
             )
-
         }
 
 
         private fun benchNumberToFirebaseID(bench: Int): String =
             when (bench) {
-                1 -> "B7"
-                2 -> "B10"
-                3 -> "B13"
-                4 -> "B9"
-                5 -> "B12"
-                else -> "B15"
+                1 -> "B7"; 2 -> "B10"; 3 -> "B13"
+                4 -> "B9"; 5 -> "B12"; else -> "B15"
             }
 
 
@@ -226,15 +216,14 @@ class OrderFragment : Fragment() {
             var currentDeliveries = 0
             var currentSessions = 0
 
-            for (request in requests.values){
+            for (request in requests.values) {
                 when (request.type) {
                     "delivering" -> currentDeliveries++
                     "current" -> currentSessions++
                 }
             }
 
-            val limitReached = (currentDeliveries + currentSessions >= 2)
-            return limitReached
+            return currentDeliveries + currentSessions >= 2
         }
 
         inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {

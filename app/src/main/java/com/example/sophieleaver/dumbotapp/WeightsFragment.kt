@@ -29,8 +29,6 @@ data class Dumbbell(
     val storageLocation: MutableList<String> = mutableListOf()
 )
 
-//todo - delete (only if none are currently rented out or in wait queue)
-
 class WeightsFragment : Fragment() {
     private val database = FirebaseDatabase.getInstance().reference
     private val weightReference = database.child("demo2").child("weights")
@@ -78,7 +76,7 @@ class WeightsFragment : Fragment() {
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
-                Log.w("WeightFragment", "loadDumbbells:onCancelled", databaseError.toException())
+                Log.w("WeightsFragment", "loadDumbbells:onCancelled", databaseError.toException())
                 requireActivity().toast("Failed getting weights, please try again")
             }
 

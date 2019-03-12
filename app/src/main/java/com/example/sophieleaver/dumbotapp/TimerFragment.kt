@@ -2,11 +2,9 @@ package com.example.sophieleaver.dumbotapp
 
 import android.app.AlarmManager
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.support.v4.app.Fragment
-import android.support.v7.app.AppCompatActivity
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -16,7 +14,7 @@ import kotlinx.android.synthetic.main.fragment_timer.view.*
 import java.util.*
 
 
-class TimerFragment : Fragment(){
+class TimerFragment : Fragment() {
 
     companion object{
 
@@ -62,9 +60,9 @@ class TimerFragment : Fragment(){
         val view = inflater.inflate(R.layout.fragment_timer, container, false)
 
 
-        (activity as AppCompatActivity).setSupportActionBar(timer_toolbar)
-        (activity as AppCompatActivity).supportActionBar?.setIcon(R.drawable.ic_timer)
-        (activity as AppCompatActivity).supportActionBar?.title = "      Timer"
+//        (activity as AppCompatActivity).setSupportActionBar(timer_toolbar)
+//        (activity as AppCompatActivity).supportActionBar?.setIcon(R.drawable.ic_timer)
+//        (activity as AppCompatActivity).supportActionBar?.title = "      Timer"
 
         view.textView_countdown.bringToFront()
         view.textView_countdown.visibility = View.INVISIBLE
@@ -85,18 +83,15 @@ class TimerFragment : Fragment(){
                 timerState = TimerState.Stopped
                 timerLengthSeconds = newVal * 60L
                 onTimerFinished()
-
                 setNewTimerLength()
                 updateCountdownUI()
-
-
             }
         }
 
 
-        view.fab_start.setOnClickListener{v ->
+        view.fab_start.setOnClickListener {
 
-            if(timerState == TimerState.Stopped){
+            if (timerState == TimerState.Stopped) {
 
                 textView_countdown.visibility = View.VISIBLE
                 progress_countdown.visibility = View.VISIBLE
@@ -110,13 +105,13 @@ class TimerFragment : Fragment(){
             updateButtons()
         }
 
-        view.fab_pause.setOnClickListener { v ->
+        view.fab_pause.setOnClickListener {
             timer.cancel()
             timerState = TimerState.Paused
             updateButtons()
         }
 
-        view.fab_stop.setOnClickListener { v ->
+        view.fab_stop.setOnClickListener {
             timer.cancel()
             timerState = TimerState.Stopped
             onTimerFinished()
@@ -131,9 +126,7 @@ class TimerFragment : Fragment(){
 
         }
 
-        view.finish_workout_button.setOnClickListener { v ->
-            returnToCurrentSession()
-        }
+        view.finish_workout_button.setOnClickListener { returnToCurrentSession() }
 
         timer = object : CountDownTimer(secondsRemaining * 1000, 1000) {
             override fun onFinish() = onTimerFinished()
@@ -154,22 +147,18 @@ class TimerFragment : Fragment(){
 
     override fun onResume() {
         super.onResume()
-
         initTimer()
-
         removeAlarm(requireContext())
-
     }
 
     override fun onPause() {
         super.onPause()
 
-        if (timerState == TimerState.Running){
+        if (timerState == TimerState.Running) {
             timer.cancel()
             setAlarm(requireContext(), nowSeconds, secondsRemaining)
-        }
-        else if (timerState == TimerState.Paused){
-
+        } else if (timerState == TimerState.Paused) {
+//            todo(Unfinished) - ?
         }
 
     }

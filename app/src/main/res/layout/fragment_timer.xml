@@ -2,159 +2,151 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_area"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.example.sophieleaver.dumbotapp.TimerFragment">
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/timer_toolbar"
+    <Button
+        android:id="@+id/finish_workout_button"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:text="@string/back"
         android:layout_width="0dp"
-        android:layout_height="56dp"
-        android:background="@color/colorPrimary"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <android.support.constraint.ConstraintLayout
-        android:id="@+id/main_area"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="64dp"
+        android:fadingEdge="horizontal"
+        android:textSize="20sp"
+        android:layout_marginStart="64dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/timer_toolbar">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/fab_pause"
+        app:layout_constraintVertical_bias="0.751" />
 
 
-        <Button
-            android:id="@+id/finish_workout_button"
-            style="@style/Widget.AppCompat.Button.Colored"
-            android:text="@string/back"
-            android:layout_width="115dp"
-            android:layout_height="49dp"
-            android:layout_marginBottom="20dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginEnd="8dp"
-            android:fadingEdge="horizontal"
-            android:textSize="20sp"
-            android:layout_marginStart="8dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/fab_pause"
-            app:layout_constraintVertical_bias="0.751" />
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_stop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginStart="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/fab_pause"
+        app:layout_constraintTop_toBottomOf="@+id/progress_countdown"
+        app:srcCompat="@drawable/ic_stop" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_pause"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        app:layout_constraintEnd_toStartOf="@+id/fab_stop"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toEndOf="@+id/fab_start"
+        app:layout_constraintTop_toBottomOf="@+id/progress_countdown"
+        app:srcCompat="@drawable/ic_pause" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|start"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintEnd_toStartOf="@+id/fab_pause"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/progress_countdown"
+        app:srcCompat="@drawable/ic_play_arrow" />
 
 
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fab_stop"
+    <me.zhanghai.android.materialprogressbar.MaterialProgressBar
+        android:id="@+id/progress_countdown"
+        style="@style/Widget.MaterialProgressBar.ProgressBar"
+
+        android:minWidth="306dp"
+        android:minHeight="306dp"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+
+        android:layout_marginEnd="32dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintDimensionRatio="1:1"
+
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:mpb_showProgressBackground="true" />
+
+
+    <TextView
+        android:id="@+id/textView_countdown"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="70sp"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
+
+        android:textAlignment="gravity"
+        android:gravity="center"
+        app:layout_constraintBottom_toBottomOf="@+id/progress_countdown"
+        app:layout_constraintEnd_toEndOf="@+id/progress_countdown"
+
+        app:layout_constraintStart_toStartOf="@+id/progress_countdown"
+        app:layout_constraintTop_toTopOf="@+id/progress_countdown"
+        tools:text="10:00" />
+
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@+id/progress_countdown"
+        app:layout_constraintEnd_toEndOf="@+id/progress_countdown"
+        app:layout_constraintStart_toStartOf="@+id/progress_countdown"
+        app:layout_constraintTop_toTopOf="@+id/progress_countdown">
+
+        <NumberPicker
+            android:id="@+id/input_total_stock"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="20dp"
-            app:layout_constraintStart_toEndOf="@+id/fab_pause"
-            app:layout_constraintTop_toBottomOf="@+id/progress_countdown"
-            app:srcCompat="@drawable/ic_stop" />
+            android:scaleX="1"
+            android:scaleY="1" />
+    </LinearLayout>
 
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fab_pause"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|center"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginTop="20dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/progress_countdown"
-            app:srcCompat="@drawable/ic_pause" />
+    <TextView
+        android:id="@+id/minutesTextView"
+        android:text="@string/minutes"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        app:layout_constraintBottom_toBottomOf="@+id/progress_countdown"
+        app:layout_constraintStart_toEndOf="@+id/linearLayout"
+        app:layout_constraintTop_toTopOf="@+id/progress_countdown" />
 
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fab_start"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|start"
-            android:layout_marginEnd="20dp"
-            android:layout_marginTop="20dp"
-            app:layout_constraintEnd_toStartOf="@+id/fab_pause"
-            app:layout_constraintTop_toBottomOf="@+id/progress_countdown"
-            app:srcCompat="@drawable/ic_play_arrow" />
+    <TextView
+        android:id="@+id/setTimer"
+        android:text="@string/set_timer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="8dp"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Headline4"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 
-        <me.zhanghai.android.materialprogressbar.MaterialProgressBar
-            android:id="@+id/progress_countdown"
-            style="@style/Widget.MaterialProgressBar.ProgressBar"
-
-            android:minWidth="306dp"
-            android:minHeight="306dp"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-
-            android:layout_marginEnd="30dp"
-            android:layout_marginStart="30dp"
-            android:layout_marginTop="10dp"
-            app:layout_constraintDimensionRatio="1:1"
-
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:mpb_showProgressBackground="true" />
-
-
-        <TextView
-            android:id="@+id/textView_countdown"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="70sp"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
-
-            app:layout_constraintBottom_toBottomOf="@+id/progress_countdown"
-            app:layout_constraintEnd_toEndOf="@+id/progress_countdown"
-            app:layout_constraintStart_toStartOf="@+id/progress_countdown"
-            app:layout_constraintTop_toTopOf="@+id/progress_countdown"
-
-            tools:text="10:00" />
-
-
-        <LinearLayout
-            android:id="@+id/linearLayout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="@+id/progress_countdown"
-            app:layout_constraintEnd_toEndOf="@+id/progress_countdown"
-            app:layout_constraintStart_toStartOf="@+id/progress_countdown"
-            app:layout_constraintTop_toTopOf="@+id/progress_countdown">
-
-            <NumberPicker
-                android:id="@+id/input_total_stock"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:scaleX="1"
-                android:scaleY="1" />
-        </LinearLayout>
-
-        <TextView
-            android:id="@+id/minutesTextView"
-            android:text="@string/minutes"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            app:layout_constraintBottom_toBottomOf="@+id/progress_countdown"
-            app:layout_constraintStart_toEndOf="@+id/linearLayout"
-            app:layout_constraintTop_toTopOf="@+id/progress_countdown" />
-
-        <TextView
-            android:id="@+id/setTimer"
-            android:text="@string/set_timer"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:fontFamily="@font/muli"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            app:layout_constraintBottom_toTopOf="@+id/linearLayout"
-            app:layout_constraintStart_toStartOf="parent" />
-
-
-    </android.support.constraint.ConstraintLayout>
 </android.support.constraint.ConstraintLayout>

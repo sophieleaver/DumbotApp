@@ -49,4 +49,12 @@
         Are you sure you want to remove %1$dkg weights from your inventory?
         Once it is removed, users will no longer be able to order this type of weight.
     </string>
+    <string name="app_mode">%1$s Mode</string>
+    <string name="workout_station">Workout Station: %1$d</string>
+    <string name="view_current_workout_session">View Current Workout Session</string>
+    <string name="current_session_time">Current Session Time - %1$d:%2$d</string>
+    <string name="after_dumbbell_request">
+        You have successfully ordered a pair of %1$s kg dumbbells. \n\n
+        Would you like to go to your current workout session or order more dumbbells?
+    </string>
 </resources>

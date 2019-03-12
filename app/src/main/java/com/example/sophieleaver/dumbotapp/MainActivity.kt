@@ -8,38 +8,85 @@ import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import android.widget.TextView
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
+import kotlinx.android.synthetic.main.nav_header_main.view.*
+import org.jetbrains.anko.design.longSnackbar
 
-//todo - be able to see what mode we are in
+//todo - clear all requests eventually
+//todo - change requests in sharedpreferences on cancel/return
 //todo - string resources everywhere
+//todo - proper auth
 
-var globalState = "manager" //TODO change to dependent on login
-var currentBench = 1 // TODO save the value
-var currentRequestExists = false
-var currentDumbbellInUse = "0"
-var userMode = false
-
-//var currentRequestExists = false
-//var currentDumbbellInUse = "0"
+var currentBench = 1
+var isManagerMode = false
 var requests = HashMap<String, Request>() // id and request
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
-
-    lateinit var navigationView: NavigationView
+    private lateinit var mainLayout: View
     private lateinit var mainToolbar: Toolbar
-
+    private lateinit var navigationView: NavigationView
+    private lateinit var modeText: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        mainLayout = drawer_layout
         mainToolbar = toolbar
         navigationView = nav_view
+        modeText = nav_view.getHeaderView(0).text_app_mode
         setSupportActionBar(toolbar)
 
+        with(getSharedPreferences("prefs", Context.MODE_PRIVATE)) {
+            isManagerMode = getBoolean("mode", false)
+            currentBench = getInt("bench", 1)
+            modeText.text = getString(R.string.app_mode, modeString())
+            loadRequests(getStringSet("requests", null)?.toMutableList())
+
+        }
+
+
+    }
+
+    private fun loadRequests(requestIds: MutableList<String>?) {
+
+        if (requestIds.isNullOrEmpty()) setupActivity()
+        else {
+            val requestsReference = FirebaseDatabase.getInstance().reference.child("demo2/requests")
+            with(requestIds.removeAt(0)) {
+                requestsReference.child(this)
+                    .addListenerForSingleValueEvent(object : ValueEventListener {
+                        override fun onDataChange(dataSnapshot: DataSnapshot) {
+                            dataSnapshot.getValue(Request::class.java)
+                                ?.let { requests.put(this@with, it) }
+                            loadRequests(requestIds)
+                        }
+
+                        override fun onCancelled(databaseError: DatabaseError) {
+                            Log.w(
+                                "MainActivity",
+                                "Failed to find request ${this@with}",
+                                databaseError.toException()
+                            )
+                            loadRequests(requestIds)
+                        }
+
+                    })
+            }
+        }
+    }
+
+    private fun setupActivity() {
         val toggle = ActionBarDrawerToggle(
             this,
             drawer_layout,
@@ -51,23 +98,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         drawer_layout.addDrawerListener(toggle)
         toggle.syncState()
         nav_view.setNavigationItemSelectedListener(this)
-        nav_view.menu.findItem(R.id.menu_manager).isVisible = !userMode
+        nav_view.menu.findItem(R.id.menu_manager).isVisible = isManagerMode
         mainToolbar.title = "Order Dumbells"
         openFragment(OrderFragment.newInstance())
-    }
-    override fun onStart() {
-        super.onStart()
-        userMode = getSharedPreferences("prefs", Context.MODE_PRIVATE).getBoolean("mode", true)
-        globalState = if (userMode) "user" else "manager"
     }
 
     override fun onBackPressed() {
 
-        if (drawer_layout.isDrawerOpen(GravityCompat.START)) {
-            drawer_layout.closeDrawer(GravityCompat.START)
-        } else {
-            super.onBackPressed()
-        }
+        if (drawer_layout.isDrawerOpen(GravityCompat.START)) drawer_layout.closeDrawer(GravityCompat.START)
+        else super.onBackPressed()
 
     }
 
@@ -87,20 +126,22 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
-    //TODO - fixe bug where it crashes if you go onto analytics in user mode using back button
+    private fun modeString(): String = if (isManagerMode) "Manager" else "User"
+
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Handle navigation view item clicks here.
         when (item.itemId) {
             R.id.nav_login -> {
                 val modeFragment = ModeChangeFragment.newInstance()
+                mainToolbar.title = "Change App Mode"
                 openFragment(modeFragment)
             }
             R.id.nav_order -> {
 //                if (!currentRequestExists) { //if the user does not have a current request open, the weight list is opened
-                    val orderFragment = OrderFragment.newInstance()
-                    mainToolbar.title = "Order Dumbbells"
-                    openFragment(orderFragment)
+                val orderFragment = OrderFragment.newInstance()
+                mainToolbar.title = "Order Dumbbells"
+                openFragment(orderFragment)
 //                } else {
 //                    val currentSession = CurrentSessionFragment.newInstance()
 //                    mainToolbar.title = "Active Workout Session"
@@ -109,55 +150,58 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
             R.id.nav_current_sessions -> {
                 val currentWorkoutFragment = CurrentOrdersFragment.newInstance()
+                mainToolbar.title = "Current Workout Session"
                 openFragment(currentWorkoutFragment)
-
             }
             R.id.nav_overview -> {
-                if (globalState == "user") {
-                    val restrictedFragment = RestrictedFragment.newInstance()
-                    mainToolbar.title = "Cannot access page"
-                    openFragment(restrictedFragment)
-                } else {
+                if (isManagerMode) {
                     val overviewFragment = OverviewFragment.newInstance()
                     mainToolbar.title = "DumBot Overview"
                     openFragment(overviewFragment)
+                } else {
+                    val restrictedFragment = RestrictedFragment.newInstance()
+                    mainToolbar.title = "Cannot access page"
+                    openFragment(restrictedFragment)
                 }
             }
             R.id.nav_analytics -> {
-                if (globalState == "user") {
-                    val restrictedFragment = RestrictedFragment.newInstance()
-                    mainToolbar.title = "Cannot access page"
-                    openFragment(restrictedFragment)
-                } else {
+                if (isManagerMode) {
                     val analyticsFragment = AnalyticsFragment.newInstance()
                     mainToolbar.title = "Analytics"
                     openFragment(analyticsFragment)
-                }
-            }
-            R.id.nav_weights -> {
-                if (globalState == "user") {
+                } else {
                     val restrictedFragment = RestrictedFragment.newInstance()
                     mainToolbar.title = "Cannot access page"
                     openFragment(restrictedFragment)
-                } else {
+                }
+            }
+            R.id.nav_weights -> {
+                if (isManagerMode) {
                     val weightsFragment = WeightsFragment.newInstance()
-                    mainToolbar.title = "Weight Inventory"
+                    mainToolbar.title = "Dumbbell Inventory"
                     openFragment(weightsFragment)
+                } else {
+                    val restrictedFragment = RestrictedFragment.newInstance()
+                    mainToolbar.title = "Cannot access page"
+                    openFragment(restrictedFragment)
                 }
             }
             R.id.nav_settings -> {
-                if (globalState == "user") {
-                    val restrictedFragment  = RestrictedFragment.newInstance()
-                    openFragment(restrictedFragment)
-                } else {
+                if (isManagerMode) {
                     val settingsFragment = SettingsFragment.newInstance()
+                    mainToolbar.title = "App Settings"
                     openFragment(settingsFragment)
+                } else {
+                    val restrictedFragment = RestrictedFragment.newInstance()
+                    mainToolbar.title = "Cannot access page"
+                    openFragment(restrictedFragment)
                 }
             }
-//            R.id.nav_timer -> {
-//                val timerFragment = TimerFragment.newInstance()
-//                openFragment(timerFragment)
-//            }
+            R.id.nav_timer -> {
+                val timerFragment = TimerFragment.newInstance()
+                mainToolbar.title = "Workout Timer"
+                openFragment(timerFragment)
+            }
 
 //            R.id.nav_demo -> {
 //                if (globalState.equals("user")){
@@ -184,25 +228,33 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         transaction.commit()
     }
 
-    fun changeMode(isUserMode: Boolean) {
-        userMode = isUserMode
-        globalState = if (userMode) "user" else "manager"
+    fun changeMode(managerMode: Boolean) {
+        isManagerMode = managerMode
         getSharedPreferences("prefs", Context.MODE_PRIVATE)
             .edit()
-            .putBoolean("mode", isUserMode)
+            .putBoolean("mode", isManagerMode)
             .apply()
-        navigationView.menu.findItem(R.id.menu_manager).isVisible = !userMode
+        navigationView.menu.findItem(R.id.menu_manager).isVisible = isManagerMode
+        modeText.text = getString(R.string.app_mode, modeString())
+    }
+
+    fun onSuccessfulOrder(weightValue: String) {
+        getSharedPreferences("prefs", Context.MODE_PRIVATE)
+            .edit()
+            .putStringSet("requests", requests.keys)
+            .apply()
+
+        mainLayout.longSnackbar("Successfully ordered $weightValue kg Dumbbells", "View") {
+            mainToolbar.title = "Current Workout Session"
+            openFragment(CurrentOrdersFragment.newInstance())
+        }
     }
 }
 
-open class Request(id : String, time : Long , type : String, weight : String, bench : String){
-    val id = id
-    var time = time
-    var type = type
-    val weight = weight
-    val benchID = bench
-
-//    fun setType(newType : String){
-//        type = newType
-//    }
-}
+data class Request(
+    val id: String = "",
+    var time: Long = 0L,
+    var type: String = "",
+    val weight: String = "",
+    val benchID: String = ""
+)

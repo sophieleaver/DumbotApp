@@ -1,16 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="200dp">
+    android:layout_height="wrap_content">
 
     <TextView
         android:id="@+id/text_collection_cancel"
         android:text="Are you sure you would like to cancel collection of the 15kg dumbbell?"
-        android:layout_width="302dp"
-        android:layout_height="92dp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:textSize="22sp"
         android:fontFamily="@font/muli_light"
         android:textAlignment="center"
@@ -25,34 +23,36 @@
         android:id="@+id/button_confirm_col"
         style="@style/Widget.AppCompat.Button.Colored"
         android:text="Confirm"
-        android:layout_width="130dp"
-        android:layout_height="50dp"
-        android:layout_marginEnd="28dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
         android:textSize="20sp"
-        android:layout_marginBottom="16dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
         android:fontFamily="@font/muli"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_collection_cancel"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/button_return_col"
+        app:layout_constraintTop_toBottomOf="@+id/text_collection_cancel" />
 
     <Button
         android:id="@+id/button_return_col"
         style="@style/Widget.AppCompat.Button"
         android:text="Back"
-        android:layout_width="115dp"
-        android:layout_height="50dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
         android:textSize="20sp"
         android:layout_marginBottom="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
         android:fontFamily="@font/muli"
+        android:layout_marginEnd="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/button_confirm_col"
-        app:layout_constraintHorizontal_bias="0.145"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_chainStyle="spread"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_collection_cancel"
-        app:layout_constraintVertical_bias="0.764" />
+        app:layout_constraintTop_toBottomOf="@+id/text_collection_cancel" />
 </android.support.constraint.ConstraintLayout>

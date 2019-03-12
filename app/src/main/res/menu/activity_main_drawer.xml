@@ -9,25 +9,23 @@
         android:title="User Section">
         <menu>
             <item
-            android:id="@+id/nav_order"
-            android:icon="@drawable/ic_barbell"
-            android:title="Order More Dumbbells" />
+                android:id="@+id/nav_order"
+                android:icon="@drawable/ic_fitness_center"
+                android:title="Order Dumbbells" />
 
             <item
-            android:id="@+id/nav_current_sessions"
-            android:icon="@drawable/weightlifting"
-            android:title="Current Workout Session"
-                />
+                android:id="@+id/nav_current_sessions"
+                android:icon="@drawable/weightlifting"
+                android:title="Current Workout Session" />
 
-            <!--<item-->
-                <!--android:id="@+id/nav_timer"-->
-                <!--android:icon="@drawable/ic_barbell"-->
-                <!--android:title="Workout Timer"-->
-                <!--/>-->
+            <item
+                android:id="@+id/nav_timer"
+                android:icon="@drawable/ic_timer"
+                android:title="Workout Timer" />
 
             <item
                 android:id="@+id/nav_login"
-                android:icon="@drawable/baseline_lock_black_18dp"
+                android:icon="@drawable/ic_lock_outline"
                 android:title="Manager Login" />
         </menu>
     </item>
@@ -38,7 +36,7 @@
         <menu>
             <item
                 android:id="@+id/nav_analytics"
-                android:icon="@drawable/ic_graph"
+                android:icon="@drawable/ic_insert_chart"
                 android:title="Analytics" />
             <item
                 android:id="@+id/nav_weights"
@@ -46,8 +44,8 @@
                 android:title="Dumbbell Inventory" />
             <item
                 android:id="@+id/nav_overview"
-                android:icon="@drawable/ic_bot"
-                android:title="Dumbot Overview"/>
+                android:icon="@drawable/ic_view_agenda_black_24dp"
+                android:title="DumBot Overview" />
             <item
                 android:id="@+id/nav_settings"
                 android:icon="@drawable/ic_menu_manage"
@@ -58,4 +56,4 @@
     </item>
 
 
-</menu>
+</menu><!--todo - hardcoded text-->

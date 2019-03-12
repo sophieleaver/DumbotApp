@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.RadioButton
-import android.widget.Toast
 
 
 class ModeChangeFragment : Fragment(), View.OnClickListener {
@@ -18,26 +17,13 @@ class ModeChangeFragment : Fragment(), View.OnClickListener {
         return inflater.inflate(R.layout.fragment_mode_change, container, false).apply {
             findViewById<Button>(R.id.button_user_mode).setOnClickListener(this@ModeChangeFragment)
             findViewById<Button>(R.id.button_manager_mode).setOnClickListener(this@ModeChangeFragment)
-            findViewById<RadioButton>(R.id.radio_mode_user).isChecked = userMode
-            findViewById<RadioButton>(R.id.radio_mode_manager).isChecked = !userMode
+            findViewById<RadioButton>(R.id.radio_mode_user).isChecked = !isManagerMode
+            findViewById<RadioButton>(R.id.radio_mode_manager).isChecked = isManagerMode
         }
     }
 
     override fun onClick(v: View?) {
-        when (v?.id){
-            R.id.button_manager_mode -> {
-                globalState = "manager"
-//                (activity as MainActivity).setNavAsManager()
-                (activity as MainActivity).changeMode(false)
-                Toast.makeText(context, "Mode is MANAGER", Toast.LENGTH_SHORT).show()
-            }
-            R.id.button_user_mode -> {
-                globalState = "user"
-//                (activity as MainActivity).setNavAsUser()
-                (activity as MainActivity).changeMode(true)
-                Toast.makeText(context, "Mode is USER", Toast.LENGTH_SHORT).show()
-            }
-        }
+        (activity as MainActivity).changeMode(v?.id == R.id.button_manager_mode)
     }
 
 

@@ -7,102 +7,78 @@
     android:layout_height="match_parent"
     tools:context=".CurrentOrdersFragment">
 
-    <ScrollView
-        android:id="@+id/scrollView2"
-        android:layout_width="match_parent"
-        android:layout_height="520dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
+    <TextView
+        android:id="@+id/textView20"
+        android:text="Current Sessions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:fontFamily="@font/muli"
+        android:textStyle="bold"
         android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:textAlignment="center"
+        android:gravity="center"
+        app:layout_constraintBottom_toTopOf="@+id/recyclerView_current_dumbbells"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerView_current_dumbbells"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/textView12"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView20"
+        tools:listitem="@layout/item_current_dumbbell" />
+
+    <TextView
+        android:id="@+id/textView12"
+        android:text="Queued Dumbbells"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:fontFamily="@font/muli"
+        android:textStyle="bold"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:textAlignment="center"
+        android:gravity="center"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/recyclerView_queued_dumbbells"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/recyclerView_current_dumbbells" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerView_queued_dumbbells"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
         android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toTopOf="@+id/button_reset_workout_session"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0">
-
-        <android.support.constraint.ConstraintLayout
-            android:id="@+id/linearLayout2"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:minWidth="@dimen/activity_horizontal_margin"
-            android:minHeight="@dimen/activity_horizontal_margin">
-
-            <TextView
-                android:id="@+id/textView19"
-                android:text="CURRENT SESSIONS"
-                android:layout_width="wrap_content"
-                android:layout_height="35dp"
-                android:textAppearance="@android:style/TextAppearance.Material.Display2"
-                android:textSize="22sp"
-                android:fontFamily="@font/muli"
-                android:textStyle="bold"
-                android:textAlignment="center"
-                android:layout_marginTop="24dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/textView20"
-                android:text="CURRENT DUMBBELL SESSIONS"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="20sp"
-                android:fontFamily="@font/muli_light"
-                android:layout_marginTop="8dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView19" />
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/recyclerView_current_dumbbells"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView20"
-                tools:listitem="@layout/item_current_dumbbell" />
-
-            <!--<TextView-->
-                <!--android:id="@+id/textView21"-->
-                <!--android:text="ORDERED DUMBBELLS"-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:textSize="20sp"-->
-                <!--android:fontFamily="@font/muli_light"-->
-                <!--android:layout_marginTop="12dp"-->
-                <!--app:layout_constraintEnd_toEndOf="parent"-->
-                <!--app:layout_constraintStart_toStartOf="parent"-->
-                <!--app:layout_constraintTop_toBottomOf="@+id/recyclerView_current_dumbbells" />-->
-
-            <!--<android.support.v7.widget.RecyclerView-->
-                <!--android:id="@+id/recyclerView_queued_dumbbells"-->
-                <!--android:layout_width="348dp"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:layout_marginTop="15dp"-->
-                <!--app:layout_constraintBottom_toBottomOf="parent"-->
-                <!--app:layout_constraintEnd_toEndOf="parent"-->
-                <!--app:layout_constraintHorizontal_bias="0.468"-->
-                <!--app:layout_constraintStart_toStartOf="parent"-->
-                <!--app:layout_constraintTop_toBottomOf="@+id/textView21"-->
-                <!--app:layout_constraintVertical_bias="1.0"-->
-                <!--tools:listitem="@layout/item_queued_dumbbell" />-->
-
-        </android.support.constraint.ConstraintLayout>
-    </ScrollView>
+        app:layout_constraintTop_toBottomOf="@+id/textView12" />
 
     <Button
         android:id="@+id/button_reset_workout_session"
         style="@style/Widget.AppCompat.Button"
-        android:layout_width="381dp"
-        android:layout_height="47dp"
-        android:layout_marginTop="16dp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="8dp"
         android:text="Reset Current Workout Session"
         android:textSize="17sp"
         android:textColor="@android:color/holo_red_dark"
@@ -116,19 +92,15 @@
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_timer"
-        android:layout_width="58dp"
-        android:layout_height="56dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:clickable="true"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
         android:layout_marginBottom="8dp"
-        app:fabSize="auto"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:tint="@android:color/white"
+        app:fabSize="normal"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.979"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.898"
-        tools:src="@drawable/baseline_alarm_black_18dp" />
+        app:layout_constraintBottom_toTopOf="@+id/button_reset_workout_session"
+        app:srcCompat="@drawable/ic_alarm" />
+
 </android.support.constraint.ConstraintLayout>

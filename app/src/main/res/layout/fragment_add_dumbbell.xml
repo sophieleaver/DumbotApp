@@ -58,7 +58,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:gravity="center"
-            app:layout_constraintEnd_toStartOf="@+id/textView22"
+            app:layout_constraintEnd_toStartOf="@+id/text_session_time"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintHorizontal_chainStyle="packed"
             app:layout_constraintStart_toStartOf="parent"
@@ -92,7 +92,7 @@
             app:layout_constraintVertical_bias="0.68" />
 
         <TextView
-            android:id="@+id/textView22"
+            android:id="@+id/text_session_time"
             android:text="kg dumbbells"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
