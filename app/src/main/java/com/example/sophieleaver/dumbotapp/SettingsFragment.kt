@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import kotlinx.android.synthetic.main.change_bench_layout.view.*
+import kotlinx.android.synthetic.main.fragment_settings.*
 import kotlinx.android.synthetic.main.fragment_settings.view.*
 import org.jetbrains.anko.toast
 
@@ -24,6 +25,8 @@ class SettingsFragment : Fragment() {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_settings, container, false)
 
+        view.text_current_bench.text = currentBench.toString()
+
         //when button pressed, alert dialog opened to change the bench
         view.button_change_bench.setOnClickListener {
             val builder = AlertDialog.Builder(context)
@@ -36,7 +39,9 @@ class SettingsFragment : Fragment() {
 
             //on click listeners for when a new bench is selected
             with(alertView) {
-                button_bench_1.setOnClickListener { changeBench(1, dialog) }
+                button_bench_1.setOnClickListener {
+                    changeBench(1, dialog)
+                }
                 button_bench_2.setOnClickListener { changeBench(2, dialog) }
                 button_bench_3.setOnClickListener { changeBench(3, dialog) }
                 button_bench_4.setOnClickListener { changeBench(4, dialog) }
@@ -51,6 +56,7 @@ class SettingsFragment : Fragment() {
 
     private fun changeBench(bench: Int, dialog: AlertDialog) {
         currentBench = bench
+        text_current_bench.text = currentBench.toString()
         with(requireActivity()) {
             getSharedPreferences("prefs", Context.MODE_PRIVATE)
                 .edit()
