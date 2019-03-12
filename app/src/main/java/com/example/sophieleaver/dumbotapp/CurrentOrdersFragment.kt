@@ -89,7 +89,7 @@ class CurrentOrdersFragment : Fragment() {
 
                         //send request to firebase
                         val newRequest = ref.child("demo2").child("requests").child(req.id)
-                        newRequest.child("bench").setValue(req.benchID)
+                        newRequest.child("bench").setValue(req.bench)
                         newRequest.child("time").setValue(unixSeconds)
                         newRequest.child("type").setValue("collecting")
                         newRequest.child("weight").setValue(req.weight)
@@ -149,7 +149,7 @@ class CurrentOrdersFragment : Fragment() {
 
                 if (position < itemCount - 1) {
 
-                    val request: Request = requests.toList().get(position).second
+                    val request: Request = requests.toList()[position].second
 
                     val type = request.type
                     holder.id = request.id
@@ -258,7 +258,7 @@ class CurrentOrdersFragment : Fragment() {
                                 //send request to firebase
                                 val newRequest =
                                     ref.child("demo2").child("requests").child(request.id)
-                                newRequest.child("bench").setValue(request.benchID)
+                                newRequest.child("bench").setValue(request.bench)
                                 newRequest.child("time").setValue(unixSeconds)
                                 newRequest.child("type").setValue("collecting")
                                 newRequest.child("weight").setValue(request.weight)
@@ -282,9 +282,9 @@ class CurrentOrdersFragment : Fragment() {
             val weight: TextView = view.textView_current_dumbbell_weight
             var id: String = ""
             val description: TextView = view.textView_current_dumbbell_status
-            val emptyText = view.text_no_current_dumbbells
+            val emptyText: TextView = view.text_no_current_dumbbells
             val button: Button = view.button_cancel_curr
-            val divider = view.divider_current
+            val divider: View = view.divider_current
             var background = view
         }
 

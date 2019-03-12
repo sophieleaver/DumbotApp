@@ -351,20 +351,30 @@ class AnalyticsFragment : Fragment() {
 //                        dataPoints[weight] = DataPoint(weight.toDouble(), weightUsage.get(weight)!!.toDouble())
                         mSeries7 = BarGraphSeries(weightUsage.map {
                             DataPoint(it.key.toDouble(), it.value.toDouble())
-                        }.toTypedArray())
+                        }.toTypedArray()).apply {
+                            // styling
+                            valueDependentColor = ValueDependentColor { data ->
+                                Color.rgb(data.x.toInt() * 255 / 4, Math.abs(data.y * 255 / 6).toInt(), 100)
+                            }
+                            spacing = 30
+                            isDrawValuesOnTop = true
+                            valuesOnTopColor = Color.RED
+                        }
 
                         graph1.let {
                             it.removeAllSeries()
                             it.addSeries(mSeries7)
                             it.title = "Request counts for each dumbbell today"
-                            it.viewport.setMaxX(20.0)
+                            it.viewport.setMinY(0.0)
+                            it.viewport.setMaxY(weightUsage.values.max()!!.toDouble())
+                            it.viewport.setMinX(weightUsage.keys.min()!!.toDouble())
+                            it.viewport.setMaxX(weightUsage.keys.max()!!.toDouble())
+                            it.viewport.isScalable = true
+                            it.viewport.isScrollable = true
+                            it.viewport.setScalableY(true)
+                            it.viewport.setScalableY(true)
                         }
 
-
-                        // styling
-                        mSeries7!!.valueDependentColor = ValueDependentColor { data ->
-                            Color.rgb(data.x.toInt() * 255 / 4, Math.abs(data.y * 255 / 6).toInt(), 100)
-                        }
 
                     }
                 }

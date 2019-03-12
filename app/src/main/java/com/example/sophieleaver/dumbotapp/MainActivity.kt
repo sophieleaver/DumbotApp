@@ -252,9 +252,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 }
 
 data class Request(
-    val id: String = "",
-    var time: Long = 0L,
-    var type: String = "",
-    val weight: String = "",
-    val benchID: String = ""
+        val id: String = "",
+        var time: Long = 0L,
+        var type: String = "",
+        val weight: String = "", val bench: String = ""
 )

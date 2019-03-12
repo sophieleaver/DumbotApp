@@ -50,8 +50,7 @@ class OrderFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         with(view) {
             orderDumbbellRecyclerView = order_dumbbell_list
-            findViewById<TextView>(R.id.text_workout_station).text =
-                getString(R.string.workout_station, currentBench)
+            findViewById<TextView>(R.id.text_workout_station).text = getString(R.string.workout_station, currentBench)
 
             //when button pressed, alert dialog opened to change the bench
             button_see_workout.setOnClickListener {
@@ -68,7 +67,7 @@ class OrderFragment : Fragment() {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val newDumbbells: MutableList<Dumbbell> = mutableListOf()
                 for (dumbbellSnapshot in dataSnapshot.children) {
-//                    Log.d("WeightsFragment", "${dumbbell.key} => ${dumbbell.value.toString()}")
+                    //                    Log.d("WeightsFragment", "${dumbbell.key} => ${dumbbell.value.toString()}")
                     val dumbbell = dumbbellSnapshot.getValue(Dumbbell::class.java)
                     if (dumbbell != null) newDumbbells += dumbbell
                 }
@@ -99,26 +98,19 @@ class OrderFragment : Fragment() {
     inner class DumbbellRequestAdapter : RecyclerView.Adapter<DumbbellRequestAdapter.ViewHolder>() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
-            ViewHolder(
-                LayoutInflater.from(this@OrderFragment.requireContext())
-                    .inflate(R.layout.item_order_dumbbell, parent, false)
-            )
+                ViewHolder(LayoutInflater.from(this@OrderFragment.requireContext()).inflate(R.layout.item_order_dumbbell,
+                        parent,
+                        false))
 
         override fun getItemCount(): Int = weights.size
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             if (maximumWeightLimitReached()) {
                 holder.orderButton.isEnabled = false
-                holder.orderButton.backgroundTintList = ColorStateList.valueOf(
-                    Color.GRAY
-                )
+                holder.orderButton.backgroundTintList = ColorStateList.valueOf(Color.GRAY)
             } else {
-                holder.orderButton.backgroundTintList = ColorStateList.valueOf(
-                    ContextCompat.getColor(
-                        requireContext(),
-                        R.color.colorDumbbellAvailable
-                    )
-                )
+                holder.orderButton.backgroundTintList =
+                        ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.colorDumbbellAvailable))
             }
             val requestedWeight = weights[position]
 
@@ -126,38 +118,21 @@ class OrderFragment : Fragment() {
                 val currentStock = requestedWeight.totalStock - requestedWeight.activeRequests.size
                 val dumbbellAvailable = currentStock > 0
 
-                val availableTextResId =
-                    if (dumbbellAvailable) R.string.available else R.string.unavailable
-                val orderButtonTextResId =
-                    if (dumbbellAvailable) R.string.order else R.string.join_wait_queue
+                val availableTextResId = if (dumbbellAvailable) R.string.available else R.string.unavailable
+                val orderButtonTextResId = if (dumbbellAvailable) R.string.order else R.string.join_wait_queue
                 val orderButtonColorResId =
                     if (dumbbellAvailable) R.color.colorDumbbellAvailable else R.color.colorDumbbellUnavailable
-                val dumbbellDetails =
-                    if (dumbbellAvailable) Triple(
-                        R.string.available_dumbbells_info,
+                val dumbbellDetails = if (dumbbellAvailable) Triple(R.string.available_dumbbells_info,
                         currentStock,
-                        requestedWeight.totalStock
-                    )
-                    else Triple(
-                        R.string.wait_queue_info,
-                        requestedWeight.totalStock,
-                        requestedWeight.waitQueue.size
-                    )
+                        requestedWeight.totalStock)
+                else Triple(R.string.wait_queue_info, requestedWeight.totalStock, requestedWeight.waitQueue.size)
 
                 weightValue.text = getString(R.string.weight, requestedWeight.weightValue)
                 available.text = getString(availableTextResId)
                 orderButton.text = getString(orderButtonTextResId)
-                availabilityInfo.text = getString(
-                    dumbbellDetails.first,
-                    dumbbellDetails.second,
-                    dumbbellDetails.third
-                )
-                orderButton.backgroundTintList = ColorStateList.valueOf(
-                    ContextCompat.getColor(
-                        requireContext(),
-                        orderButtonColorResId
-                    )
-                )
+                availabilityInfo.text = getString(dumbbellDetails.first, dumbbellDetails.second, dumbbellDetails.third)
+                orderButton.backgroundTintList =
+                        ColorStateList.valueOf(ContextCompat.getColor(requireContext(), orderButtonColorResId))
                 orderButton.setOnClickListener {
                     val builder = AlertDialog.Builder(context)
                     builder.setTitle("Confirm Order")
@@ -182,13 +157,12 @@ class OrderFragment : Fragment() {
             val requestID = milliseconds.toString()
             val status = if (dumbbellAvailable) "delivering" else "waiting"
             val path = if (dumbbellAvailable) "activeRequests" else "waitQueue"
-            val benchID = benchNumberToFirebaseID(currentBench)
+            val bench = benchNumberToFirebaseID(currentBench)
 
-            val newRequest = Request(requestID, seconds, status, weightValue, benchID)
+            val newRequest = Request(requestID, seconds, status, weightValue, bench)
             requests[requestID] = newRequest
             requestReference.child(requestID).setValue(newRequest)
-            weightReference.child("$weightValue/$path/$benchID")
-                .setValue("$status|$seconds")
+            weightReference.child("$weightValue/$path/$bench").setValue("$status|$seconds")
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         (activity as MainActivity).onSuccessfulOrder(weightValue)
@@ -198,33 +172,20 @@ class OrderFragment : Fragment() {
                     }
                 }
 
-            Log.d(
-                fragTag,
-                "Sending request $requestID to server (deliver dumbbells of $weightValue kg to bench $currentBench)"
-            )
+            Log.d(fragTag,
+                    "Sending request $requestID to server (deliver dumbbells of $weightValue kg to bench $currentBench)")
         }
 
 
-        private fun benchNumberToFirebaseID(bench: Int): String =
-            when (bench) {
-                1 -> "B7"; 2 -> "B10"; 3 -> "B13"
-                4 -> "B9"; 5 -> "B12"; else -> "B15"
-            }
-
-
-        private fun maximumWeightLimitReached() : Boolean {
-            var currentDeliveries = 0
-            var currentSessions = 0
-
-            for (request in requests.values) {
-                when (request.type) {
-                    "delivering" -> currentDeliveries++
-                    "current" -> currentSessions++
-                }
-            }
-
-            return currentDeliveries + currentSessions >= 2
+        private fun benchNumberToFirebaseID(bench: Int): String = when (bench) {
+            1 -> "B7"; 2 -> "B10"; 3 -> "B13"
+            4 -> "B9"; 5 -> "B12"; else -> "B15"
         }
+
+
+        private fun maximumWeightLimitReached(): Boolean = requests.values.count {
+            (it.type == "delivering") or (it.type == "current")
+        } >= 2
 
         inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             val weightValue: TextView = view.text_total_stock
