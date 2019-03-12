@@ -28,7 +28,6 @@ import java.time.ZoneOffset
 /**
  * TODO loophole needs to be fixed - has a weight, returns it, orders two more, cancels return
  * TODO - add way to access timer & stopwatch (eventually)
- * TODO - create proper empty state for recyclerviews
  *
  */
 
@@ -178,7 +177,6 @@ class CurrentOrdersFragment : Fragment() {
                                 dialog.cancel()
                             }
                             cancelDeliveryView.button_confirm_del.setOnClickListener {
-                                //Todo cancel the request
                                 val now = LocalDateTime.now(ZoneOffset.UTC)
                                 val unixSeconds = now.atZone(ZoneOffset.UTC)?.toEpochSecond()
 
@@ -213,7 +211,6 @@ class CurrentOrdersFragment : Fragment() {
                                 dialog.cancel()
                             }
                             cancelCollectionView.button_confirm_col.setOnClickListener {
-                                //Todo cancel the request
                                 val now = LocalDateTime.now(ZoneOffset.UTC)
                                 val unixSeconds = now.atZone(ZoneOffset.UTC)?.toEpochSecond()
 

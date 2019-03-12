@@ -1,6 +1,5 @@
 package com.example.sophieleaver.dumbotapp
 
-import android.app.AlarmManager
 import android.content.Context
 import android.os.Bundle
 import android.os.CountDownTimer
@@ -16,17 +15,17 @@ import java.util.*
 
 class TimerFragment : Fragment() {
 
-    companion object{
+    companion object {
 
-        fun setAlarm(context: Context, nowSeconds: Long, secondsRemaining: Long): Long{
-            val wakeUpTime = (nowSeconds + secondsRemaining)* 1000
-            val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        fun setAlarm(context: Context, nowSeconds: Long, secondsRemaining: Long): Long {
+            val wakeUpTime = (nowSeconds + secondsRemaining) * 1000
+//            val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
             return wakeUpTime
         }
 
-        fun removeAlarm(context: Context){
-
+        fun removeAlarm(context: Context) {
+//            todo - finish this?
         }
 
         fun newInstance() = TimerFragment()
@@ -35,14 +34,13 @@ class TimerFragment : Fragment() {
             get() = Calendar.getInstance().timeInMillis / 1000
     }
 
-    enum class TimerState{
+    enum class TimerState {
         Stopped, Paused, Running
     }
 
-    enum class PagerState{
+    enum class PagerState {
         Timer, Collection
     }
-
 
 
     private lateinit var timer: CountDownTimer
@@ -51,8 +49,7 @@ class TimerFragment : Fragment() {
 
     private var secondsRemaining: Long = 0
 
-    private var page:PagerState = PagerState.Timer
-
+    private var page: PagerState = PagerState.Timer
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -76,7 +73,7 @@ class TimerFragment : Fragment() {
         view.input_total_stock.value = 1
 
 
-        view.input_total_stock.setOnValueChangedListener { picker, oldVal, newVal ->
+        view.input_total_stock.setOnValueChangedListener { _, _, newVal ->
 
             if (newVal.toString() != "") {
                 timer.cancel()
@@ -101,7 +98,7 @@ class TimerFragment : Fragment() {
 
             }
             startTimer()
-            timerState =  TimerState.Running
+            timerState = TimerState.Running
             updateButtons()
         }
 
@@ -169,18 +166,16 @@ class TimerFragment : Fragment() {
     }
 
 
-
-    private fun initTimer(){
+    private fun initTimer() {
         timerState = TimerState.Stopped
         timerLengthSeconds = 60
         secondsRemaining = timerLengthSeconds
         setNewTimerLength()
-
         updateButtons()
         updateCountdownUI()
     }
 
-    private fun onTimerFinished(){
+    private fun onTimerFinished() {
         timerState = TimerState.Stopped
         setNewTimerLength()
         progress_countdown.progress = 0
@@ -190,7 +185,7 @@ class TimerFragment : Fragment() {
         updateCountdownUI()
     }
 
-    private fun startTimer(){
+    private fun startTimer() {
         timerState = TimerState.Running
 
         timer = object : CountDownTimer(secondsRemaining * 1000, 1000) {
@@ -203,12 +198,12 @@ class TimerFragment : Fragment() {
         }.start()
     }
 
-    private fun setNewTimerLength(){
+    private fun setNewTimerLength() {
         progress_countdown.max = timerLengthSeconds.toInt()
     }
 
 
-    private fun updateCountdownUI(){
+    private fun updateCountdownUI() {
         val minutesUntilFinished = secondsRemaining / 60
         val secondsInMinuteUntilFinished = secondsRemaining - minutesUntilFinished * 60
         val secondsStr = secondsInMinuteUntilFinished.toString()
@@ -216,9 +211,9 @@ class TimerFragment : Fragment() {
         progress_countdown.progress = (timerLengthSeconds - secondsRemaining).toInt()
     }
 
-    private fun updateButtons(){
+    private fun updateButtons() {
         when (timerState) {
-            TimerState.Running ->{
+            TimerState.Running -> {
                 fab_start.isEnabled = false
                 fab_pause.isEnabled = true
                 fab_stop.isEnabled = true
@@ -237,7 +232,6 @@ class TimerFragment : Fragment() {
     }
 
 
-
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
@@ -247,9 +241,6 @@ class TimerFragment : Fragment() {
             else -> super.onOptionsItemSelected(item)
         }
     }
-
-
-
 
 
 }

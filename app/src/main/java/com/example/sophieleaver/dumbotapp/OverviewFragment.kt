@@ -184,7 +184,7 @@ class OverviewFragment : Fragment() {
                     val builder = AlertDialog.Builder(itemView.context)
                     builder.setTitle("Dumbot #$dumbotNo")
                     builder.setMessage("Dumbot #$dumbotNo is currently idle and awaiting a request.")
-                    builder.setNeutralButton("OKAY") { dialog, which -> }
+                    builder.setNeutralButton("OKAY") { _, _ -> }
                     val dialog: AlertDialog = builder.create()
                     dialog.show()
                 }
