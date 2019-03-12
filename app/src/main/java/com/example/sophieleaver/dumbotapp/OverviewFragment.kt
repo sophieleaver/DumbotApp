@@ -36,7 +36,7 @@ class OverviewFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        with(view){ overviewDumbotRecyclerView = recycler_dumbots_overview }
+        with(view) { overviewDumbotRecyclerView = recycler_dumbot_overview }
         overviewDumbotRecyclerView!!.layoutManager =
             LinearLayoutManager(this@OverviewFragment.requireContext())
         overviewDumbotRecyclerView!!.adapter = DumbotOverviewAdapter()
@@ -65,7 +65,7 @@ class OverviewFragment : Fragment() {
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             holder.apply {
-                dumbot.text = "#${position + 1}"
+                dumbot.text = getString(R.string.number, position + 1)
 
                 if (position == 0){ //only changing dumbot #1 status
 
@@ -99,7 +99,7 @@ class OverviewFragment : Fragment() {
                 override fun onDataChange(snap: DataSnapshot) {
                     val id = snap.child("status").value.toString()
                     //if the id is null then there is no current request -> the dumbot is idle
-                    if (id.equals("False")){
+                    if (id == "False") {
                         setIdleRequestStatus(holder, 1)
                     }
                     //else, set the status to information about the request
@@ -107,10 +107,10 @@ class OverviewFragment : Fragment() {
                         val requestType = snap.child("type").value.toString() // delivering or collecting
                         val weight = snap.child("weight").value.toString()
                         var bench = ""
-                        if (requestType.equals("collecting")){
+                        if (requestType == "collecting") {
                             bench = snap.child("s_point").value.toString()
                             bench = convertIDtoBench(bench)
-                        } else if (requestType.equals("delivering")){
+                        } else if (requestType == "delivering") {
                             bench = snap.child("e_point").value.toString()
                             bench = convertIDtoBench(bench)
                         }
@@ -125,9 +125,9 @@ class OverviewFragment : Fragment() {
 
         fun setErrorStatus(holder: ViewHolder, dumbotNo: Int) {
             holder.apply {
-                dumbotStatus.text = "EMERGENCY STOP"
+                dumbotStatus.text = getString(R.string.emergency_stop)
                 //set button to red with ! logo
-                overviewButton.text = "Reset DumBot"
+                overviewButton.text = getString(R.string.reset_dumbot)
                 overviewButton.setBackgroundColor(Color.rgb(179, 0, 0))
                 //overviewButton.setBackgroundResource(R.drawable.red_circle)
 
@@ -150,12 +150,12 @@ class OverviewFragment : Fragment() {
         fun setActiveRequestStatus(holder : ViewHolder, dumbotNo: Int, requestType : String, weight : String, bench : String){
             holder.apply {
                 //set button to ? and orange
-                overviewButton.text = "More Information"
+                overviewButton.text = getString(R.string.more_info)
                 overviewButton.setBackgroundColor(Color.rgb(214, 215, 215))
                 //overviewButton.setBackgroundResource(R.drawable.orange_circle)
 
                 //set text to about the request
-                dumbotStatus.text = "${requestType.toUpperCase()} DUMBBELL"
+                dumbotStatus.text = getString(R.string.dumbbell, requestType)
 
                 //set dialog to more information about request
                 overviewButton.setOnClickListener {
@@ -173,17 +173,16 @@ class OverviewFragment : Fragment() {
             }
         }
 
+        //        todo - fix break cos not attached to context
         fun setIdleRequestStatus(holder : ViewHolder, dumbotNo: Int){
             holder.apply {
-                dumbotStatus.text = "IDLE"
-                overviewButton.text = "More Information"
+                dumbotStatus.text = "Idle"
+                overviewButton.text = "More Info"
                 overviewButton.setBackgroundColor(Color.rgb(214, 215, 215))
-                //overviewButton.setBackgroundResource(R.drawable.orange_circle)
-
                 overviewButton.setOnClickListener {
                     val builder = AlertDialog.Builder(itemView.context)
-                    builder.setTitle("Dumbot #$dumbotNo")
-                    builder.setMessage("Dumbot #$dumbotNo is currently idle and awaiting a request.")
+                    builder.setTitle("DumBot #$dumbotNo")
+                    builder.setMessage("DumBot #$dumbotNo is currently idle and awaiting a request.")
                     builder.setNeutralButton("OKAY") { _, _ -> }
                     val dialog: AlertDialog = builder.create()
                     dialog.show()
@@ -191,7 +190,7 @@ class OverviewFragment : Fragment() {
             }
         }
 
-        fun convertIDtoBench( id : String) : String {
+        fun convertIDtoBench(id: String): String {
             var bench = "1"
             when (id){
                 "B10" -> bench = "2"

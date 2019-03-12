@@ -1,5 +1,6 @@
 package com.example.sophieleaver.dumbotapp
 
+import android.annotation.SuppressLint
 import android.app.ActionBar
 import android.app.AlertDialog
 import android.graphics.Color
@@ -25,15 +26,16 @@ import java.time.ZoneOffset
 
 /**
  * TODO loophole needs to be fixed - has a weight, returns it, orders two more, cancels return
- * TODO - add way to access timer & stopwatch (eventually)
  *
  */
 
+@SuppressLint("InflateParams")
 class CurrentOrdersFragment : Fragment() {
     private lateinit var currentDBRecyclerView: RecyclerView
-    private lateinit var queuedDBRecyclerView: RecyclerView
+//    private lateinit var queuedDBRecyclerView: RecyclerView
 
     val ref = FirebaseDatabase.getInstance().reference
+
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -183,8 +185,8 @@ class CurrentOrdersFragment : Fragment() {
                                 dialog.cancel()
                             }
                             cancelDeliveryView.button_confirm_del.setOnClickListener {
-                                val now = LocalDateTime.now(ZoneOffset.UTC)
-                                val unixSeconds = now.atZone(ZoneOffset.UTC)?.toEpochSecond()
+                                val now1 = LocalDateTime.now(ZoneOffset.UTC)
+                                val unixSeconds = now1.atZone(ZoneOffset.UTC)?.toEpochSecond()
 
                                 ref.child("demo2").child("cancelledRequests").child(request.id)
                                         .setValue(unixSeconds)
@@ -216,8 +218,8 @@ class CurrentOrdersFragment : Fragment() {
                                 dialog.cancel()
                             }
                             cancelCollectionView.button_confirm_col.setOnClickListener {
-                                val now = LocalDateTime.now(ZoneOffset.UTC)
-                                val unixSeconds = now.atZone(ZoneOffset.UTC)?.toEpochSecond()
+                                val now2 = LocalDateTime.now(ZoneOffset.UTC)
+                                val unixSeconds = now2.atZone(ZoneOffset.UTC)?.toEpochSecond()
 
                                 ref.child("demo2").child("cancelledRequests").child(request.id)
                                         .setValue(unixSeconds)
@@ -242,7 +244,6 @@ class CurrentOrdersFragment : Fragment() {
                                     layoutInflater.inflate(R.layout.current_dumbbell_view, null)
                             builder.setView(currentSessionView)
                             currentSessionView.text_title_currentDB.text = getString(R.string.dumbbell, holder.weight.text)
-                            //todo set timer -> set it as time from request??
                             currentSessionView.text_session_time.base = baseTime
                             currentSessionView.text_session_time.start()
                             val dialog = builder.create()
@@ -256,8 +257,8 @@ class CurrentOrdersFragment : Fragment() {
                                 //set entry in request hashmap to collecting
                                 requests[holder.id]!!.type = "collecting"
 
-                                val now = LocalDateTime.now(ZoneOffset.UTC)
-                                val unixSeconds = now.atZone(ZoneOffset.UTC)?.toEpochSecond()
+                                val now3 = LocalDateTime.now(ZoneOffset.UTC)
+                                val unixSeconds = now3.atZone(ZoneOffset.UTC)?.toEpochSecond()
 
                                 //send request to firebase
                                 val newRequest =

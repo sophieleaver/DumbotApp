@@ -1,6 +1,5 @@
 package com.example.sophieleaver.dumbotapp
 
-import android.content.Context
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.support.v4.app.Fragment
@@ -17,14 +16,11 @@ class TimerFragment : Fragment() {
 
     companion object {
 
-        fun setAlarm(context: Context, nowSeconds: Long, secondsRemaining: Long): Long {
-            val wakeUpTime = (nowSeconds + secondsRemaining) * 1000
-//            val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-
-            return wakeUpTime
+        fun setAlarm(nowSeconds: Long, secondsRemaining: Long): Long {
+            return (nowSeconds + secondsRemaining) * 1000
         }
 
-        fun removeAlarm(context: Context) {
+        fun removeAlarm() {
 //            todo - finish this?
         }
 
@@ -38,9 +34,9 @@ class TimerFragment : Fragment() {
         Stopped, Paused, Running
     }
 
-    enum class PagerState {
+    /*enum class PagerState {
         Timer, Collection
-    }
+    }*/
 
 
     private lateinit var timer: CountDownTimer
@@ -49,7 +45,7 @@ class TimerFragment : Fragment() {
 
     private var secondsRemaining: Long = 0
 
-    private var page: PagerState = PagerState.Timer
+//    private var page: PagerState = PagerState.Timer
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -145,7 +141,7 @@ class TimerFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         initTimer()
-        removeAlarm(requireContext())
+        removeAlarm()
     }
 
     override fun onPause() {
@@ -153,7 +149,7 @@ class TimerFragment : Fragment() {
 
         if (timerState == TimerState.Running) {
             timer.cancel()
-            setAlarm(requireContext(), nowSeconds, secondsRemaining)
+            setAlarm(nowSeconds, secondsRemaining)
         } else if (timerState == TimerState.Paused) {
 //            todo(Unfinished) - ?
         }
@@ -207,7 +203,8 @@ class TimerFragment : Fragment() {
         val minutesUntilFinished = secondsRemaining / 60
         val secondsInMinuteUntilFinished = secondsRemaining - minutesUntilFinished * 60
         val secondsStr = secondsInMinuteUntilFinished.toString()
-        textView_countdown.text = "$minutesUntilFinished:${if (secondsStr.length == 2) secondsStr else "0" + secondsStr}"
+        textView_countdown.text = getString(R.string.timer_format, minutesUntilFinished,
+                if (secondsStr.length == 2) secondsStr else "0$secondsStr")
         progress_countdown.progress = (timerLengthSeconds - secondsRemaining).toInt()
     }
 
@@ -236,10 +233,8 @@ class TimerFragment : Fragment() {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        return when (item.itemId) {
-            R.id.action_settings -> true
-            else -> super.onOptionsItemSelected(item)
-        }
+        return if (item.itemId == R.id.action_settings) true
+        else super.onOptionsItemSelected(item)
     }
 
 

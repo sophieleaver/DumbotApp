@@ -1,6 +1,7 @@
 package com.example.sophieleaver.dumbotapp
 
 import android.content.Context
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.support.design.widget.NavigationView
 import android.support.v4.app.Fragment
@@ -21,13 +22,12 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.nav_header_main.view.*
 import org.jetbrains.anko.design.longSnackbar
+import org.jetbrains.anko.design.snackbar
 
-//todo - clear all requests eventually
 //todo - change requests in sharedpreferences on cancel/return
-//todo - string resources everywhere
 //todo - proper auth
 
-var currentBench = 1
+var currentBench = "B7"
 var isManagerMode = false
 var requests = HashMap<String, Request>() // id and request
 
@@ -40,6 +40,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         setContentView(R.layout.activity_main)
         mainLayout = drawer_layout
         mainToolbar = toolbar
@@ -49,13 +50,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         with(getSharedPreferences("prefs", Context.MODE_PRIVATE)) {
             isManagerMode = getBoolean("mode", false)
-            currentBench = getInt("bench", 1)
+            currentBench = getString("bench", "B7")
             modeText.text = getString(R.string.app_mode, modeString())
             loadRequests(getStringSet("requests", null)?.toMutableList())
-
         }
-
-
     }
 
     private fun loadRequests(requestIds: MutableList<String>?) {
@@ -133,9 +131,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         // Handle navigation view item clicks here.
         when (item.itemId) {
             R.id.nav_login -> {
-                val modeFragment = ModeChangeFragment.newInstance()
-                mainToolbar.title = "Change App Mode"
-                openFragment(modeFragment)
+                changeMode(!isManagerMode)
             }
             R.id.nav_order -> {
 //                if (!currentRequestExists) { //if the user does not have a current request open, the weight list is opened
@@ -236,6 +232,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             .apply()
         navigationView.menu.findItem(R.id.menu_manager).isVisible = isManagerMode
         modeText.text = getString(R.string.app_mode, modeString())
+        mainLayout.snackbar("Switched to ${modeText.text}")
     }
 
     fun onSuccessfulOrder(weightValue: String) {

@@ -1,59 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:ignore="HardcodedText"
     tools:showIn="navigation_view">
 
     <item
         android:id="@+id/menu_user"
-        android:title="User Section">
+        android:title="@string/section_user">
         <menu>
             <item
                 android:id="@+id/nav_order"
                 android:icon="@drawable/ic_fitness_center"
-                android:title="Order Dumbbells" />
+                android:title="@string/order_dumbbells" />
 
             <item
                 android:id="@+id/nav_current_sessions"
                 android:icon="@drawable/weightlifting"
-                android:title="Current Workout Session" />
+                android:title="@string/current_workout_session" />
 
             <item
                 android:id="@+id/nav_timer"
                 android:icon="@drawable/ic_timer"
-                android:title="Workout Timer" />
+                android:title="@string/workout_timer" />
 
             <item
                 android:id="@+id/nav_login"
                 android:icon="@drawable/ic_lock_outline"
-                android:title="Manager Login" />
+                android:title="@string/manager_login" />
         </menu>
     </item>
 
     <item
         android:id="@+id/menu_manager"
-        android:title="Manager Section">
+        android:title="@string/section_manager">
         <menu>
             <item
                 android:id="@+id/nav_analytics"
                 android:icon="@drawable/ic_insert_chart"
-                android:title="Analytics" />
+                android:title="@string/analytics" />
             <item
                 android:id="@+id/nav_weights"
                 android:icon="@drawable/ic_view_list"
-                android:title="Dumbbell Inventory" />
+                android:title="@string/dumbbell_inventory" />
             <item
                 android:id="@+id/nav_overview"
                 android:icon="@drawable/ic_view_agenda_black_24dp"
-                android:title="DumBot Overview" />
+                android:title="@string/dumbot_overview" />
             <item
                 android:id="@+id/nav_settings"
                 android:icon="@drawable/ic_menu_manage"
-                android:title="App Settings"
+                android:title="@string/app_settings"
                 />
         </menu>
 
     </item>
 
 
-</menu><!--todo - hardcoded text-->
+</menu>

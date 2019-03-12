@@ -1,9 +1,5 @@
 package com.example.sophieleaver.dumbotapp
 
-//todo - fix workout timer
-//todo - fix current sessions title
-//todo - fix keeping the same fragment on rotation (or just lock portrait mode)
-
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.res.ColorStateList
@@ -157,7 +153,7 @@ class OrderFragment : Fragment() {
             val requestID = milliseconds.toString()
             val status = if (dumbbellAvailable) "delivering" else "waiting"
             val path = if (dumbbellAvailable) "activeRequests" else "waitQueue"
-            val bench = benchNumberToFirebaseID(currentBench)
+            val bench = currentBench
 
             val newRequest = Request(requestID, seconds, status, weightValue, bench)
             requests[requestID] = newRequest
@@ -175,13 +171,6 @@ class OrderFragment : Fragment() {
             Log.d(fragTag,
                     "Sending request $requestID to server (deliver dumbbells of $weightValue kg to bench $currentBench)")
         }
-
-
-        private fun benchNumberToFirebaseID(bench: Int): String = when (bench) {
-            1 -> "B7"; 2 -> "B10"; 3 -> "B13"
-            4 -> "B9"; 5 -> "B12"; else -> "B15"
-        }
-
 
         private fun maximumWeightLimitReached(): Boolean = requests.values.count {
             (it.type == "delivering") or (it.type == "current")

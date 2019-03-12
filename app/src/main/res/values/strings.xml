@@ -50,7 +50,7 @@
         Once it is removed, users will no longer be able to order this type of weight.
     </string>
     <string name="app_mode">%1$s Mode</string>
-    <string name="workout_station">Workout Station: %1$d</string>
+    <string name="workout_station">Workout Station: %1$s</string>
     <string name="view_current_workout_session">View Current Workout Session</string>
     <string name="current_session_time">Current Session Time - %1$d:%2$d</string>
     <string name="after_dumbbell_request">
@@ -64,4 +64,20 @@
     <string name="more_info">More Info</string>
     <string name="dumbbell">%1$s dumbbell</string>
     <string name="cancel_dumbbell">Are you sure you would like to %1$s delivery of the %2$s dumbbell?</string>
+    <string name="section_user">User Section</string>
+    <string name="order_dumbbells">Order Dumbbells</string>
+    <string name="current_workout_session">Current Workout Session</string>
+    <string name="workout_timer">Workout Timer</string>
+    <string name="switch_mode">Switch Mode</string>
+    <string name="section_manager">Manager Section</string>
+    <string name="analytics">Analytics</string>
+    <string name="dumbbell_inventory">Dumbbell Inventory</string>
+    <string name="dumbot_overview">DumBot Overview</string>
+    <string name="app_settings">App Settings</string>
+    <string name="idle">Idle</string>
+    <string name="timer_format">%1$d:%2$s</string>
+    <string name="reset_dumbot">Reset DumBot</string>
+    <string name="emergency_stop">EMERGENCY STOP</string>
+    <string name="number">#%1$d</string>
+    <string name="manager_login">Manager Login</string>
 </resources>

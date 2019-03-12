@@ -8,16 +8,16 @@
 
     <android.support.design.widget.AppBarLayout
         android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        android:theme="@style/AppTheme.AppBarOverlay">
+        android:layout_width="match_parent">
 
         <android.support.v7.widget.Toolbar
+            android:theme="@style/AppTheme"
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:background="@color/colorPrimary"
+            app:title="@string/order_dumbbells"
             app:popupTheme="@style/AppTheme.PopupOverlay"
-            app:title="test"
             app:titleTextColor="@android:color/white" />
 
     </android.support.design.widget.AppBarLayout>

@@ -41,12 +41,12 @@ class AnalyticsFragment : Fragment() {
     private lateinit var graph2: GraphView
 
     //variable if we want to make hourly updates on dumbbell and station usages
-    private var time = 6
-    private val TAG = "AnalyticsFragment"
+//    private var time = 6
+    private val fragTag = "AnalyticsFragment"
 
     //firebase variables
     private val ref = FirebaseDatabase.getInstance().reference
-    private val requestReference = ref.child("demo2").child("requests")
+    private val requestReference = ref.child("demo2").child("log")
 
 
     data class Request(var bench: String = "", var time: Long = 0, var type: String = "", var weight: String = "")
@@ -318,7 +318,7 @@ class AnalyticsFragment : Fragment() {
         //listen for changes in the database
         val childEventListener = object : ChildEventListener {
             override fun onChildAdded(dataSnapshot: DataSnapshot, previousChildName: String?) {
-                Log.d(TAG, "onChildAdded:" + dataSnapshot.key!!)
+                Log.d(fragTag, "onChildAdded:" + dataSnapshot.key!!)
 
 
                 val unixSeconds: Long = dataSnapshot.getValue(Request::class.java)!!.time
@@ -326,17 +326,18 @@ class AnalyticsFragment : Fragment() {
                 val localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
                 if (dataSnapshot.getValue(Request::class.java)!!.weight.length < 4 && dataSnapshot.getValue(Request::class.java)!!.weight != "") {
 
-                    val weight: Int = Integer.parseInt(dataSnapshot.getValue(Request::class.java)!!.weight)
+//                    todo - deal with decimal weights?
+                    val weight: Int = dataSnapshot.getValue(Request::class.java)!!.weight.toDouble().toInt()
 
-                    Log.d(TAG, "localDate: $localDate nowDate: $nowDate")
+                    Log.d(fragTag, "localDate: $localDate nowDate: $nowDate")
                     if (/*localDate == nowDate*/true) {
 
                         weightUsage[weight] = weightUsage.getOrDefault(weight, 0) + 1
-                        Log.d(TAG,
-                                "onChildAdded: dataPoints.set called with: ${weight}X: ${weight.toDouble()} Y: " + weightUsage.get(
-                                        weight)!!.toDouble())
+                        Log.d(fragTag,
+                                "onChildAdded: dataPoints.set called with: $weight " +
+                                        "X: ${weight.toDouble()} Y: ${weightUsage[weight]!!.toDouble()}")
 
-//                        Log.d(TAG, "ARRAYELEMENT: " + dataPoints.get(weight))
+//                        Log.d(fragTag, "ARRAYELEMENT: " + dataPoints.get(weight))
 //                        dataPoints[weight] = DataPoint(weight.toDouble(), weightUsage.get(weight)!!.toDouble())
                         mSeries7 = BarGraphSeries(weightUsage.map {
                             DataPoint(it.key.toDouble(), it.value.toDouble())
@@ -370,48 +371,34 @@ class AnalyticsFragment : Fragment() {
             }
 
             override fun onChildChanged(dataSnapshot: DataSnapshot, previousChildName: String?) {
-                Log.d(TAG, "onChildChanged: ${dataSnapshot.key}")
+                Log.d(fragTag, "onChildChanged: ${dataSnapshot.key}")
 
                 // A comment has changed, use the key to determine if we are displaying this
                 // comment and if so displayed the changed comment.
             }
 
             override fun onChildRemoved(dataSnapshot: DataSnapshot) {
-                Log.d(TAG, "onChildRemoved:" + dataSnapshot.key!!)
+                Log.d(fragTag, "onChildRemoved:" + dataSnapshot.key!!)
 
                 // A comment has changed, use the key to determine if we are displaying this
                 // comment and if so remove it.
             }
 
             override fun onChildMoved(dataSnapshot: DataSnapshot, previousChildName: String?) {
-                Log.d(TAG, "onChildMoved:" + dataSnapshot.key!!)
+                Log.d(fragTag, "onChildMoved:" + dataSnapshot.key!!)
 
                 // A comment has changed position, use the key to determine if we are
                 // displaying this comment and if so move it.
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
-                Log.w(TAG, "postComments:onCancelled", databaseError.toException())
+                Log.w(fragTag, "postComments:onCancelled", databaseError.toException())
             }
         }
 
         requestReference.addChildEventListener(childEventListener)
 
-
     }
-
-
-    /*fun contains(array: ArrayList<String>, element: String): Boolean {
-        for (arrayElement in array) {
-            if (arrayElement.equals(element)) {
-                Log.d(TAG, "CONTAINS RETURNS TRUE")
-                return true
-            }
-        }
-        Log.d(TAG, "CONTAINS RETURNS FALSE")
-        return false
-    }*/
-
 
     companion object {
         @JvmStatic
