@@ -21,6 +21,7 @@ import kotlinx.android.synthetic.main.fragment_current_orders.*
 import kotlinx.android.synthetic.main.nav_header_main.view.*
 import org.jetbrains.anko.design.longSnackbar
 import org.jetbrains.anko.design.snackbar
+import org.jetbrains.anko.longToast
 import org.jetbrains.anko.toast
 import java.time.LocalDateTime
 import java.time.ZoneOffset
@@ -81,17 +82,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     requests[newRequest.id]?.let {
                         when (it.type) {
                             "delivering" -> {
-                                toast("delivering")
                                 Log.d("MainActivity", it.id)
                                 it.type = "current"
                                 it.time = LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneOffset.UTC)?.toEpochSecond()!!
                                 recyclerView_current_dumbbells.adapter!!.notifyDataSetChanged()
                             }
                             "collecting" -> {
-                                //toast("collecting")
-                                toast(it.id)
                                 Log.d("MainActivity", it.id)
                                 requests.remove(it.id)
+                                longToast(requests.toString())
                                 recyclerView_current_dumbbells.adapter!!.notifyDataSetChanged()
 
                             }
@@ -101,36 +100,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
 
             override fun onChildRemoved(p0: DataSnapshot) {}
-
-        })
-        logRef.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                for (request in requests.values) {
-                    if (dataSnapshot.hasChild(request.id)) {
-                        when (request.type) {
-                            "delivering" ->  {
-                                toast("delivering")
-                                Log.d("MainActivity", "${request.id}")
-                                request.type = "current"
-                                request.time = LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneOffset.UTC)?.toEpochSecond()!!
-                                recyclerView_current_dumbbells.adapter!!.notifyDataSetChanged()
-                            }
-                            "collecting" -> {
-                                //toast("collecting")
-                                toast(request.id)
-                                Log.d("MainActivity", "${request.id}")
-                                requests.remove(request.id)
-                                recyclerView_current_dumbbells.adapter!!.notifyDataSetChanged()
-
-                            }
-                        }
-                    }
-                }
-            }
-
-            override fun onCancelled(p0: DatabaseError) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
 
         })
     }

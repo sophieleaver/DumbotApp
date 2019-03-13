@@ -176,7 +176,7 @@ class OrderFragment : Fragment() {
 
             val newRequest = Request(requestID, seconds, status, weightValue, bench)
             requests[requestID] = newRequest
-            requestReference.child(requestID).setValue(newRequest)
+            /**requestReference.child(requestID).setValue(newRequest)
             weightReference.child("$weightValue/$path/$bench")
                 .setValue("$status|$seconds")
                 .addOnCompleteListener { task ->
@@ -186,7 +186,7 @@ class OrderFragment : Fragment() {
                         Log.w(fragTag, "Failed to send request $requestID", task.exception)
                         requireActivity().toast("There was an error sending your dumbbell request. Please try again later.")
                     }
-                }
+                }**/
 
             Log.d(fragTag,
                     "Sending request $requestID to server (deliver dumbbells of $weightValue kg to bench $currentBench)")

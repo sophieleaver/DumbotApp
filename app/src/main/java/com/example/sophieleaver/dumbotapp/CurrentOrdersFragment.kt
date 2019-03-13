@@ -22,6 +22,8 @@ import kotlinx.android.synthetic.main.fragment_current_orders.*
 import kotlinx.android.synthetic.main.fragment_current_orders.view.*
 import kotlinx.android.synthetic.main.item_current_dumbbell.view.*
 import kotlinx.android.synthetic.main.reset_warning_view.view.*
+import org.jetbrains.anko.longToast
+import org.jetbrains.anko.toast
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 
@@ -35,7 +37,7 @@ class CurrentOrdersFragment : Fragment() {
     private lateinit var currentDBRecyclerView: RecyclerView
 //    private lateinit var queuedDBRecyclerView: RecyclerView
 
-    val ref = FirebaseDatabase.getInstance().reference
+    //val ref = FirebaseDatabase.getInstance().reference
 
 
     override fun onCreateView(
@@ -56,14 +58,12 @@ class CurrentOrdersFragment : Fragment() {
 //            adapter.notifyDataSetChanged()
         }
 
+        requests.put("123231", Request("123231", 1233213, "current", "1", "B7"))
+        requests.put("1212", Request("1212", 1233215, "current", "2", "B7"))
+        requests.put("12124", Request("12124", 1233212, "current", "3", "B7"))
+
         view.fab_timer.setOnClickListener {
             (activity as MainActivity).openFragment(TimerFragment.newInstance())
-        }
-        view.btn_debug.setOnClickListener {
-            requests.forEach {
-                it.value.type = if (it.value.type == "delivering") "current" else "delivering"
-            }
-            currentDBRecyclerView.adapter?.notifyDataSetChanged()
         }
 
         val cancelButton: Button = view.findViewById(R.id.button_reset_workout_session)
@@ -77,35 +77,38 @@ class CurrentOrdersFragment : Fragment() {
 
             warningView.button_cancel_warning.setOnClickListener {
                 dialog.cancel()
-                Toast.makeText(context, "Workout reset has been cancelled", Toast.LENGTH_SHORT).show()
             }
 
             warningView.button_confirm_reset.setOnClickListener {
                 //TODO cancel all requests
+                var toFilter = requests.filter{ it.value.type == "delivering"}
+                toFilter.forEach{requests.remove(it.key)}
+                recyclerView_current_dumbbells.adapter!!.notifyDataSetChanged()
 
-                val toRemove = requests.filter { it.value.type == "delivering" }
-                toRemove.forEach { requests.remove(it.key) }
 
-                for (req in requests.values) {
-                    if (req.type == "delivering") {
-                        requests.remove(req.id)
-                        currentDBRecyclerView.adapter!!.notifyDataSetChanged()
-                    }
-                    if (req.type == "current") {
-                        req.type = "collecting"
+                toFilter = requests.filter { it.value.type == "current" }
+                toFilter.forEach {
+                    val req = it.value
 
-                        val now = LocalDateTime.now(ZoneOffset.UTC)
-                        val unixSeconds = now.atZone(ZoneOffset.UTC)?.toEpochSecond()
+                    val now3 = LocalDateTime.now(ZoneOffset.UTC)
+                    val unixSeconds = now3.atZone(ZoneOffset.UTC)?.toEpochSecond()
+                    val unixMilli = now3.atZone(ZoneOffset.UTC)?.toInstant()?.toEpochMilli().toString()
 
-                        //send request to firebase
-                        val newRequest = ref.child("demo2").child("requests").child(req.id)
-                        newRequest.child("bench").setValue(req.bench)
-                        newRequest.child("time").setValue(unixSeconds)
-                        newRequest.child("type").setValue("collecting")
-                        newRequest.child("weight").setValue(req.weight)
+                    //update id and type in requests to new request information
+                    var currentDumbbellReq: Request = requests[req.id]!!
+                    currentDumbbellReq.id = unixMilli
+                    currentDumbbellReq.type = "collecting"
 
-                        currentDBRecyclerView.adapter?.notifyDataSetChanged()
-                    }
+                    requests.remove(req.id) //remove the request with the delivering id
+                    requests.put(currentDumbbellReq.id, currentDumbbellReq)
+                    recyclerView_current_dumbbells.adapter!!.notifyDataSetChanged()
+
+                    //send request to firebase
+                    /**val newRequest = ref.child("demo2").child("requests").child(currentDumbbellReq.id)
+                    newRequest.child("bench").setValue(currentDumbbellReq.bench)
+                    newRequest.child("time").setValue(unixSeconds)
+                    newRequest.child("type").setValue("collecting")
+                    newRequest.child("weight").setValue(currentDumbbellReq.weight)**/
                 }
 
                 dialog.cancel()
@@ -148,6 +151,7 @@ class CurrentOrdersFragment : Fragment() {
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             if (itemCount == 1) {
+                //if there is only one item then the list is empty -> convert it into a description saying it is empty
                 holder.weight.visibility = View.INVISIBLE
                 holder.description.visibility = View.INVISIBLE
                 holder.button.visibility = View.INVISIBLE
@@ -156,7 +160,6 @@ class CurrentOrdersFragment : Fragment() {
                 holder.background.setBackgroundColor(Color.rgb(242, 242, 242))
             }
             if (itemCount > 1) {
-
                 if (position < itemCount - 1) {
 
                     val request: Request = requests.toList()[position].second
@@ -171,57 +174,69 @@ class CurrentOrdersFragment : Fragment() {
                     holder.background.setBackgroundColor(Color.WHITE)
 
                     if (type == "delivering") {
+                        //set the delivery view
                         holder.timer.visibility = View.INVISIBLE
                         holder.description.text = getString(R.string.dumbbell_being_delivered)
                         holder.button.text = getString(R.string.cancel)
+
+                        //when the cancel button is clicked
                         holder.button.setOnClickListener {
+                            //create an alert dialog with a custom view
                             val builder = AlertDialog.Builder(context)
-                            val cancelDeliveryView =
-                                    layoutInflater.inflate(R.layout.cancel_delivery_view, null)
+                            val cancelDeliveryView = layoutInflater.inflate(R.layout.cancel_delivery_view, null)
                             builder.setView(cancelDeliveryView)
 
                             cancelDeliveryView.text_delivery_cancel.text =
                                     getString(R.string.cancel_dumbbell, "delivery", holder.weight.text)
 
+                            //create the dialog
                             val dialog: AlertDialog = builder.create()
                             dialog.show()
 
+                            //button - return to current orders
                             cancelDeliveryView.button_return_del.setOnClickListener {
                                 dialog.cancel()
                             }
+
+                            //button - confirm cancellation of delivery
                             cancelDeliveryView.button_confirm_del.setOnClickListener {
                                 val now1 = LocalDateTime.now(ZoneOffset.UTC)
                                 val unixSeconds = now1.atZone(ZoneOffset.UTC)?.toEpochSecond()
 
-                                ref.child("demo2").child("cancelledRequests").child(request.id)
-                                        .setValue(unixSeconds)
+                                //add cancellation to firebase
+                                /**ref.child("demo2").child("cancelledRequests").child(request.id).setValue(unixSeconds)**/
 
+                                //delete request from recyclerview
                                 requests.remove(holder.id)
                                 recyclerView_current_dumbbells.removeViewAt(position)
-
                                 dialog.cancel()
                             }
                         }
                     }
                     if (type == "collecting") {
+                        //set the collecting view
                         holder.timer.visibility = View.INVISIBLE
                         holder.description.text = getString(R.string.dumbbell_being_collected)
                         holder.button.text = getString(R.string.cancel)
+
+                        //when the cancel button is clicked
                         holder.button.setOnClickListener {
+                            //set custom view
                             val builder = AlertDialog.Builder(context)
-                            val cancelCollectionView =
-                                    layoutInflater.inflate(R.layout.cancel_collection_view, null)
+                            val cancelCollectionView = layoutInflater.inflate(R.layout.cancel_collection_view, null)
                             builder.setView(cancelCollectionView)
-
                             cancelCollectionView.text_collection_cancel.text =
-                                    getString(R.string.cancel_dumbbell, "collection", holder.weight.text)
+                                getString(R.string.cancel_dumbbell, "collection", holder.weight.text)
 
+                            //create dialog
                             val dialog: AlertDialog = builder.create()
                             dialog.show()
 
+                            //button - return to current sessions
                             cancelCollectionView.button_return_col.setOnClickListener {
                                 dialog.cancel()
                             }
+                            //button - end the current workout
                             cancelCollectionView.button_confirm_col.setOnClickListener {
                                 val now2 = LocalDateTime.now(ZoneOffset.UTC)
                                 val unixSeconds = now2.atZone(ZoneOffset.UTC)?.toEpochSecond()
@@ -229,11 +244,10 @@ class CurrentOrdersFragment : Fragment() {
                                 requests[holder.id]!!.type = "current"
                                 requests[holder.id]!!.id = now2.atZone(ZoneOffset.UTC)?.toInstant()?.toEpochMilli().toString()
                                 request.id = now2.atZone(ZoneOffset.UTC)?.toInstant()?.toEpochMilli().toString()
-                                ref.child("demo2").child("cancelledRequests").child(request.id)
-                                    .setValue(unixSeconds)
+                                /**ref.child("demo2").child("cancelledRequests").child(request.id)
+                                    .setValue(unixSeconds)**/
 
-//                                todo - why?
-                                onBindViewHolder(holder, position)
+                                notifyDataSetChanged()
                                 dialog.cancel()
                             }
 //
@@ -241,11 +255,13 @@ class CurrentOrdersFragment : Fragment() {
 
                     }
                     if (type == "current") {
+
                         holder.timer.visibility = View.VISIBLE
                         holder.description.text = getString(R.string.current_dumbbell)
                         holder.button.text = getString(R.string.more_info)
                         holder.timer.base = baseTime
                         holder.timer.start()
+
                         holder.button.setOnClickListener {
                             val builder = AlertDialog.Builder(context)
                             val currentSessionView =
@@ -263,45 +279,38 @@ class CurrentOrdersFragment : Fragment() {
 
                             currentSessionView.button_end_workout.setOnClickListener {
                                 //set entry in request hashmap to collecting
-                                requests[holder.id]!!.type = "collecting"
-
                                 val now3 = LocalDateTime.now(ZoneOffset.UTC)
                                 val unixSeconds = now3.atZone(ZoneOffset.UTC)?.toEpochSecond()
                                 val unixMilli = now3.atZone(ZoneOffset.UTC)?.toInstant()?.toEpochMilli().toString()
-                                Log.d("currO","before request: id = ${request.id}")
-                                //set entry in request hashmap to collecting
 
-                                var currentDumbbellReq: Request = requests[holder.id]!!
+                                //update id and type in requests to new request information
+                                val currentDumbbellReq: Request = requests[holder.id]!!
                                 currentDumbbellReq.id = unixMilli
                                 currentDumbbellReq.type = "collecting"
-                                request.id = unixMilli
-
+                                val beforesize = requests.size
                                 requests.remove(holder.id) //remove the request with the delivering id
+                                val midSize = requests.size
                                 requests.put(currentDumbbellReq.id, currentDumbbellReq)
+                                val afterSize = requests.size
+                                activity?.longToast("before = $beforesize, mid = $midSize, after = $afterSize")
                                 notifyDataSetChanged()
-//                                requests[holder.id]!!.type = "collecting"
-//                                requests[holder.id]!!.id = unixMilli
-
-                                //Log.d("currO", "after id change: ${requests[request.id]!!.id}")
-
-
-                                request.id = unixMilli
-                                //Log.d("currO", "time $unixMilli: returning request id ${request.id} (holder id ${requests[holder.id]!!.id})")
+                                //request.id = unixMilli
 
                                 //send request to firebase
-                                val newRequest =
+                                /**val newRequest =
                                     ref.child("demo2").child("requests").child(request.id)
                                 newRequest.child("bench").setValue(request.bench)
                                 newRequest.child("time").setValue(unixSeconds)
                                 newRequest.child("type").setValue("collecting")
-                                newRequest.child("weight").setValue(request.weight)
+                                newRequest.child("weight").setValue(request.weight)**/
 
-                                onBindViewHolder(holder, position)
+                                notifyDataSetChanged()
                                 dialog.cancel()
                             }
                         }
                     }
                 }
+
                 if (position == itemCount - 1) {
 //                    todo - why?
                     //give final holder a height of zero to make invisible?
@@ -385,4 +394,5 @@ class CurrentOrdersFragment : Fragment() {
 //            val background = view
 //        }
 //    }
+
 }
