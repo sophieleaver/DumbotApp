@@ -264,7 +264,7 @@ class NewWeightDialog : DialogFragment() {
 
     private fun editWeight(weightValue: Int, newTotalStock: Int) {
         database.child("weights/$weightValue")
-            .updateChildren(mapOf("totalStock" to newTotalStock))
+            .updateChildren(mapOf("totalStock" to newTotalStock, "storageLocation" to newWeight.storageLocation))
             .addOnSuccessListener {
                 requireActivity().toast("Successfully edited $weightValue kg weight")
                 dismiss()
@@ -295,10 +295,7 @@ class NewWeightDialog : DialogFragment() {
     companion object {
         private const val TAG = "NewWeightDialog"
 
-        fun display(
-            fragmentManager: FragmentManager,
-            weightToEdit: Dumbbell? = null
-        ): NewWeightDialog {
+        fun display(fragmentManager: FragmentManager, weightToEdit: Dumbbell? = null): NewWeightDialog {
             val exampleDialog = NewWeightDialog().apply {
                 weightToEdit?.let {
                     arguments = Bundle().apply {

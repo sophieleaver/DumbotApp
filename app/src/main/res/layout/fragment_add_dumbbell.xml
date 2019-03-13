@@ -40,15 +40,15 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <android.support.design.widget.TextInputEditText
-                android:id="@+id/text_total_stock"
-                style="@style/TextAppearance.MaterialComponents.Headline5"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
-                android:inputType="number"
-                android:hint="Total Stock"
-                android:textAlignment="viewEnd"
-                tools:text="250" />
+                    android:id="@+id/text_total_stock"
+                    style="@style/TextAppearance.MaterialComponents.Headline5"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Total Stock"
+                    android:inputType="number|numberDecimal"
+                    android:textAlignment="viewEnd"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
+                    tools:text="250" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
@@ -65,15 +65,15 @@
             app:layout_constraintTop_toBottomOf="@+id/input_total_stock">
 
             <android.support.design.widget.TextInputEditText
-                android:id="@+id/text_weight_value"
-                style="@style/TextAppearance.MaterialComponents.Headline5"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Weight Value"
-                android:inputType="number"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
-                android:textAlignment="viewEnd"
-                tools:text="200" />
+                    android:id="@+id/text_weight_value"
+                    style="@style/TextAppearance.MaterialComponents.Headline5"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Weight Value"
+                    android:inputType="number|numberDecimal"
+                    android:textAlignment="viewEnd"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
+                    tools:text="200" />
         </android.support.design.widget.TextInputLayout>
 
         <TextView

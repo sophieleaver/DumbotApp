@@ -22,7 +22,6 @@ import kotlinx.android.synthetic.main.fragment_current_orders.*
 import kotlinx.android.synthetic.main.fragment_current_orders.view.*
 import kotlinx.android.synthetic.main.item_current_dumbbell.view.*
 import kotlinx.android.synthetic.main.reset_warning_view.view.*
-import org.jetbrains.anko.toast
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 
@@ -83,6 +82,9 @@ class CurrentOrdersFragment : Fragment() {
 
             warningView.button_confirm_reset.setOnClickListener {
                 //TODO cancel all requests
+
+                val toRemove = requests.filter { it.value.type == "delivering" }
+                toRemove.forEach { requests.remove(it.key) }
 
                 for (req in requests.values) {
                     if (req.type == "delivering") {
@@ -270,8 +272,8 @@ class CurrentOrdersFragment : Fragment() {
                                 //set entry in request hashmap to collecting
 
                                 var currentDumbbellReq: Request = requests[holder.id]!!
-                                currentDumbbellReq!!.id = unixMilli
-                                currentDumbbellReq!!.type = "collecting"
+                                currentDumbbellReq.id = unixMilli
+                                currentDumbbellReq.type = "collecting"
                                 request.id = unixMilli
 
                                 requests.remove(holder.id) //remove the request with the delivering id

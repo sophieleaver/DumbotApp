@@ -3,7 +3,6 @@ package com.example.sophieleaver.dumbotapp
 import android.content.Context
 import android.content.pm.ActivityInfo
 import android.os.Bundle
-import android.renderscript.Sampler
 import android.support.design.widget.NavigationView
 import android.support.v4.app.Fragment
 import android.support.v4.view.GravityCompat
@@ -15,19 +14,14 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.fragment_current_orders.*
-import kotlinx.android.synthetic.main.fragment_current_orders.view.*
 import kotlinx.android.synthetic.main.nav_header_main.view.*
 import org.jetbrains.anko.design.longSnackbar
 import org.jetbrains.anko.design.snackbar
 import org.jetbrains.anko.toast
-import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.util.*
@@ -67,17 +61,53 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             loadRequests(getStringSet("requests", null)?.toMutableList())
         }
 
-        listenToCurrentRequestsStatus()
+        //        listenToCurrentRequestsStatus()
 
 
     }
 
     private fun listenToCurrentRequestsStatus() {
+        logRef.addChildEventListener(object : ChildEventListener {
+            override fun onCancelled(p0: DatabaseError) {}
+
+            override fun onChildMoved(p0: DataSnapshot, p1: String?) {}
+
+            override fun onChildChanged(dataSnapshot: DataSnapshot, previousChildName: String?) {}
+
+            override fun onChildAdded(dataSnapshot: DataSnapshot, previousChildName: String?) {
+                val newRequest = dataSnapshot.getValue(Request::class.java)
+
+                if (newRequest != null) {
+                    requests[newRequest.id]?.let {
+                        when (it.type) {
+                            "delivering" -> {
+                                toast("delivering")
+                                Log.d("MainActivity", it.id)
+                                it.type = "current"
+                                it.time = LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneOffset.UTC)?.toEpochSecond()!!
+                                recyclerView_current_dumbbells.adapter!!.notifyDataSetChanged()
+                            }
+                            "collecting" -> {
+                                //toast("collecting")
+                                toast(it.id)
+                                Log.d("MainActivity", it.id)
+                                requests.remove(it.id)
+                                recyclerView_current_dumbbells.adapter!!.notifyDataSetChanged()
+
+                            }
+                        }
+                    }
+                }
+            }
+
+            override fun onChildRemoved(p0: DataSnapshot) {}
+
+        })
         logRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                for (request in requests.values){
-                    if (dataSnapshot.hasChild(request.id)){
-                        when (request.type){
+                for (request in requests.values) {
+                    if (dataSnapshot.hasChild(request.id)) {
+                        when (request.type) {
                             "delivering" ->  {
                                 toast("delivering")
                                 Log.d("MainActivity", "${request.id}")
@@ -148,6 +178,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         nav_view.menu.findItem(R.id.menu_manager).isVisible = isManagerMode
         mainToolbar.title = "Order Dumbells"
         openFragment(OrderFragment.newInstance())
+        listenToCurrentRequestsStatus()
     }
 
     override fun onBackPressed() {
