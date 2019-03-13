@@ -2,7 +2,6 @@ package com.example.sophieleaver.dumbotapp
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.Log
@@ -15,7 +14,6 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.fragment_weight_inventory.view.*
 import kotlinx.android.synthetic.main.item_inventory_dumbbell.view.*
 import org.jetbrains.anko.toast
@@ -36,24 +34,21 @@ class WeightsFragment : Fragment() {
     private var dumbbellList: List<Dumbbell> = emptyList()
     private lateinit var dumbbellRecyclerView: RecyclerView
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        (activity as AppCompatActivity).setSupportActionBar(toolbar)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_weight_inventory, container, false).apply {
-            dumbbellRecyclerView = dumbbell_list.apply {
-                layoutManager = LinearLayoutManager(this@WeightsFragment.requireContext())
-                adapter = DumbbellAdapter()
-            }
-            fab_edit_dumbbells.setOnClickListener { NewWeightDialog.display(fragmentManager!!) }
+        val view = inflater.inflate(R.layout.fragment_weight_inventory, container, false)
+
+        dumbbellRecyclerView = view.dumbbell_list.apply {
+            layoutManager = LinearLayoutManager(this@WeightsFragment.requireContext())
+            adapter = DumbbellAdapter()
         }
+        view.fab_edit_dumbbells.setOnClickListener { NewWeightDialog.display(fragmentManager!!) }
+
+        return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -93,10 +88,7 @@ class WeightsFragment : Fragment() {
 
     companion object {
         @JvmStatic
-        fun newInstance() =
-            WeightsFragment().apply {
-                arguments = Bundle().apply { }
-            }
+        fun newInstance() = WeightsFragment()
     }
 
     inner class DumbbellAdapter : RecyclerView.Adapter<DumbbellAdapter.ViewHolder>() {

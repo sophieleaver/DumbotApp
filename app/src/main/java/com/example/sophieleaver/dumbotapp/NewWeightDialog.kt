@@ -21,6 +21,7 @@ import org.jetbrains.anko.longToast
 import org.jetbrains.anko.toast
 import java.util.*
 
+// todo - deal with decimal weights?
 
 class NewWeightDialog : DialogFragment() {
 

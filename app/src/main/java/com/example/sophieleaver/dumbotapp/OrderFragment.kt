@@ -49,7 +49,7 @@ class OrderFragment : Fragment() {
 
             //when button pressed, alert dialog opened to change the bench
             button_see_workout.setOnClickListener {
-                (activity as MainActivity).openFragment(CurrentOrdersFragment.newInstance())
+                (activity as MainActivity).showCurrentOrdersFragment()
             }
         }
         setupRecyclerView()
@@ -93,21 +93,24 @@ class OrderFragment : Fragment() {
     inner class DumbbellRequestAdapter : RecyclerView.Adapter<DumbbellRequestAdapter.ViewHolder>() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
-                ViewHolder(LayoutInflater.from(this@OrderFragment.requireContext()).inflate(R.layout.item_order_dumbbell,
-                        parent,
-                        false))
+            ViewHolder(
+                LayoutInflater.from(this@OrderFragment.requireContext()).inflate(
+                    R.layout.item_order_dumbbell,
+                    parent, false
+                )
+            )
 
         override fun getItemCount(): Int = weights.size
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             //todo implement for next demo
-//            if (maximumWeightLimitReached()) {
-//                holder.orderButton.isEnabled = false
-//                holder.orderButton.backgroundTintList = ColorStateList.valueOf(Color.GRAY)
-//            } else {
-                holder.orderButton.backgroundTintList =
-                        ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.colorDumbbellAvailable))
-//            }
+            //            if (maximumWeightLimitReached()) {
+            //                holder.orderButton.isEnabled = false
+            //                holder.orderButton.backgroundTintList = ColorStateList.valueOf(Color.GRAY)
+            //            } else {
+            holder.orderButton.backgroundTintList =
+                ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.colorDumbbellAvailable))
+            //            }
             val requestedWeight = weights[position]
 
             holder.apply {
@@ -118,17 +121,20 @@ class OrderFragment : Fragment() {
                 val orderButtonTextResId = if (dumbbellAvailable) R.string.order else R.string.join_wait_queue
                 val orderButtonColorResId =
                     if (dumbbellAvailable) R.color.colorDumbbellAvailable else R.color.colorDumbbellUnavailable
-                val dumbbellDetails = if (dumbbellAvailable) Triple(R.string.available_dumbbells_info,
+                val dumbbellDetails: Triple<Int, Int, Int> =
+                    if (dumbbellAvailable) Triple(
+                        R.string.available_dumbbells_info,
                         currentStock,
-                        requestedWeight.totalStock)
-                else Triple(R.string.wait_queue_info, requestedWeight.totalStock, requestedWeight.waitQueue.size)
+                        requestedWeight.totalStock
+                    )
+                    else Triple(R.string.wait_queue_info, requestedWeight.totalStock, requestedWeight.waitQueue.size)
 
                 weightValue.text = getString(R.string.weight, requestedWeight.weightValue)
                 available.text = getString(availableTextResId)
                 orderButton.text = getString(orderButtonTextResId)
                 availabilityInfo.text = getString(dumbbellDetails.first, dumbbellDetails.second, dumbbellDetails.third)
                 orderButton.backgroundTintList =
-                        ColorStateList.valueOf(ContextCompat.getColor(requireContext(), orderButtonColorResId))
+                    ColorStateList.valueOf(ContextCompat.getColor(requireContext(), orderButtonColorResId))
                 orderButton.setOnClickListener {
                     val builder = AlertDialog.Builder(context)
                     builder.setTitle("Confirm Order")
@@ -138,29 +144,28 @@ class OrderFragment : Fragment() {
                     }
                     builder.setNeutralButton("CANCEL") { dialog, _ -> dialog.cancel() }
 
-                        val dialog = builder.create()
-                        dialog.show()
-                    }
-//                if (dumbbellAvailable) {
-//                                createRequest(
-//                                    dumbbellAvailable,
-//                                    requestedWeight.weightValue.toString()
-//                                )
-//                            } else {
-//                                dialog.cancel()
-//                                val innerBuilder = AlertDialog.Builder(context)
-//                                innerBuilder.apply {
-//                                    setTitle("Weight Unavailable")
-//                                    setMessage("The weight you just ordered has now become unavailable - please choose another set of dumbbells from the list.")
-//                                    setPositiveButton("OKAY") { dialog, _ ->
-//                                        dialog.cancel()
-//                                    }
-//                                }
-//                            }
-//                        }
+                    val dialog = builder.create()
+                    dialog.show()
                 }
+                //                if (dumbbellAvailable) {
+                //                                createRequest(
+                //                                    dumbbellAvailable,
+                //                                    requestedWeight.weightValue.toString()
+                //                                )
+                //                            } else {
+                //                                dialog.cancel()
+                //                                val innerBuilder = AlertDialog.Builder(context)
+                //                                innerBuilder.apply {
+                //                                    setTitle("Weight Unavailable")
+                //                                    setMessage("The weight you just ordered has now become unavailable - please choose another set of dumbbells from the list.")
+                //                                    setPositiveButton("OKAY") { dialog, _ ->
+                //                                        dialog.cancel()
+                //                                    }
+                //                                }
+                //                            }
+                //                        }
             }
-
+        }
 
 
         private fun createRequest(dumbbellAvailable: Boolean, weightValue: String) {
@@ -176,9 +181,8 @@ class OrderFragment : Fragment() {
 
             val newRequest = Request(requestID, seconds, status, weightValue, bench)
             requests[requestID] = newRequest
-            /**requestReference.child(requestID).setValue(newRequest)
-            weightReference.child("$weightValue/$path/$bench")
-                .setValue("$status|$seconds")
+            requestReference.child(requestID).setValue(newRequest)
+            weightReference.child("$weightValue/$path/$bench").setValue("$status|$seconds")
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         (activity as MainActivity).onSuccessfulOrder(weightValue)
@@ -186,10 +190,11 @@ class OrderFragment : Fragment() {
                         Log.w(fragTag, "Failed to send request $requestID", task.exception)
                         requireActivity().toast("There was an error sending your dumbbell request. Please try again later.")
                     }
-                }**/
+                }
 
             Log.d(fragTag,
-                    "Sending request $requestID to server (deliver dumbbells of $weightValue kg to bench $currentBench)")
+                "Sending request $requestID to server (deliver dumbbells of $weightValue kg to bench $currentBench)"
+            )
         }
 
         private fun maximumWeightLimitReached(): Boolean = requests.values.count {

@@ -17,12 +17,10 @@ import android.widget.TextView
 import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
-import kotlinx.android.synthetic.main.fragment_current_orders.*
 import kotlinx.android.synthetic.main.nav_header_main.view.*
 import org.jetbrains.anko.design.longSnackbar
 import org.jetbrains.anko.design.snackbar
 import org.jetbrains.anko.longToast
-import org.jetbrains.anko.toast
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.util.*
@@ -30,9 +28,9 @@ import java.util.*
 //todo - change requests in sharedpreferences on cancel/return
 //todo - proper auth
 
-var currentBench = "B7"
-var isManagerMode = false
-var requests = HashMap<String, Request>() // id and request
+var currentBench: String = "B7"
+var isManagerMode: Boolean = false
+var requests: MutableMap<String, Request> = HashMap() // id and request
 
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -42,8 +40,20 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var navigationView: NavigationView
     private lateinit var modeText: TextView
 
-    var ref = FirebaseDatabase.getInstance().reference
-    var logRef = ref.child("demo2").child("log")
+    private lateinit var analyticsFragment: AnalyticsFragment
+    private lateinit var currentOrdersFragment: CurrentOrdersFragment
+    private lateinit var modeChangeFragment: ModeChangeFragment
+    private lateinit var orderFragment: OrderFragment
+    private lateinit var overviewFragment: OverviewFragment
+    private lateinit var restrictedFragment: RestrictedFragment
+    private lateinit var settingsFragment: SettingsFragment
+    private lateinit var timerFragment: TimerFragment
+    private lateinit var weightsFragment: WeightsFragment
+
+    private var activeFragment: Fragment? = null
+
+    private var ref = FirebaseDatabase.getInstance().reference
+    private var logRef = ref.child("demo2").child("log")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -78,20 +88,21 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             override fun onChildAdded(dataSnapshot: DataSnapshot, previousChildName: String?) {
                 val newRequest = dataSnapshot.getValue(Request::class.java)
 
-                if (newRequest != null) {
-                    requests[newRequest.id]?.let {
+                if (newRequest != null && requests.containsKey(newRequest.id)) {
+                    requests[newRequest.id]!!.let {
                         when (it.type) {
                             "delivering" -> {
                                 Log.d("MainActivity", it.id)
                                 it.type = "current"
                                 it.time = LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneOffset.UTC)?.toEpochSecond()!!
-                                recyclerView_current_dumbbells.adapter!!.notifyDataSetChanged()
+                                currentOrdersFragment.currentDBRecyclerView.adapter!!.notifyDataSetChanged()
                             }
                             "collecting" -> {
                                 Log.d("MainActivity", it.id)
+                                val size = requests.size
                                 requests.remove(it.id)
-                                longToast(requests.toString())
-                                recyclerView_current_dumbbells.adapter!!.notifyDataSetChanged()
+                                longToast(size - requests.size)
+                                currentOrdersFragment.currentDBRecyclerView.adapter!!.notifyDataSetChanged()
 
                             }
                         }
@@ -109,25 +120,35 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         if (requestIds.isNullOrEmpty()) setupActivity()
         else {
             val requestsReference = FirebaseDatabase.getInstance().reference.child("demo2/requests")
+//            todo - this next time
+            /*requestsReference.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    requests = dataSnapshot.children
+                        .map { it.getValue(Request::class.java)!! }
+                        .filter { it.bench == currentBench  }
+                        .associateBy { it.id }
+                        .toMutableMap()
+                }
+
+                override fun onCancelled(databaseError: DatabaseError) {
+                    Log.w("MainActivity", "Failed to find request ${this@with}", databaseError.toException())
+                    loadRequests(requestIds)
+                }
+            })*/
+
             with(requestIds.removeAt(0)) {
-                requestsReference.child(this)
-                    .addListenerForSingleValueEvent(object : ValueEventListener {
-                        override fun onDataChange(dataSnapshot: DataSnapshot) {
-                            dataSnapshot.getValue(Request::class.java)
-                                ?.let { requests.put(this@with, it) }
-                            loadRequests(requestIds)
-                        }
+                requestsReference.child(this).addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(dataSnapshot: DataSnapshot) {
+                        dataSnapshot.getValue(Request::class.java)?.let { requests.put(this@with, it) }
+                        loadRequests(requestIds)
+                    }
 
-                        override fun onCancelled(databaseError: DatabaseError) {
-                            Log.w(
-                                "MainActivity",
-                                "Failed to find request ${this@with}",
-                                databaseError.toException()
-                            )
-                            loadRequests(requestIds)
-                        }
+                    override fun onCancelled(databaseError: DatabaseError) {
+                        Log.w("MainActivity", "Failed to find request ${this@with}", databaseError.toException())
+                        loadRequests(requestIds)
+                    }
 
-                    })
+                })
             }
         }
     }
@@ -143,11 +164,45 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         drawer_layout.addDrawerListener(toggle)
         toggle.syncState()
+        mainToolbar.title = "Order Dumbells"
+        setupFragments()
+        listenToCurrentRequestsStatus()
+        showNewFragment(orderFragment)
+    }
+
+    private fun setupFragments() {
+        analyticsFragment = AnalyticsFragment.newInstance()
+        currentOrdersFragment = CurrentOrdersFragment.newInstance()
+        modeChangeFragment = ModeChangeFragment.newInstance()
+        orderFragment = OrderFragment.newInstance()
+        overviewFragment = OverviewFragment.newInstance()
+        restrictedFragment = RestrictedFragment.newInstance()
+        settingsFragment = SettingsFragment.newInstance()
+        timerFragment = TimerFragment.newInstance()
+        weightsFragment = WeightsFragment.newInstance()
+
+        with(supportFragmentManager) {
+            beginTransaction().add(R.id.content_frame, analyticsFragment, "fragment_analytics").hide(analyticsFragment)
+                .commit()
+            beginTransaction().add(R.id.content_frame, currentOrdersFragment, "fragment_current_orders")
+                .hide(currentOrdersFragment).commit()
+            beginTransaction().add(R.id.content_frame, overviewFragment, "fragment_overview").hide(overviewFragment)
+                .commit()
+            beginTransaction().add(R.id.content_frame, restrictedFragment, "fragment_restricted")
+                .hide(restrictedFragment).commit()
+            beginTransaction().add(R.id.content_frame, settingsFragment, "fragment_settings").hide(settingsFragment)
+                .commit()
+            beginTransaction().add(R.id.content_frame, timerFragment, "fragment_timer").hide(timerFragment).commit()
+            beginTransaction().add(R.id.content_frame, weightsFragment, "fragment_weights").hide(weightsFragment)
+                .commit()
+            beginTransaction().add(R.id.content_frame, orderFragment, "fragment_order").commit()
+        }
+
+        activeFragment = orderFragment
+
         nav_view.setNavigationItemSelectedListener(this)
         nav_view.menu.findItem(R.id.menu_manager).isVisible = isManagerMode
-        mainToolbar.title = "Order Dumbells"
-        openFragment(OrderFragment.newInstance())
-        listenToCurrentRequestsStatus()
+
     }
 
     override fun onBackPressed() {
@@ -178,112 +233,67 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Handle navigation view item clicks here.
-        when (item.itemId) {
-            R.id.nav_login -> {
-                changeMode(!isManagerMode)
-            }
-            R.id.nav_order -> {
-                val orderFragment = OrderFragment.newInstance()
-                mainToolbar.title = "Order Dumbbells"
-                openFragment(orderFragment)
-
-            }
-            R.id.nav_current_sessions -> {
-                val currentWorkoutFragment = CurrentOrdersFragment.newInstance()
-                mainToolbar.title = "Current Workout Session"
-                openFragment(currentWorkoutFragment)
-            }
-            R.id.nav_overview -> {
-                if (isManagerMode) {
-                    val overviewFragment = OverviewFragment.newInstance()
-                    mainToolbar.title = "DumBot Overview"
-                    openFragment(overviewFragment)
-                } else {
-                    val restrictedFragment = RestrictedFragment.newInstance()
-                    mainToolbar.title = "Cannot access page"
-                    openFragment(restrictedFragment)
-                }
-            }
-            R.id.nav_analytics -> {
-                if (isManagerMode) {
-                    val analyticsFragment = AnalyticsFragment.newInstance()
-                    mainToolbar.title = "Analytics"
-                    openFragment(analyticsFragment)
-                } else {
-                    val restrictedFragment = RestrictedFragment.newInstance()
-                    mainToolbar.title = "Cannot access page"
-                    openFragment(restrictedFragment)
-                }
-            }
-            R.id.nav_weights -> {
-                if (isManagerMode) {
-                    val weightsFragment = WeightsFragment.newInstance()
-                    mainToolbar.title = "Dumbbell Inventory"
-                    openFragment(weightsFragment)
-                } else {
-                    val restrictedFragment = RestrictedFragment.newInstance()
-                    mainToolbar.title = "Cannot access page"
-                    openFragment(restrictedFragment)
-                }
-            }
-            R.id.nav_settings -> {
-                if (isManagerMode) {
-                    val settingsFragment = SettingsFragment.newInstance()
-                    mainToolbar.title = "App Settings"
-                    openFragment(settingsFragment)
-                } else {
-                    val restrictedFragment = RestrictedFragment.newInstance()
-                    mainToolbar.title = "Cannot access page"
-                    openFragment(restrictedFragment)
-                }
-            }
-            R.id.nav_timer -> {
-                val timerFragment = TimerFragment.newInstance()
-                mainToolbar.title = "Workout Timer"
-                openFragment(timerFragment)
-            }
-
+        val newFragment = when (item.itemId) {
+            R.id.nav_order -> orderFragment
+            R.id.nav_current_sessions -> currentOrdersFragment
+            R.id.nav_timer -> timerFragment
+            R.id.nav_overview -> if (isManagerMode) overviewFragment else restrictedFragment
+            R.id.nav_analytics -> if (isManagerMode) analyticsFragment else restrictedFragment
+            R.id.nav_weights -> if (isManagerMode) weightsFragment else restrictedFragment
+            R.id.nav_settings -> if (isManagerMode) settingsFragment else restrictedFragment
+            else -> modeChangeFragment
         }
+
+        if (newFragment == modeChangeFragment) changeMode() else showNewFragment(newFragment)
 
         drawer_layout.closeDrawer(GravityCompat.START)
         return true
     }
 
-    fun openFragment(fragment: Fragment) {
-        val transaction = supportFragmentManager.beginTransaction()
-        transaction.replace(R.id.content_frame, fragment)
-        transaction.addToBackStack(null)
-        transaction.commit()
+//    fun openFragment(fragment: Fragment) {
+//        val transaction = supportFragmentManager.beginTransaction()
+//        transaction.replace(R.id.content_frame, fragment)
+//        transaction.addToBackStack(null)
+//        transaction.commit()
+//    }
+
+    private fun showNewFragment(newFragment: Fragment?) {
+        supportFragmentManager.beginTransaction()
+            .hide(activeFragment!!)
+            .show(newFragment!!)
+            .commit()
+
+        // set new fragment as active fragment
+        activeFragment = newFragment
     }
 
-    fun changeMode(managerMode: Boolean) {
-        isManagerMode = managerMode
-        getSharedPreferences("prefs", Context.MODE_PRIVATE)
-            .edit()
-            .putBoolean("mode", isManagerMode)
-            .apply()
+    fun showTimeFragment() {
+        showNewFragment(timerFragment)
+    }
+
+    fun showCurrentOrdersFragment() {
+        showNewFragment(currentOrdersFragment)
+    }
+
+    fun changeMode() {
+        isManagerMode = !isManagerMode
+        getSharedPreferences("prefs", Context.MODE_PRIVATE).edit().putBoolean("mode", isManagerMode).apply()
         navigationView.menu.findItem(R.id.menu_manager).isVisible = isManagerMode
         modeText.text = getString(R.string.app_mode, modeString())
         mainLayout.snackbar("Switched to ${modeText.text}")
     }
 
     fun onSuccessfulOrder(weightValue: String) {
-        getSharedPreferences("prefs", Context.MODE_PRIVATE)
-            .edit()
-            .putStringSet("requests", requests.keys)
-            .apply()
+        getSharedPreferences("prefs", Context.MODE_PRIVATE).edit().putStringSet("requests", requests.keys).apply()
 
         mainLayout.longSnackbar("Successfully ordered $weightValue kg Dumbbells", "View") {
             mainToolbar.title = "Current Workout Session"
-            openFragment(CurrentOrdersFragment.newInstance())
+            showNewFragment(currentOrdersFragment)
         }
     }
 }
 
 data class Request(
-    var id: String = "",
-    var time: Long = 0L,
-    var type: String = "",
-    val weight: String = "",
+    var id: String = "", var time: Long = 0L, var type: String = "", val weight: String = "",
     val bench: String = ""
 )

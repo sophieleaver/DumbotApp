@@ -63,7 +63,7 @@
     <string name="current_dumbbell">Your current dumbbell. Press the button below to return.</string>
     <string name="more_info">More Info</string>
     <string name="dumbbell">%1$s dumbbell</string>
-    <string name="cancel_dumbbell">Are you sure you would like to %1$s delivery of the %2$s dumbbell?</string>
+    <string name="cancel_dumbbell">Are you sure you would like to cancel %1$s of the %2$s dumbbell?</string>
     <string name="section_user">User Section</string>
     <string name="order_dumbbells">Order Dumbbells</string>
     <string name="current_workout_session">Current Workout Session</string>

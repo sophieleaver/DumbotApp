@@ -135,7 +135,7 @@ class TimerFragment : Fragment() {
     }
 
     private fun returnToCurrentSession() {
-        (activity as MainActivity).openFragment(CurrentOrdersFragment.newInstance())
+        (activity as MainActivity).showCurrentOrdersFragment()
     }
 
     override fun onResume() {

@@ -49,7 +49,7 @@ class AnalyticsFragment : Fragment() {
     private val requestReference = ref.child("demo2").child("log")
 
 
-    data class Request(var bench: String = "", var time: Long = 0, var type: String = "", var weight: String = "")
+//    data class Request(var bench: String = "", var time: Long = 0, var type: String = "", var weight: String = "")
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -326,7 +326,6 @@ class AnalyticsFragment : Fragment() {
                 val localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
                 if (dataSnapshot.getValue(Request::class.java)!!.weight.length < 4 && dataSnapshot.getValue(Request::class.java)!!.weight != "") {
 
-//                    todo - deal with decimal weights?
                     val weight: Int = dataSnapshot.getValue(Request::class.java)!!.weight.toDouble().toInt()
 
                     Log.d(fragTag, "localDate: $localDate nowDate: $nowDate")
