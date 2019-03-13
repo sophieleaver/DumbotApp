@@ -9,6 +9,7 @@ import android.os.SystemClock
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,6 +22,7 @@ import kotlinx.android.synthetic.main.fragment_current_orders.*
 import kotlinx.android.synthetic.main.fragment_current_orders.view.*
 import kotlinx.android.synthetic.main.item_current_dumbbell.view.*
 import kotlinx.android.synthetic.main.reset_warning_view.view.*
+import org.jetbrains.anko.toast
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 
@@ -85,7 +87,7 @@ class CurrentOrdersFragment : Fragment() {
                 for (req in requests.values) {
                     if (req.type == "delivering") {
                         requests.remove(req.id)
-                        currentDBRecyclerView.adapter?.notifyDataSetChanged()
+                        currentDBRecyclerView.adapter!!.notifyDataSetChanged()
                     }
                     if (req.type == "current") {
                         req.type = "collecting"
@@ -221,10 +223,12 @@ class CurrentOrdersFragment : Fragment() {
                                 val now2 = LocalDateTime.now(ZoneOffset.UTC)
                                 val unixSeconds = now2.atZone(ZoneOffset.UTC)?.toEpochSecond()
 
-                                ref.child("demo2").child("cancelledRequests").child(request.id)
-                                        .setValue(unixSeconds)
-
                                 requests[holder.id]!!.type = "current"
+                                requests[holder.id]!!.id = now2.atZone(ZoneOffset.UTC)?.toInstant()?.toEpochMilli().toString()
+                                request.id = now2.atZone(ZoneOffset.UTC)?.toInstant()?.toEpochMilli().toString()
+                                ref.child("demo2").child("cancelledRequests").child(request.id)
+                                    .setValue(unixSeconds)
+
 //                                todo - why?
                                 onBindViewHolder(holder, position)
                                 dialog.cancel()
@@ -259,10 +263,30 @@ class CurrentOrdersFragment : Fragment() {
 
                                 val now3 = LocalDateTime.now(ZoneOffset.UTC)
                                 val unixSeconds = now3.atZone(ZoneOffset.UTC)?.toEpochSecond()
+                                val unixMilli = now3.atZone(ZoneOffset.UTC)?.toInstant()?.toEpochMilli().toString()
+                                Log.d("currO","before request: id = ${request.id}")
+                                //set entry in request hashmap to collecting
+
+                                var currentDumbbellReq: Request = requests[holder.id]!!
+                                currentDumbbellReq!!.id = unixMilli
+                                currentDumbbellReq!!.type = "collecting"
+                                request.id = unixMilli
+
+                                requests.remove(holder.id) //remove the request with the delivering id
+                                requests.put(currentDumbbellReq.id, currentDumbbellReq)
+                                notifyDataSetChanged()
+//                                requests[holder.id]!!.type = "collecting"
+//                                requests[holder.id]!!.id = unixMilli
+
+                                //Log.d("currO", "after id change: ${requests[request.id]!!.id}")
+
+
+                                request.id = unixMilli
+                                //Log.d("currO", "time $unixMilli: returning request id ${request.id} (holder id ${requests[holder.id]!!.id})")
 
                                 //send request to firebase
                                 val newRequest =
-                                        ref.child("demo2").child("requests").child(request.id)
+                                    ref.child("demo2").child("requests").child(request.id)
                                 newRequest.child("bench").setValue(request.bench)
                                 newRequest.child("time").setValue(unixSeconds)
                                 newRequest.child("type").setValue("collecting")

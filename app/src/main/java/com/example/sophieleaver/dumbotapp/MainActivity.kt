@@ -3,6 +3,7 @@ package com.example.sophieleaver.dumbotapp
 import android.content.Context
 import android.content.pm.ActivityInfo
 import android.os.Bundle
+import android.renderscript.Sampler
 import android.support.design.widget.NavigationView
 import android.support.v4.app.Fragment
 import android.support.v4.view.GravityCompat
@@ -20,9 +21,16 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
+import kotlinx.android.synthetic.main.fragment_current_orders.*
+import kotlinx.android.synthetic.main.fragment_current_orders.view.*
 import kotlinx.android.synthetic.main.nav_header_main.view.*
 import org.jetbrains.anko.design.longSnackbar
 import org.jetbrains.anko.design.snackbar
+import org.jetbrains.anko.toast
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneOffset
+import java.util.*
 
 //todo - change requests in sharedpreferences on cancel/return
 //todo - proper auth
@@ -31,12 +39,16 @@ var currentBench = "B7"
 var isManagerMode = false
 var requests = HashMap<String, Request>() // id and request
 
+
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     private lateinit var mainLayout: View
     private lateinit var mainToolbar: Toolbar
     private lateinit var navigationView: NavigationView
     private lateinit var modeText: TextView
+
+    var ref = FirebaseDatabase.getInstance().reference
+    var logRef = ref.child("demo2").child("log")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,6 +66,43 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             modeText.text = getString(R.string.app_mode, modeString())
             loadRequests(getStringSet("requests", null)?.toMutableList())
         }
+
+        listenToCurrentRequestsStatus()
+
+
+    }
+
+    private fun listenToCurrentRequestsStatus() {
+        logRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                for (request in requests.values){
+                    if (dataSnapshot.hasChild(request.id)){
+                        when (request.type){
+                            "delivering" ->  {
+                                toast("delivering")
+                                Log.d("MainActivity", "${request.id}")
+                                request.type = "current"
+                                request.time = LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneOffset.UTC)?.toEpochSecond()!!
+                                recyclerView_current_dumbbells.adapter!!.notifyDataSetChanged()
+                            }
+                            "collecting" -> {
+                                //toast("collecting")
+                                toast(request.id)
+                                Log.d("MainActivity", "${request.id}")
+                                requests.remove(request.id)
+                                recyclerView_current_dumbbells.adapter!!.notifyDataSetChanged()
+
+                            }
+                        }
+                    }
+                }
+            }
+
+            override fun onCancelled(p0: DatabaseError) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+        })
     }
 
     private fun loadRequests(requestIds: MutableList<String>?) {
@@ -134,15 +183,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 changeMode(!isManagerMode)
             }
             R.id.nav_order -> {
-//                if (!currentRequestExists) { //if the user does not have a current request open, the weight list is opened
                 val orderFragment = OrderFragment.newInstance()
                 mainToolbar.title = "Order Dumbbells"
                 openFragment(orderFragment)
-//                } else {
-//                    val currentSession = CurrentSessionFragment.newInstance()
-//                    mainToolbar.title = "Active Workout Session"
-//                    openFragment(currentSession)
-//                }
+
             }
             R.id.nav_current_sessions -> {
                 val currentWorkoutFragment = CurrentOrdersFragment.newInstance()
@@ -199,18 +243,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 openFragment(timerFragment)
             }
 
-//            R.id.nav_demo -> {
-//                if (globalState.equals("user")){
-//                    val restrictedFragment  = RestrictedFragment.newInstance()
-//                    mainToolbar.title = "Cannot access page"
-//                    openFragment(restrictedFragment)
-//                } else {
-//                    val demoFragment = DemoFragment.newInstance()
-//                    supportActionBar!!.title = "Demo"
-//                    openFragment(demoFragment)
-//                }
-//            }
-
         }
 
         drawer_layout.closeDrawer(GravityCompat.START)
@@ -249,8 +281,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 }
 
 data class Request(
-        val id: String = "",
-        var time: Long = 0L,
-        var type: String = "",
-        val weight: String = "", val bench: String = ""
+    var id: String = "",
+    var time: Long = 0L,
+    var type: String = "",
+    val weight: String = "",
+    val bench: String = ""
 )

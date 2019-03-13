@@ -3,7 +3,6 @@ package com.example.sophieleaver.dumbotapp
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.res.ColorStateList
-import android.graphics.Color
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
@@ -101,13 +100,14 @@ class OrderFragment : Fragment() {
         override fun getItemCount(): Int = weights.size
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            if (maximumWeightLimitReached()) {
-                holder.orderButton.isEnabled = false
-                holder.orderButton.backgroundTintList = ColorStateList.valueOf(Color.GRAY)
-            } else {
+            //todo implement for next demo
+//            if (maximumWeightLimitReached()) {
+//                holder.orderButton.isEnabled = false
+//                holder.orderButton.backgroundTintList = ColorStateList.valueOf(Color.GRAY)
+//            } else {
                 holder.orderButton.backgroundTintList =
                         ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.colorDumbbellAvailable))
-            }
+//            }
             val requestedWeight = weights[position]
 
             holder.apply {
@@ -138,11 +138,30 @@ class OrderFragment : Fragment() {
                     }
                     builder.setNeutralButton("CANCEL") { dialog, _ -> dialog.cancel() }
 
-                    val dialog = builder.create()
-                    dialog.show()
+                        val dialog = builder.create()
+                        dialog.show()
+                    }
+//                if (dumbbellAvailable) {
+//                                createRequest(
+//                                    dumbbellAvailable,
+//                                    requestedWeight.weightValue.toString()
+//                                )
+//                            } else {
+//                                dialog.cancel()
+//                                val innerBuilder = AlertDialog.Builder(context)
+//                                innerBuilder.apply {
+//                                    setTitle("Weight Unavailable")
+//                                    setMessage("The weight you just ordered has now become unavailable - please choose another set of dumbbells from the list.")
+//                                    setPositiveButton("OKAY") { dialog, _ ->
+//                                        dialog.cancel()
+//                                    }
+//                                }
+//                            }
+//                        }
                 }
             }
-        }
+
+
 
         private fun createRequest(dumbbellAvailable: Boolean, weightValue: String) {
 
@@ -158,7 +177,8 @@ class OrderFragment : Fragment() {
             val newRequest = Request(requestID, seconds, status, weightValue, bench)
             requests[requestID] = newRequest
             requestReference.child(requestID).setValue(newRequest)
-            weightReference.child("$weightValue/$path/$bench").setValue("$status|$seconds")
+            weightReference.child("$weightValue/$path/$bench")
+                .setValue("$status|$seconds")
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         (activity as MainActivity).onSuccessfulOrder(weightValue)

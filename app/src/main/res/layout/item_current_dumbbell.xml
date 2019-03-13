@@ -15,6 +15,8 @@
         android:gravity="center"
         tools:text="10 KG"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Headline3"
+        android:fontFamily="@font/muli"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/divider_current"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
