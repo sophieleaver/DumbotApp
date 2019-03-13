@@ -6,20 +6,21 @@
     android:layout_height="wrap_content">
 
     <TextView
-        android:id="@+id/textView_current_dumbbell_weight"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:gravity="center"
-        tools:text="10 KG"
-        android:textAppearance="@style/TextAppearance.MaterialComponents.Headline3"
-        android:fontFamily="@font/muli"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/divider_current"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+            android:id="@+id/textView_current_dumbbell_weight"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            tools:text="10 KG"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline3"
+            android:fontFamily="@font/muli"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/divider_current"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" app:layout_constraintHorizontal_bias="0.47"
+            app:layout_constraintVertical_bias="0.0" android:textSize="36sp"/>
 
     <View
         android:id="@+id/divider_current"
@@ -93,19 +94,18 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Chronometer
-        android:id="@+id/text_dumbbell_timer"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:gravity="center"
-        android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
-        android:textSize="28sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/textView_current_dumbbell_weight"
-        app:layout_constraintStart_toStartOf="@+id/textView_current_dumbbell_weight"
-        app:layout_constraintTop_toBottomOf="@+id/textView_current_dumbbell_weight"
-        tools:text="13:46" />
+            android:id="@+id/text_dumbbell_timer"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:gravity="center"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/textView_current_dumbbell_weight"
+            app:layout_constraintStart_toStartOf="@+id/textView_current_dumbbell_weight"
+            app:layout_constraintTop_toBottomOf="@+id/textView_current_dumbbell_weight"
+    />
 
 </android.support.constraint.ConstraintLayout>

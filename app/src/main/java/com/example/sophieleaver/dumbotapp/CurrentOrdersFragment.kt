@@ -169,6 +169,7 @@ class CurrentOrdersFragment : Fragment() {
                     holder.background.setBackgroundColor(Color.WHITE)
 
                     if (type == "delivering") {
+                        holder.timer.visibility = View.INVISIBLE
                         holder.description.text = getString(R.string.dumbbell_being_delivered)
                         holder.button.text = getString(R.string.cancel)
                         holder.button.setOnClickListener {
@@ -198,10 +199,10 @@ class CurrentOrdersFragment : Fragment() {
 
                                 dialog.cancel()
                             }
-//
                         }
                     }
                     if (type == "collecting") {
+                        holder.timer.visibility = View.INVISIBLE
                         holder.description.text = getString(R.string.dumbbell_being_collected)
                         holder.button.text = getString(R.string.cancel)
                         holder.button.setOnClickListener {
@@ -238,6 +239,7 @@ class CurrentOrdersFragment : Fragment() {
 
                     }
                     if (type == "current") {
+                        holder.timer.visibility = View.VISIBLE
                         holder.description.text = getString(R.string.current_dumbbell)
                         holder.button.text = getString(R.string.more_info)
                         holder.timer.base = baseTime
