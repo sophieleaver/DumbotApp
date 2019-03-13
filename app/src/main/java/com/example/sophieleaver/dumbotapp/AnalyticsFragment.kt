@@ -21,6 +21,8 @@ import com.jjoe64.graphview.series.DataPoint
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZoneOffset
+import java.time.temporal.WeekFields
+import java.util.*
 
 
 //TODO create a login
@@ -34,8 +36,11 @@ class AnalyticsFragment : Fragment() {
     private var mSeries5: BarGraphSeries<DataPoint>? = null
     private var mSeries6: BarGraphSeries<DataPoint>? = null
     private var mSeries7: BarGraphSeries<DataPoint>? = null
-    //key: weight maps to usage and place in dataPoints
-    private var weightUsage: HashMap<Int, Int> = HashMap()
+
+    private var weightUsageToday: HashMap<Int, Int> = HashMap()
+    private var weightUsageWeek: HashMap<Int, Int> = HashMap()
+    private var weightUsageMonth: HashMap<Int, Int> = HashMap()
+    private var weightUsageYear: HashMap<Int, Int> = HashMap()
 
     private lateinit var graph1: GraphView
     private lateinit var graph2: GraphView
@@ -47,6 +52,11 @@ class AnalyticsFragment : Fragment() {
     //firebase variables
     private val ref = FirebaseDatabase.getInstance().reference
     private val requestReference = ref.child("demo2").child("log")
+
+    private var clickedToday = false
+    private var clickedWeek = false
+    private var clickedMonth = false
+    private var clickedYear = false
 
 
 //    data class Request(var bench: String = "", var time: Long = 0, var type: String = "", var weight: String = "")
@@ -66,7 +76,7 @@ class AnalyticsFragment : Fragment() {
         dropdown.apply {
             adapter = ArrayAdapter(this@AnalyticsFragment.requireContext(),
                     android.R.layout.simple_spinner_dropdown_item,
-                    arrayOf("Today", "Last Week", "Last Month", "Last Year"))
+                    arrayOf("Today", "This Week", "This Month", "This Year"))
 
             // Set an on item selected listener for spinner object
             onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -76,42 +86,27 @@ class AnalyticsFragment : Fragment() {
                     //show last week analytics
                     when (parent.getItemAtPosition(position).toString()) {
 
-                        "Today" -> showDailyStats()
-                        "Last Week" -> {
+                        "Today" -> {
 
+                            if(!clickedToday){
+                                addListener("Today")
+                                clickedToday = true
+                            }else{
 
-                            //---------------------weekly dumbbell counts-----------------------
-
-
-                            graph1.removeAllSeries()
-                            if (mSeries1 == null) {
-                                mSeries1 = BarGraphSeries(arrayOf(
-
-                                        //should be initialised to zero every day
-                                        //should be imported from firestore
-                                        //updated everytime a request is issued in the requests page
-                                        DataPoint(5.0, 12.0),
-                                        DataPoint(10.0, 14.0),
-                                        DataPoint(15.0, 17.0),
-                                        DataPoint(20.0, 11.0),
-                                        DataPoint(25.0, 12.0)))
+                                updateGraph("Today")
+                                Log.d(fragTag, "clickedYear is true")
                             }
+                        }
+                        "This Week" -> {
 
-                            graph1.addSeries(mSeries1)
-                            graph1.title = "Request counts for each dumbbell last week"
+                            if(!clickedWeek){
+                                addListener("Week")
+                                clickedWeek = true
+                            }else{
 
-                            // styling
-                            mSeries1!!.valueDependentColor = ValueDependentColor { data ->
-                                Color.rgb(data.x.toInt() * 255 / 4, Math.abs(data.y * 255 / 6).toInt(), 100)
+                                updateGraph("Week")
+                                Log.d(fragTag, "clickedYear is true")
                             }
-
-                            mSeries1!!.spacing = 20
-
-                            // draw values on top
-                            mSeries1!!.isDrawValuesOnTop = true
-                            mSeries1!!.valuesOnTopColor = Color.RED
-                            //series.setValuesOnTopSize(50);
-
 
                             // ----------------weekly station counts------------------------
 
@@ -148,40 +143,16 @@ class AnalyticsFragment : Fragment() {
 
                         }
                         //show last months analytics
-                        "Last Month" -> {
+                        "This Month" -> {
 
 
-                            //-----------------monthly dumbbell counts---------------------------
-
-
-                            graph1.removeAllSeries()
-                            if (mSeries3 == null) {
-                                mSeries3 = BarGraphSeries(arrayOf(
-
-                                        //should be initialised to zero every month
-                                        //should be imported from firestore
-                                        //updated everytime a request is issued in the requests page
-                                        DataPoint(5.0, 120.0),
-                                        DataPoint(10.0, 140.0),
-                                        DataPoint(15.0, 170.0),
-                                        DataPoint(20.0, 110.0),
-                                        DataPoint(25.0, 120.0)))
+                            if(!clickedMonth){
+                                addListener("Month")
+                                clickedMonth = true
+                            }else{
+                                updateGraph("Month")
+                                Log.d(fragTag, "clickedYear is true")
                             }
-                            graph1.addSeries(mSeries3)
-                            graph1.title = "Request counts for each dumbbell last month"
-
-                            // styling
-                            mSeries3!!.valueDependentColor = ValueDependentColor { data ->
-                                Color.rgb(data.x.toInt() * 255 / 4, Math.abs(data.y * 255 / 6).toInt(), 100)
-                            }
-
-                            mSeries3!!.spacing = 20
-
-                            // draw values on top
-                            mSeries3!!.isDrawValuesOnTop = true
-                            mSeries3!!.valuesOnTopColor = Color.RED
-                            //series.setValuesOnTopSize(50);
-
 
                             //-----------------monthly station counts---------------------------
 
@@ -216,60 +187,34 @@ class AnalyticsFragment : Fragment() {
 
                         }
                         //show last years analytics
-                        "Last Year" -> {
+                        "This Year" -> {
 
-
-                            //-----------------yearly dumbbell counts---------------------------
-
-
-                            graph1.removeAllSeries()
-                            if (mSeries5 == null) {
-                                mSeries5 = BarGraphSeries(arrayOf(
-
-                                        //should be initialised to zero every year
-                                        //should be imported from firestore
-                                        //updated everytime a request is issued in the requests page
-                                        DataPoint(5.0, 1200.0),
-                                        DataPoint(10.0, 1400.0),
-                                        DataPoint(15.0, 1700.0),
-                                        DataPoint(20.0, 1100.0),
-                                        DataPoint(25.0, 1200.0)))
-                            }
-                            graph1.addSeries(mSeries5)
-                            graph1.title = "Request counts for each dumbbell last year"
-
-                            // styling
-                            mSeries5!!.valueDependentColor = ValueDependentColor { data ->
-                                Color.rgb(data.x.toInt() * 255 / 4, Math.abs(data.y * 255 / 6).toInt(), 100)
+                            if(!clickedYear){
+                                addListener("Year")
+                                clickedYear = true
+                            }else{
+                                updateGraph("Year")
+                                Log.d(fragTag, "clickedYear is true")
                             }
 
-                            mSeries5!!.spacing = 20
-
-                            // draw values on top
-                            mSeries5!!.isDrawValuesOnTop = true
-                            mSeries5!!.valuesOnTopColor = Color.RED
-                            //series.setValuesOnTopSize(50);
-
-
-                            //-------------------yearly station counts-----------------------------
+                            //-----------------monthly station counts---------------------------
 
 
                             graph2.removeAllSeries()
                             if (mSeries6 == null) {
                                 mSeries6 = BarGraphSeries(arrayOf(
 
-                                        //should be initialised to zero every year
-                                        //should be imported from firestore
-                                        //updated everytime a request is issued in the requests page
-                                        DataPoint(1.0, 1200.0),
-                                        DataPoint(2.0, 1400.0),
-                                        DataPoint(3.0, 1700.0),
-                                        DataPoint(4.0, 1100.0),
-                                        DataPoint(5.0, 1200.0)))
+                                    //should be initialised to zero every month
+                                    //should be imported from firestore
+                                    //updated everytime a request is issued in the requests page
+                                    DataPoint(1.0, 120.0),
+                                    DataPoint(2.0, 140.0),
+                                    DataPoint(3.0, 170.0),
+                                    DataPoint(4.0, 110.0),
+                                    DataPoint(5.0, 120.0)))
                             }
-
                             graph2.addSeries(mSeries6)
-                            graph2.title = "Request counts for each workout station last year"
+                            graph2.title = "Request counts for each workout station last month"
 
                             // styling
                             mSeries6!!.valueDependentColor = ValueDependentColor { data ->
@@ -282,6 +227,8 @@ class AnalyticsFragment : Fragment() {
                             mSeries6!!.isDrawValuesOnTop = true
                             mSeries6!!.valuesOnTopColor = Color.RED
                             //series.setValuesOnTopSize(50);
+
+
                         }
                     }
 
@@ -299,72 +246,81 @@ class AnalyticsFragment : Fragment() {
         return view
     }
 
-    private fun showDailyStats() {
 
-        //---------------------dumbbell counts for that day-----------------------
 
-        // reset current graph
-        graph1.removeAllSeries()
-        if (mSeries7 == null) {
-            mSeries7 = BarGraphSeries(arrayOf(DataPoint(0.0, 0.0)))
-        }
-        graph1.addSeries(mSeries7)
-
-        //get counts for that day from firebase
-        val now = LocalDateTime.now(ZoneOffset.UTC)
-        val nowDate = now.toLocalDate()
+    private fun addListener(type:String) {
 
 
         //listen for changes in the database
         val childEventListener = object : ChildEventListener {
             override fun onChildAdded(dataSnapshot: DataSnapshot, previousChildName: String?) {
                 Log.d(fragTag, "onChildAdded:" + dataSnapshot.key!!)
+                //get current date
+                val now = LocalDateTime.now(ZoneOffset.UTC)
+                val nowDate = now.toLocalDate()
+                val weekFields = WeekFields.of(Locale.getDefault())
+                val nowWeek = nowDate.get(weekFields.weekOfWeekBasedYear())
+                val nowMonth = now.monthValue
+                val nowYear = now.year
 
-
+                //get date of the added request
                 val unixSeconds: Long = dataSnapshot.getValue(Request::class.java)!!.time
-                val date = java.util.Date(unixSeconds) // * 1000L)
-                val localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+                val date = java.util.Date(unixSeconds * 1000)
+                val requestDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+                val requestWeek = requestDate.get(weekFields.weekOfWeekBasedYear())
+                val requestMonth = requestDate.monthValue
+                val requestYear = requestDate.year
+
+                // check that the weight is valid
                 if (dataSnapshot.getValue(Request::class.java)!!.weight.length < 4 && dataSnapshot.getValue(Request::class.java)!!.weight != "") {
 
                     val weight: Int = dataSnapshot.getValue(Request::class.java)!!.weight.toDouble().toInt()
 
-                    Log.d(fragTag, "localDate: $localDate nowDate: $nowDate")
-                    if (/*localDate == nowDate*/true) {
+                    when (type) {
 
-                        weightUsage[weight] = weightUsage.getOrDefault(weight, 0) + 1
-                        Log.d(fragTag,
-                                "onChildAdded: dataPoints.set called with: $weight " +
-                                        "X: ${weight.toDouble()} Y: ${weightUsage[weight]!!.toDouble()}")
+                        "Today" -> {
 
-//                        Log.d(fragTag, "ARRAYELEMENT: " + dataPoints.get(weight))
-//                        dataPoints[weight] = DataPoint(weight.toDouble(), weightUsage.get(weight)!!.toDouble())
-                        mSeries7 = BarGraphSeries(weightUsage.map {
-                            DataPoint(it.key.toDouble(), it.value.toDouble())
-                        }.toTypedArray()).apply {
-                            // styling
-                            valueDependentColor = ValueDependentColor { data ->
-                                Color.rgb(data.x.toInt() * 255 / 4, Math.abs(data.y * 255 / 6).toInt(), 100)
+                            Log.d(fragTag, "localDate: $requestDate nowDate: $nowDate")
+                            if (requestDate == nowDate) {
+                               // Log.d(fragTag, "onChildAdded: dataPoints.set called with: $weight " + "X: ${weight.toDouble()} Y: ${weightUsage[weight]!!.toDouble()}")
+                                weightUsageToday[weight] = weightUsageToday.getOrDefault(weight, 0) + 1
+                                updateGraph("Today")
                             }
-                            spacing = 30
-                            isDrawValuesOnTop = true
-                            valuesOnTopColor = Color.RED
+
+
                         }
+                        "Week" -> {
 
-                        graph1.let {
-                            it.removeAllSeries()
-                            it.addSeries(mSeries7)
-                            it.title = "Request counts for each dumbbell today"
-                            it.viewport.setMinY(0.0)
-                            it.viewport.setMaxY(weightUsage.values.max()!!.toDouble())
-                            it.viewport.setMinX(weightUsage.keys.min()!!.toDouble())
-                            it.viewport.setMaxX(weightUsage.keys.max()!!.toDouble())
-                            it.viewport.isScalable = true
-                            it.viewport.isScrollable = true
-                            it.viewport.setScalableY(true)
-                            it.viewport.setScalableY(true)
+                            Log.d(fragTag, "localDate: $requestDate nowDate: $nowDate")
+                            if (requestWeek == nowWeek) {
+                                //Log.d(fragTag, "onChildAdded: dataPoints.set called with: $weight " + "X: ${weight.toDouble()} Y: ${weightUsage[weight]!!.toDouble()}")
+                                weightUsageWeek[weight] = weightUsageWeek.getOrDefault(weight, 0) + 1
+                                updateGraph("Week")
+                            }
+
+
                         }
+                        "Month" -> {
+
+                            Log.d(fragTag, "localDate: $requestDate nowDate: $nowDate")
+                            if (requestMonth == nowMonth) {
+                               // Log.d(fragTag, "onChildAdded: dataPoints.set called with: $weight " + "X: ${weight.toDouble()} Y: ${weightUsage[weight]!!.toDouble()}")
+                                weightUsageMonth[weight] = weightUsageMonth.getOrDefault(weight, 0) + 1
+                                updateGraph("Month")
+                            }
 
 
+                        }
+                        "Year" -> {
+                            Log.d(fragTag, "localDate: $requestDate nowDate: $nowDate")
+                            if (requestYear == nowYear) {
+                                //Log.d(fragTag, "onChildAdded: dataPoints.set called with: $weight " + "X: ${weight.toDouble()} Y: ${weightUsage[weight]!!.toDouble()}")
+                                weightUsageYear[weight] = weightUsageYear.getOrDefault(weight, 0) + 1
+                                updateGraph("Year")
+                            }
+
+
+                        }
                     }
                 }
             }
@@ -396,8 +352,99 @@ class AnalyticsFragment : Fragment() {
         }
 
         requestReference.addChildEventListener(childEventListener)
-
     }
+
+    private fun updateGraph(type:String){
+        graph1.removeAllSeries()
+
+//                        Log.d(fragTag, "ARRAYELEMENT: " + dataPoints.get(weight))
+//                        dataPoints[weight] = DataPoint(weight.toDouble(), weightUsage.get(weight)!!.toDouble())
+
+        when (type) {
+
+            "Today" -> {
+                mSeries7 = BarGraphSeries(weightUsageToday.map {
+                    DataPoint(it.key.toDouble(), it.value.toDouble()) }.toTypedArray()).apply {
+                    valueDependentColor = ValueDependentColor { data ->
+                        Color.rgb(data.x.toInt() * 255 / 4, Math.abs(data.y * 255 / 6).toInt(), 100)
+                    }
+                    spacing = 30
+                    isDrawValuesOnTop = true
+                    valuesOnTopColor = Color.RED
+                }
+                graph1.let {
+                    it.title = "Request counts for each dumbbell today"
+                    it.removeAllSeries()
+                    it.addSeries(mSeries7)
+                }
+            }
+            "Week" -> {
+                mSeries1 = BarGraphSeries(weightUsageWeek.map {
+                    DataPoint(it.key.toDouble(), it.value.toDouble()) }.toTypedArray()).apply {
+                    valueDependentColor = ValueDependentColor { data ->
+                        Color.rgb(data.x.toInt() * 255 / 4, Math.abs(data.y * 255 / 6).toInt(), 100)
+                    }
+                    spacing = 30
+                    isDrawValuesOnTop = true
+                    valuesOnTopColor = Color.RED
+                }
+                graph1.let {
+                    it.title = "Request counts for each dumbbell this week"
+                    it.removeAllSeries()
+                    it.addSeries(mSeries1)
+                }
+            }
+            "Month" -> {
+                mSeries3 = BarGraphSeries(weightUsageMonth.map {
+                    DataPoint(it.key.toDouble(), it.value.toDouble()) }.toTypedArray()).apply {
+                    valueDependentColor = ValueDependentColor { data ->
+                        Color.rgb(data.x.toInt() * 255 / 4, Math.abs(data.y * 255 / 6).toInt(), 100)
+                    }
+                    spacing = 30
+                    isDrawValuesOnTop = true
+                    valuesOnTopColor = Color.RED
+                }
+                graph1.let {
+                    it.title = "Request counts for each dumbbell this month"
+                    it.removeAllSeries()
+                    it.addSeries(mSeries3)
+                }
+            }
+            "Year" -> {
+                mSeries5 = BarGraphSeries(weightUsageYear.map {
+                    DataPoint(it.key.toDouble(), it.value.toDouble()) }.toTypedArray()).apply {
+                    valueDependentColor = ValueDependentColor { data ->
+                        Color.rgb(data.x.toInt() * 255 / 4, Math.abs(data.y * 255 / 6).toInt(), 100)
+                    }
+                    spacing = 30
+                    isDrawValuesOnTop = true
+                    valuesOnTopColor = Color.RED
+                }
+                graph1.let {
+                    it.title = "Request counts for each dumbbell this year"
+                    it.removeAllSeries()
+                    it.addSeries(mSeries5)
+                }
+            }
+        }
+
+
+        graph1.let {
+            it.viewport.setMinY(0.0)
+//            it.viewport.setMaxY(weightUsage.values.max()!!.toDouble())
+//            it.viewport.setMinX(weightUsage.keys.min()!!.toDouble())
+//            it.viewport.setMaxX(weightUsage.keys.max()!!.toDouble())
+            it.viewport.setMaxY(200.0)
+            it.viewport.setMinX(0.0)
+            it.viewport.setMaxX(20.0)
+            it.viewport.isScalable = true
+            it.viewport.isScrollable = true
+            it.viewport.setScalableY(true)
+            it.viewport.setScalableY(true)
+        }
+    }
+
+
 
     companion object {
         @JvmStatic
