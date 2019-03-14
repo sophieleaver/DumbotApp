@@ -53,10 +53,7 @@ class AnalyticsFragment : Fragment() {
     private val ref = FirebaseDatabase.getInstance().reference
     private val requestReference = ref.child("demo2").child("log")
 
-    private var clickedToday = false
-    private var clickedWeek = false
-    private var clickedMonth = false
-    private var clickedYear = false
+    private var type= "Today"
 
 
 //    data class Request(var bench: String = "", var time: Long = 0, var type: String = "", var weight: String = "")
@@ -69,6 +66,9 @@ class AnalyticsFragment : Fragment() {
         //the two bargraphs displayed on the screen
         graph1 = view.findViewById(R.id.graph1)
         graph2 = view.findViewById(R.id.graph2)
+
+        //add firebase listener
+        addListener()
 
         //create spinner to hold selection box for period of time for graph
         val dropdown: Spinner = view.findViewById(R.id.spinner1)
@@ -87,26 +87,14 @@ class AnalyticsFragment : Fragment() {
                     when (parent.getItemAtPosition(position).toString()) {
 
                         "Today" -> {
+                            type = "Today"
+                            updateGraph()
 
-                            if(!clickedToday){
-                                addListener("Today")
-                                clickedToday = true
-                            }else{
-
-                                updateGraph("Today")
-                                Log.d(fragTag, "clickedYear is true")
-                            }
                         }
                         "This Week" -> {
+                            type = "Week"
+                            updateGraph()
 
-                            if(!clickedWeek){
-                                addListener("Week")
-                                clickedWeek = true
-                            }else{
-
-                                updateGraph("Week")
-                                Log.d(fragTag, "clickedYear is true")
-                            }
 
                             // ----------------weekly station counts------------------------
 
@@ -145,14 +133,9 @@ class AnalyticsFragment : Fragment() {
                         //show last months analytics
                         "This Month" -> {
 
+                            type = "Month"
+                            updateGraph()
 
-                            if(!clickedMonth){
-                                addListener("Month")
-                                clickedMonth = true
-                            }else{
-                                updateGraph("Month")
-                                Log.d(fragTag, "clickedYear is true")
-                            }
 
                             //-----------------monthly station counts---------------------------
 
@@ -188,16 +171,10 @@ class AnalyticsFragment : Fragment() {
                         }
                         //show last years analytics
                         "This Year" -> {
+                            type = "Year"
+                            updateGraph()
 
-                            if(!clickedYear){
-                                addListener("Year")
-                                clickedYear = true
-                            }else{
-                                updateGraph("Year")
-                                Log.d(fragTag, "clickedYear is true")
-                            }
-
-                            //-----------------monthly station counts---------------------------
+                            //-----------------yearly station counts---------------------------
 
 
                             graph2.removeAllSeries()
@@ -207,14 +184,14 @@ class AnalyticsFragment : Fragment() {
                                     //should be initialised to zero every month
                                     //should be imported from firestore
                                     //updated everytime a request is issued in the requests page
-                                    DataPoint(1.0, 120.0),
-                                    DataPoint(2.0, 140.0),
-                                    DataPoint(3.0, 170.0),
-                                    DataPoint(4.0, 110.0),
-                                    DataPoint(5.0, 120.0)))
+                                    DataPoint(1.0, 1200.0),
+                                    DataPoint(2.0, 1400.0),
+                                    DataPoint(3.0, 1700.0),
+                                    DataPoint(4.0, 1100.0),
+                                    DataPoint(5.0, 1200.0)))
                             }
                             graph2.addSeries(mSeries6)
-                            graph2.title = "Request counts for each workout station last month"
+                            graph2.title = "Request counts for each workout station last year"
 
                             // styling
                             mSeries6!!.valueDependentColor = ValueDependentColor { data ->
@@ -248,8 +225,8 @@ class AnalyticsFragment : Fragment() {
 
 
 
-    private fun addListener(type:String) {
-
+    private fun addListener() {
+        Log.d(fragTag, "addListener")
 
         //listen for changes in the database
         val childEventListener = object : ChildEventListener {
@@ -271,59 +248,51 @@ class AnalyticsFragment : Fragment() {
                 val requestMonth = requestDate.monthValue
                 val requestYear = requestDate.year
 
-                // check that the weight is valid
-                if (dataSnapshot.getValue(Request::class.java)!!.weight.length < 4 && dataSnapshot.getValue(Request::class.java)!!.weight != "") {
+                val type: String = dataSnapshot.getValue(Request::class.java)!!.type
+
+                // check that the weight is valid and that the weight has been delivered
+                if (dataSnapshot.getValue(Request::class.java)!!.weight.length < 4 && dataSnapshot.getValue(Request::class.java)!!.weight != "" && type == "delivering") {
 
                     val weight: Int = dataSnapshot.getValue(Request::class.java)!!.weight.toDouble().toInt()
 
-                    when (type) {
-
-                        "Today" -> {
 
                             Log.d(fragTag, "localDate: $requestDate nowDate: $nowDate")
                             if (requestDate == nowDate) {
                                // Log.d(fragTag, "onChildAdded: dataPoints.set called with: $weight " + "X: ${weight.toDouble()} Y: ${weightUsage[weight]!!.toDouble()}")
                                 weightUsageToday[weight] = weightUsageToday.getOrDefault(weight, 0) + 1
-                                updateGraph("Today")
+
                             }
 
-
-                        }
-                        "Week" -> {
 
                             Log.d(fragTag, "localDate: $requestDate nowDate: $nowDate")
                             if (requestWeek == nowWeek) {
                                 //Log.d(fragTag, "onChildAdded: dataPoints.set called with: $weight " + "X: ${weight.toDouble()} Y: ${weightUsage[weight]!!.toDouble()}")
                                 weightUsageWeek[weight] = weightUsageWeek.getOrDefault(weight, 0) + 1
-                                updateGraph("Week")
+
                             }
 
-
-                        }
-                        "Month" -> {
 
                             Log.d(fragTag, "localDate: $requestDate nowDate: $nowDate")
                             if (requestMonth == nowMonth) {
                                // Log.d(fragTag, "onChildAdded: dataPoints.set called with: $weight " + "X: ${weight.toDouble()} Y: ${weightUsage[weight]!!.toDouble()}")
                                 weightUsageMonth[weight] = weightUsageMonth.getOrDefault(weight, 0) + 1
-                                updateGraph("Month")
+
                             }
 
 
-                        }
-                        "Year" -> {
+
                             Log.d(fragTag, "localDate: $requestDate nowDate: $nowDate")
                             if (requestYear == nowYear) {
                                 //Log.d(fragTag, "onChildAdded: dataPoints.set called with: $weight " + "X: ${weight.toDouble()} Y: ${weightUsage[weight]!!.toDouble()}")
                                 weightUsageYear[weight] = weightUsageYear.getOrDefault(weight, 0) + 1
-                                updateGraph("Year")
+
                             }
 
-
-                        }
-                    }
+                    updateGraph()
                 }
+
             }
+
 
             override fun onChildChanged(dataSnapshot: DataSnapshot, previousChildName: String?) {
                 Log.d(fragTag, "onChildChanged: ${dataSnapshot.key}")
@@ -354,7 +323,8 @@ class AnalyticsFragment : Fragment() {
         requestReference.addChildEventListener(childEventListener)
     }
 
-    private fun updateGraph(type:String){
+    private fun updateGraph(){
+        Log.d(fragTag, "updateGraph")
         graph1.removeAllSeries()
 
 //                        Log.d(fragTag, "ARRAYELEMENT: " + dataPoints.get(weight))
