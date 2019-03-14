@@ -20,6 +20,7 @@ import kotlinx.android.synthetic.main.current_dumbbell_view.view.*
 import kotlinx.android.synthetic.main.fragment_current_orders.view.*
 import kotlinx.android.synthetic.main.item_current_dumbbell.view.*
 import kotlinx.android.synthetic.main.reset_warning_view.view.*
+import org.jetbrains.anko.toast
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 
@@ -48,7 +49,7 @@ class CurrentOrdersFragment : Fragment() {
         //                layoutManager = LinearLayoutManager(this@CurrentOrdersFragment.requireContext())
         //                adapter = QueuedDumbbellAdapter()
         //            }
-        //            adapter.notifyDataSetChanged()
+//                    adapter.notifyDataSetChanged()
 
         view.fab_timer.setOnClickListener { (requireActivity() as MainActivity).showTimeFragment() }
 
@@ -188,9 +189,10 @@ class CurrentOrdersFragment : Fragment() {
                                 ref.child("demo2").child("cancelledRequests").child(request.id).setValue(unixSeconds)
 
                                 //delete request from recyclerview
+
+                                requireActivity().toast("${request.id} and key ${requests[request.id]}")
                                 requests.remove(request.id)
                                 currentDBRecyclerView.adapter!!.notifyDataSetChanged()
-                                notifyDataSetChanged()
                                 //                                currentDBRecyclerView.removeViewAt(position)
                                 dialog.cancel()
                             }
@@ -232,7 +234,7 @@ class CurrentOrdersFragment : Fragment() {
                                 notifyDataSetChanged()
                                 dialog.cancel()
                             }
-                            //
+//
                         }
 
                     }
@@ -307,65 +309,65 @@ class CurrentOrdersFragment : Fragment() {
 
     }
 
-    //    inner class QueuedDumbbellAdapter : RecyclerView.Adapter<QueuedDumbbellAdapter.ViewHolder>() {
-    //
-    //        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
-    //            ViewHolder(
-    //                LayoutInflater.from(this@CurrentOrdersFragment.requireContext())
-    //                    .inflate(R.layout.item_queued_dumbbell, parent, false)
-    //            )
-    //
-    //        override fun getItemCount(): Int = 2 //change
-    //
-    //        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-    //            if (itemCount == 1){
-    //                holder.weight.visibility = View.INVISIBLE
-    //                holder.description.visibility = View.INVISIBLE
-    //                holder.button.visibility = View.INVISIBLE
-    //                holder.divider.visibility = View.INVISIBLE
-    //                holder.emptyText.visibility = View.VISIBLE
-    //                holder.background.setBackgroundColor(Color.rgb(242,242,242))
-    //            }
-    //            if (itemCount > 1){
-    //                holder.background.setBackgroundColor(Color.WHITE)
-    //                if (position < itemCount -1) {
-    //                    holder.emptyText.visibility = View.INVISIBLE
-    //
-    //                    //todo change weight value
-    //                    //todo change queue value
-    //                    holder.button.setOnClickListener {
-    //                        val builder = AlertDialog.Builder(context)
-    //                        val cancelView = layoutInflater.inflate(R.layout.queued_dumbbell_cancellation_view, null)
-    //                        builder.setView(cancelView)
-    //
-    //                        val dialog = builder.create()
-    //                        dialog.show()
-    //
-    //                        cancelView.button_return_que.setOnClickListener {
-    //                            dialog.cancel()
-    //                        }
-    //                        cancelView.button_confirm_que.setOnClickListener{
-    //                            //TODO cancel queued request
-    //                            dialog.cancel()
-    //                        }
-    //                    }
-    //                }
-    //                if (position == itemCount -1){
-    //                    holder.background.layoutParams = LinearLayout.LayoutParams(ActionBar.LayoutParams.FILL_PARENT, 0)
-    //
-    //                }
-    //            }
-    //        }
-    //
-    //        inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-    //            val weight : TextView = view.textView_queued_dumbbell_weight
-    //            var id : String = ""
-    //            val description : TextView = view.textView_queued_dumbbell_status
-    //            val emptyText = view.text_no_queued_dumbbells
-    //            val button : Button = view.button_cancel_que
-    //            val divider = view.divider_queued
-    //            val background = view
-    //        }
-    //    }
+//    inner class QueuedDumbbellAdapter : RecyclerView.Adapter<QueuedDumbbellAdapter.ViewHolder>() {
+//
+//        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
+//            ViewHolder(
+//                LayoutInflater.from(this@CurrentOrdersFragment.requireContext())
+//                    .inflate(R.layout.item_queued_dumbbell, parent, false)
+//            )
+//
+//        override fun getItemCount(): Int = 2 //change
+//
+//        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+//            if (itemCount == 1){
+//                holder.weight.visibility = View.INVISIBLE
+//                holder.description.visibility = View.INVISIBLE
+//                holder.button.visibility = View.INVISIBLE
+//                holder.divider.visibility = View.INVISIBLE
+//                holder.emptyText.visibility = View.VISIBLE
+//                holder.background.setBackgroundColor(Color.rgb(242,242,242))
+//            }
+//            if (itemCount > 1){
+//                holder.background.setBackgroundColor(Color.WHITE)
+//                if (position < itemCount -1) {
+//                    holder.emptyText.visibility = View.INVISIBLE
+//
+//                    //todo change weight value
+//                    //todo change queue value
+//                    holder.button.setOnClickListener {
+//                        val builder = AlertDialog.Builder(context)
+//                        val cancelView = layoutInflater.inflate(R.layout.queued_dumbbell_cancellation_view, null)
+//                        builder.setView(cancelView)
+//
+//                        val dialog = builder.create()
+//                        dialog.show()
+//
+//                        cancelView.button_return_que.setOnClickListener {
+//                            dialog.cancel()
+//                        }
+//                        cancelView.button_confirm_que.setOnClickListener{
+//                            //TODO cancel queued request
+//                            dialog.cancel()
+//                        }
+//                    }
+//                }
+//                if (position == itemCount -1){
+//                    holder.background.layoutParams = LinearLayout.LayoutParams(ActionBar.LayoutParams.FILL_PARENT, 0)
+//
+//                }
+//            }
+//        }
+//
+//        inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+//            val weight : TextView = view.textView_queued_dumbbell_weight
+//            var id : String = ""
+//            val description : TextView = view.textView_queued_dumbbell_status
+//            val emptyText = view.text_no_queued_dumbbells
+//            val button : Button = view.button_cancel_que
+//            val divider = view.divider_queued
+//            val background = view
+//        }
+//    }
 
 }

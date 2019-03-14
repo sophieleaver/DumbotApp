@@ -168,6 +168,7 @@ class OrderFragment : Fragment() {
         }
 
 
+
         private fun createRequest(dumbbellAvailable: Boolean, weightValue: String) {
 
             val now = LocalDateTime.now(ZoneOffset.UTC)
@@ -181,6 +182,7 @@ class OrderFragment : Fragment() {
 
             val newRequest = Request(requestID, seconds, status, weightValue, bench)
             requests[requestID] = newRequest
+            requireActivity().toast("${requests.values}")
             requestReference.child(requestID).setValue(newRequest)
             weightReference.child("$weightValue/$path/$bench").setValue("$status|$seconds")
                 .addOnCompleteListener { task ->
@@ -197,9 +199,9 @@ class OrderFragment : Fragment() {
             )
         }
 
-        private fun maximumWeightLimitReached(): Boolean = requests.values.count {
-            (it.type == "delivering") or (it.type == "current")
-        } >= 2
+//        private fun maximumWeightLimitReached(): Boolean = requests.values.count {
+//            (it.type == "delivering") or (it.type == "current")
+//        } >= 2
 
         inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             val weightValue: TextView = view.text_total_stock

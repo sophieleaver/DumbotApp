@@ -164,7 +164,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         drawer_layout.addDrawerListener(toggle)
         toggle.syncState()
-        mainToolbar.title = "Order Dumbells"
+        mainToolbar.title = "Order Dumbbells"
         setupFragments()
         listenToCurrentRequestsStatus()
         showNewFragment(orderFragment)
@@ -290,6 +290,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             mainToolbar.title = "Current Workout Session"
             showNewFragment(currentOrdersFragment)
         }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        getSharedPreferences("prefs", Context.MODE_PRIVATE).edit().putStringSet("requests", requests.keys).apply()
+    }
+
+
+    override fun onDestroy() {
+        super.onDestroy()
+        getSharedPreferences("prefs", Context.MODE_PRIVATE).edit().putStringSet("requests", requests.keys).apply()
     }
 }
 
