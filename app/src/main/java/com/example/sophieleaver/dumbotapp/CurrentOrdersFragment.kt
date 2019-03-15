@@ -17,8 +17,11 @@ import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.cancel_collection_view.view.*
 import kotlinx.android.synthetic.main.cancel_delivery_view.view.*
 import kotlinx.android.synthetic.main.current_dumbbell_view.view.*
+import kotlinx.android.synthetic.main.fragment_current_orders.*
 import kotlinx.android.synthetic.main.fragment_current_orders.view.*
 import kotlinx.android.synthetic.main.item_current_dumbbell.view.*
+import kotlinx.android.synthetic.main.item_queued_dumbbell.view.*
+import kotlinx.android.synthetic.main.queued_dumbbell_cancellation_view.view.*
 import kotlinx.android.synthetic.main.reset_warning_view.view.*
 import org.jetbrains.anko.toast
 import java.time.LocalDateTime
@@ -32,23 +35,23 @@ import java.time.ZoneOffset
 @SuppressLint("InflateParams")
 class CurrentOrdersFragment : Fragment() {
     lateinit var currentDBRecyclerView: RecyclerView
-    //    private lateinit var queuedDBRecyclerView: RecyclerView
+        private lateinit var queuedDBRecyclerView: RecyclerView
 
     val ref = FirebaseDatabase.getInstance().reference
-
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_current_orders, container, false)
+        //requireActivity().toast(requests.values.size)
 
         currentDBRecyclerView = view.recyclerView_current_dumbbells
         currentDBRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         currentDBRecyclerView.adapter = CurrentDumbbellAdapter()
 
-        //            queuedDBRecyclerView = recyclerView_queued_dumbbells.apply {
-        //                layoutManager = LinearLayoutManager(this@CurrentOrdersFragment.requireContext())
-        //                adapter = QueuedDumbbellAdapter()
-        //            }
+        queuedDBRecyclerView = view.recyclerView_queued_dumbbells
+        queuedDBRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        queuedDBRecyclerView.adapter = QueuedDumbbellAdapter()
+
 //                    adapter.notifyDataSetChanged()
 
         view.fab_timer.setOnClickListener { (requireActivity() as MainActivity).showTimeFragment() }
@@ -110,8 +113,8 @@ class CurrentOrdersFragment : Fragment() {
         currentDBRecyclerView.layoutManager = LinearLayoutManager(this.requireContext())
         currentDBRecyclerView.adapter = CurrentDumbbellAdapter()
 
-        //        queuedDBRecyclerView.layoutManager = LinearLayoutManager(this.requireContext())
-        //        queuedDBRecyclerView.adapter = QueuedDumbbellAdapter()
+        queuedDBRecyclerView.layoutManager = LinearLayoutManager(this.requireContext())
+        queuedDBRecyclerView.adapter = QueuedDumbbellAdapter()
     }
 
 
@@ -309,65 +312,65 @@ class CurrentOrdersFragment : Fragment() {
 
     }
 
-//    inner class QueuedDumbbellAdapter : RecyclerView.Adapter<QueuedDumbbellAdapter.ViewHolder>() {
-//
-//        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
-//            ViewHolder(
-//                LayoutInflater.from(this@CurrentOrdersFragment.requireContext())
-//                    .inflate(R.layout.item_queued_dumbbell, parent, false)
-//            )
-//
-//        override fun getItemCount(): Int = 2 //change
-//
-//        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-//            if (itemCount == 1){
-//                holder.weight.visibility = View.INVISIBLE
-//                holder.description.visibility = View.INVISIBLE
-//                holder.button.visibility = View.INVISIBLE
-//                holder.divider.visibility = View.INVISIBLE
-//                holder.emptyText.visibility = View.VISIBLE
-//                holder.background.setBackgroundColor(Color.rgb(242,242,242))
-//            }
-//            if (itemCount > 1){
-//                holder.background.setBackgroundColor(Color.WHITE)
-//                if (position < itemCount -1) {
-//                    holder.emptyText.visibility = View.INVISIBLE
-//
-//                    //todo change weight value
-//                    //todo change queue value
-//                    holder.button.setOnClickListener {
-//                        val builder = AlertDialog.Builder(context)
-//                        val cancelView = layoutInflater.inflate(R.layout.queued_dumbbell_cancellation_view, null)
-//                        builder.setView(cancelView)
-//
-//                        val dialog = builder.create()
-//                        dialog.show()
-//
-//                        cancelView.button_return_que.setOnClickListener {
-//                            dialog.cancel()
-//                        }
-//                        cancelView.button_confirm_que.setOnClickListener{
-//                            //TODO cancel queued request
-//                            dialog.cancel()
-//                        }
-//                    }
-//                }
-//                if (position == itemCount -1){
-//                    holder.background.layoutParams = LinearLayout.LayoutParams(ActionBar.LayoutParams.FILL_PARENT, 0)
-//
-//                }
-//            }
-//        }
-//
-//        inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-//            val weight : TextView = view.textView_queued_dumbbell_weight
-//            var id : String = ""
-//            val description : TextView = view.textView_queued_dumbbell_status
-//            val emptyText = view.text_no_queued_dumbbells
-//            val button : Button = view.button_cancel_que
-//            val divider = view.divider_queued
-//            val background = view
-//        }
-//    }
+    inner class QueuedDumbbellAdapter : RecyclerView.Adapter<QueuedDumbbellAdapter.ViewHolder>() {
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
+            ViewHolder(
+                LayoutInflater.from(this@CurrentOrdersFragment.requireContext())
+                    .inflate(R.layout.item_queued_dumbbell, parent, false)
+            )
+
+        override fun getItemCount(): Int = 2 //change
+
+        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+            if (itemCount == 1){
+                holder.weight.visibility = View.INVISIBLE
+                holder.description.visibility = View.INVISIBLE
+                holder.button.visibility = View.INVISIBLE
+                holder.divider.visibility = View.INVISIBLE
+                holder.emptyText.visibility = View.VISIBLE
+                holder.background.setBackgroundColor(Color.rgb(242,242,242))
+            }
+            if (itemCount > 1){
+                holder.background.setBackgroundColor(Color.WHITE)
+                if (position < itemCount -1) {
+                    holder.emptyText.visibility = View.INVISIBLE
+
+                    //todo change weight value
+                    //todo change queue value
+                    holder.button.setOnClickListener {
+                        val builder = AlertDialog.Builder(context)
+                        val cancelView = layoutInflater.inflate(R.layout.queued_dumbbell_cancellation_view, null)
+                        builder.setView(cancelView)
+
+                        val dialog = builder.create()
+                        dialog.show()
+
+                        cancelView.button_return_que.setOnClickListener {
+                            dialog.cancel()
+                        }
+                        cancelView.button_confirm_que.setOnClickListener{
+                            //TODO cancel queued request
+                            dialog.cancel()
+                        }
+                    }
+                }
+                if (position == itemCount -1){
+                    holder.background.layoutParams = LinearLayout.LayoutParams(ActionBar.LayoutParams.FILL_PARENT, 0)
+
+                }
+            }
+        }
+
+        inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+            val weight : TextView = view.textView_queued_dumbbell_weight
+            var id : String = ""
+            val description : TextView = view.textView_queued_dumbbell_status
+            val emptyText = view.text_no_queued_dumbbells
+            val button : Button = view.button_cancel_que
+            val divider = view.divider_queued
+            val background = view
+        }
+    }
 
 }

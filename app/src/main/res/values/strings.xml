@@ -57,7 +57,9 @@
         You have successfully ordered a pair of %1$s kg dumbbells. \n\n
         Would you like to go to your current workout session or order more dumbbells?
     </string>
-    <string name="no_dumbbells_in_use">You currently have no dumbbells in use. Order dumbbells from the Order Dumbbells Section</string>
+    <string name="no_dumbbells_in_use">You currently have no dumbbells in use. Order dumbbells from the Order Dumbbells
+        Section
+    </string>
     <string name="dumbbell_being_delivered">This dumbbell is being delivered now</string>
     <string name="dumbbell_being_collected">Dumbbell is being collected now</string>
     <string name="current_dumbbell">Your current dumbbell. Press the button below to return.</string>
@@ -80,4 +82,7 @@
     <string name="emergency_stop">EMERGENCY STOP</string>
     <string name="number">#%1$d</string>
     <string name="manager_login">Manager Login</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

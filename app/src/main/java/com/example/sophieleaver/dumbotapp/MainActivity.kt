@@ -49,6 +49,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var settingsFragment: SettingsFragment
     private lateinit var timerFragment: TimerFragment
     private lateinit var weightsFragment: WeightsFragment
+    private lateinit var loginFragment: LoginFragment
 
     private var activeFragment: Fragment? = null
 
@@ -180,6 +181,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         settingsFragment = SettingsFragment.newInstance()
         timerFragment = TimerFragment.newInstance()
         weightsFragment = WeightsFragment.newInstance()
+        loginFragment = LoginFragment.newInstance()
 
         with(supportFragmentManager) {
             beginTransaction().add(R.id.content_frame, analyticsFragment, "fragment_analytics").hide(analyticsFragment)
@@ -195,6 +197,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             beginTransaction().add(R.id.content_frame, timerFragment, "fragment_timer").hide(timerFragment).commit()
             beginTransaction().add(R.id.content_frame, weightsFragment, "fragment_weights").hide(weightsFragment)
                 .commit()
+            beginTransaction().add(R.id.content_frame, loginFragment, "fragment_login").hide(loginFragment).commit()
             beginTransaction().add(R.id.content_frame, orderFragment, "fragment_order").commit()
         }
 
@@ -241,6 +244,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.nav_analytics -> if (isManagerMode) analyticsFragment else restrictedFragment
             R.id.nav_weights -> if (isManagerMode) weightsFragment else restrictedFragment
             R.id.nav_settings -> if (isManagerMode) settingsFragment else restrictedFragment
+            R.id.nav_login -> loginFragment
             else -> modeChangeFragment
         }
 
