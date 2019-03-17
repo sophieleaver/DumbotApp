@@ -312,3 +312,9 @@ data class Request(
     var id: String = "", var time: Long = 0L, var type: String = "", val weight: String = "",
     val bench: String = ""
 )
+
+
+data class LoggedRequest(
+    var id: String = "", var time: Long = 0L, var type: String = "", val weight: String = "",
+    val end_node: String = "", val start_node:String = ""
+)
