@@ -20,9 +20,7 @@ class TimerFragment : Fragment() {
             return (nowSeconds + secondsRemaining) * 1000
         }
 
-        fun removeAlarm() {
-//            todo - finish this?
-        }
+
 
         fun newInstance() = TimerFragment()
 
@@ -141,7 +139,6 @@ class TimerFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         initTimer()
-        removeAlarm()
     }
 
     override fun onPause() {

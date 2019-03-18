@@ -1,5 +1,6 @@
 package com.example.sophieleaver.dumbotapp
 
+import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -15,15 +16,18 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.jjoe64.graphview.GraphView
+import com.jjoe64.graphview.LegendRenderer
 import com.jjoe64.graphview.ValueDependentColor
 import com.jjoe64.graphview.series.BarGraphSeries
 import com.jjoe64.graphview.series.DataPoint
 import com.jjoe64.graphview.series.LineGraphSeries
+import com.jjoe64.graphview.series.PointsGraphSeries
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.temporal.WeekFields
 import java.util.*
+import java.util.Calendar.DAY_OF_WEEK
 
 
 //TODO create a login
@@ -50,15 +54,15 @@ class AnalyticsFragment : Fragment() {
     private var benchUsageMonth: HashMap<Int, Int> = HashMap()
     private var benchUsageYear: HashMap<Int, Int> = HashMap()
 
-    private var requestsPerHour: HashMap<Int, Int> = HashMap()
+    private var requestsPerHour: HashMap<Double, Int> = HashMap()
 
     private lateinit var graph1: GraphView
     private lateinit var graph2: GraphView
     private lateinit var graph3: GraphView
 
     //get from sharedpref
-    private var openingHour:Int = 6
-    private var openingMinute:Int = 30
+    private var openingHour:Int = 7
+    private var openingMinute:Int = 0
     private var closingHour:Int = 21
     private var closingMinute:Int = 0
 
@@ -84,22 +88,53 @@ class AnalyticsFragment : Fragment() {
         graph3 = view.findViewById(R.id.graph3)
 
 
+
         graph3.addSeries(mSeries9)
+        graph3.viewport.setYAxisBoundsManual(true)
+        graph3.viewport.setXAxisBoundsManual(true)
         graph3.viewport.setMinX(0.0)
+        graph3.viewport.setMaxX(12.0)
         graph3.viewport.setMinY(0.0)
-        graph3.viewport.setMaxX(40.0)
+        graph3.viewport.setMaxY(20.0)
+        graph3.viewport.setScalableY(true)
+        graph3.viewport.setScalable(true)
         graph3.title = "Number of requests throughout the day"
 
-        mSeries9.appendData(DataPoint(timeToDecimal(openingHour, openingMinute), 0.0), true, 24)
+        //get opening hours from sharedprefs
+        val now = LocalDateTime.now(ZoneOffset.UTC)
+        val weekDayNr: Int = now.dayOfWeek.value
+        val weekDayNrString = weekDayNr.toString()
 
 
-        //just for displaying
-        requestsPerHour[7] = 5
-        requestsPerHour[8] = 4
-        requestsPerHour[9] = 7
-        requestsPerHour[10] = 12
-        requestsPerHour[11] = 8
-        requestsPerHour[12] = 7
+        val sharedPref = with(requireActivity()){getSharedPreferences("prefs", Context.MODE_PRIVATE)}
+        openingHour = sharedPref.getInt(weekDayNrString + "OpenHour", 7)
+        openingMinute = sharedPref.getInt(weekDayNrString + "OpenMinute", 0)
+        closingHour = sharedPref.getInt(weekDayNrString + "CloseHour",21 )
+        closingMinute = sharedPref.getInt(weekDayNrString + "CloseMinute", 0)
+
+        requestsPerHour[timeToDecimal(openingHour, openingMinute)] = 0
+
+        //show opening and closing time on graph
+        val series: PointsGraphSeries<DataPoint> = PointsGraphSeries(
+            arrayOf(
+                DataPoint(timeToDecimal(openingHour, openingMinute), 0.0),
+                DataPoint(timeToDecimal(closingHour, closingMinute), 0.0)
+            )
+        )
+
+        graph3.addSeries(series)
+        series.setShape(PointsGraphSeries.Shape.POINT)
+        series.size = 10f
+
+        mSeries9.title = "opening time"
+        series.title = "closing time"
+        graph3.legendRenderer.setVisible(true)
+        graph3.legendRenderer.setAlign(LegendRenderer.LegendAlign.TOP)
+        graph3.viewport.setScalableY(true)
+        graph3.viewport.setScrollableY(true)
+        graph3.viewport.isScalable = true
+        graph3.viewport.isScrollable = true
+
 
 
         //add firebase listener
@@ -161,53 +196,7 @@ class AnalyticsFragment : Fragment() {
             }
         }
 
-        //--------------for graph 3------------------
-
-        val date = Date()
-        val now = LocalDateTime.now(ZoneOffset.UTC)
-        val nowHour = now.hour
-
-        //update graph3 with the requests issued in passed hours
-        for (element in requestsPerHour) {
-            //don't add before hour is over - the timertask will take care of this
-            if (nowHour != element.key) {
-                mSeries9.appendData(DataPoint(element.key.toDouble(), element.value.toDouble()), true, 24)
-            }
-        }
-
-
-        //update graph3 every hour with requests made during that hour starting from next :00 hour
-
-        val updateGraphTask = setTimerTask()
-
-        val calNextHour = Calendar.getInstance()
-        calNextHour.set(Calendar.HOUR_OF_DAY, nowHour + 1)
-        calNextHour.set(Calendar.MINUTE, 0)
-        val nextHour = calNextHour.time
-
-        val delay = nextHour.time - date.time
-        //start timer at next hour for every hour
-        myTimer.scheduleAtFixedRate(updateGraphTask, delay, 3600000)
-
-
-
-        //reset requestsPerHour and mSeries9 each midnight
-
-        val calMidnight = Calendar.getInstance()
-        calMidnight.set(Calendar.HOUR_OF_DAY, 24)
-        calMidnight.set(Calendar.MINUTE, 0)
-        val midnight = calMidnight.time
-
-        val timeToMidnight = midnight.time - date.time
-
-        val midnightTimer = Timer()
-        val task = object : TimerTask() {
-            override fun run() {
-                requestsPerHour.clear()
-                mSeries9 = LineGraphSeries()
-            }
-        }
-        midnightTimer.scheduleAtFixedRate(task, timeToMidnight, 86400000)
+        setUpGraph3()
 
         return view
     }
@@ -278,11 +267,45 @@ class AnalyticsFragment : Fragment() {
 
                     }
                     //if closing time is 21:30 requestsPerHour will store requests made in last 30 mins under key 22
-                    if(requestHour == nowHour && isInOpenHours(requestHour, requestMinute) ){
+                    if( requestDate == nowDate && isInOpenHours(requestHour, requestMinute) ){
+                        Log.d(fragTag, "onChildAdded: requestHour = $requestHour")
+                        requestsPerHour[requestHour + 1.0] = requestsPerHour.getOrDefault(requestHour + 1.0, 0) + 1
 
-                        requestsPerHour[requestHour + 1] = requestsPerHour.getOrDefault(requestHour + 1, 0) + 1
+                        if(requestHour < nowHour){
+                            mSeries9 = LineGraphSeries(requestsPerHour.map {
+                                DataPoint(it.key, it.value.toDouble()) }.toTypedArray())
+                            graph3.let {
+                                it.removeAllSeries()
+                                it.addSeries(mSeries9)
+                            }
+                            //show opening and closing time on graph
+                            val series: PointsGraphSeries<DataPoint> = PointsGraphSeries(
+                                arrayOf(
+                                    DataPoint(timeToDecimal(openingHour, openingMinute), 0.0),
+                                    DataPoint(timeToDecimal(closingHour, closingMinute), 0.0)
+                                )
+                            )
 
+                            graph3.addSeries(series)
+                            series.setShape(PointsGraphSeries.Shape.POINT)
+                            series.size = 10f
+
+                            mSeries9.title = "opening time"
+                            series.title = "closing time"
+                            graph3.legendRenderer.setVisible(true)
+                            graph3.legendRenderer.setAlign(LegendRenderer.LegendAlign.TOP)
+
+                            graph3.viewport.setScalableY(true)
+                            graph3.viewport.setScrollableY(true)
+                            graph3.viewport.isScalable = true
+                            graph3.viewport.isScrollable = true
+
+
+                        }
                     }
+
+                    updateGraph1()
+                    updateGraph2()
 
                 }
 
@@ -316,8 +339,7 @@ class AnalyticsFragment : Fragment() {
         }
 
         requestReference.addChildEventListener(childEventListener)
-        updateGraph1()
-        updateGraph2()
+
     }
 
     private fun updateGraph1(){
@@ -554,10 +576,7 @@ class AnalyticsFragment : Fragment() {
 
     //returns true to exact opening time and exact closing time
     private fun isInOpenHours(hour:Int, minutes:Int):Boolean{
-        if(hour > openingHour && hour < closingHour){
-            return true
-        }
-        if(hour == openingHour && minutes >= openingMinute && hour == closingHour && minutes <= closingMinute){
+        if(((hour == openingHour && minutes >= openingMinute) || (hour > openingHour)) && ((hour < closingHour) || (hour == closingHour && minutes <= closingMinute))){
             return true
         }
         return false
@@ -595,7 +614,7 @@ class AnalyticsFragment : Fragment() {
                                     mSeries9.appendData(
                                         DataPoint(
                                             timeToDecimal(closingHour, closingMinute),
-                                            requestsPerHour.getOrDefault(closingHour + 1, 0).toDouble()
+                                            requestsPerHour.getOrDefault(closingHour + 1.0, 0).toDouble()
                                         ), true, 24
                                     )
                                     timer2.cancel()
@@ -612,7 +631,7 @@ class AnalyticsFragment : Fragment() {
                             mSeries9.appendData(
                                 DataPoint(
                                     nowHour.toDouble(),
-                                    requestsPerHour.getOrDefault(nowHour + 1, 0).toDouble()
+                                    requestsPerHour.getOrDefault(nowHour + 1.0, 0).toDouble()
                                 ), true, 24
                             )
                         }else{
@@ -620,7 +639,7 @@ class AnalyticsFragment : Fragment() {
                             mSeries9.appendData(
                                 DataPoint(
                                     nowHour.toDouble(),
-                                    requestsPerHour.getOrDefault(nowHour, 0).toDouble()
+                                    requestsPerHour.getOrDefault(nowHour.toDouble(), 0).toDouble()
                                 ), true, 24
                             )
                         }
@@ -643,6 +662,66 @@ class AnalyticsFragment : Fragment() {
         }
 
         return task
+
+    }
+
+    private fun setUpGraph3(){
+
+
+        //get opening hours from sharedprefs
+        var date = Date()
+        var now = LocalDateTime.now(ZoneOffset.UTC)
+        var nowHour = now.hour
+
+        val sharedPref = with(requireActivity()){getSharedPreferences("prefs", Context.MODE_PRIVATE)}
+
+
+        //update graph3 every hour with requests made during that hour starting from next :00 hour
+
+        val updateGraphTask = setTimerTask()
+
+        val calNextHour = Calendar.getInstance()
+        calNextHour.set(Calendar.HOUR_OF_DAY, nowHour + 1)
+        calNextHour.set(Calendar.MINUTE, 0)
+        val nextHour = calNextHour.time
+
+        val delay = nextHour.time - date.time
+        //start timer at next hour for every hour
+        myTimer.scheduleAtFixedRate(updateGraphTask, delay, 3600000)
+
+
+
+        //reset requestsPerHour and mSeries9 and update opening hours each midnight
+
+        val calMidnight = Calendar.getInstance()
+        calMidnight.set(Calendar.HOUR_OF_DAY, 24)
+        calMidnight.set(Calendar.MINUTE, 0)
+        val midnight = calMidnight.time
+
+
+        val timeToMidnight = midnight.time - date.time
+
+        val midnightTimer = Timer()
+        val task = object : TimerTask() {
+            override fun run() {
+                date = Date()
+                now = LocalDateTime.now(ZoneOffset.UTC)
+                nowHour = now.hour
+                val weekDayNr = now.dayOfWeek.value
+                val weekDayNrString = weekDayNr.toString()
+
+                requestsPerHour.clear()
+                mSeries9 = LineGraphSeries()
+
+                //update opening hours
+                openingHour = sharedPref.getInt(weekDayNrString + "OpenHour", 7)
+                openingHour = sharedPref.getInt(weekDayNrString + "OpenMinute", 0)
+                closingHour = sharedPref.getInt(weekDayNrString + "CloseHour",21 )
+                closingMinute = sharedPref.getInt(weekDayNrString + "CloseMinute", 0)
+
+            }
+        }
+        midnightTimer.scheduleAtFixedRate(task, timeToMidnight, 86400000)
 
     }
 
