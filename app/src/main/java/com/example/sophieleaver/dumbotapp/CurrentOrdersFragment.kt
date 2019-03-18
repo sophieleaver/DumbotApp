@@ -35,7 +35,7 @@ import java.time.ZoneOffset
 @SuppressLint("InflateParams")
 class CurrentOrdersFragment : Fragment() {
     lateinit var currentDBRecyclerView: RecyclerView
-        private lateinit var queuedDBRecyclerView: RecyclerView
+    private lateinit var queuedDBRecyclerView: RecyclerView
 
     val ref = FirebaseDatabase.getInstance().reference
 

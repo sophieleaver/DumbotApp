@@ -50,6 +50,11 @@
                 android:icon="@drawable/ic_menu_manage"
                 android:title="@string/app_settings"
                 />
+            <item
+                android:id="@+id/nav_logout"
+                android:title="Log Out"
+                android:icon="@drawable/baseline_lock_black_18dp"
+                />
         </menu>
 
     </item>

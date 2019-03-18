@@ -14,6 +14,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
@@ -55,6 +56,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private var ref = FirebaseDatabase.getInstance().reference
     private var logRef = ref.child("demo2").child("log")
+    private lateinit var auth : FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -248,7 +250,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             else -> modeChangeFragment
         }
 
-        if (newFragment == modeChangeFragment) changeMode() else showNewFragment(newFragment)
+        if (newFragment == modeChangeFragment){
+            FirebaseAuth.getInstance().signOut()
+            changeMode("USER")
+            showNewFragment(orderFragment)
+        }
+        else showNewFragment(newFragment)
 
         drawer_layout.closeDrawer(GravityCompat.START)
         return true
@@ -275,14 +282,25 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         showNewFragment(timerFragment)
     }
 
+    fun showOrderFragment(){
+        showNewFragment(orderFragment)
+    }
+
     fun showCurrentOrdersFragment() {
         showNewFragment(currentOrdersFragment)
     }
 
-    fun changeMode() {
-        isManagerMode = !isManagerMode
+    fun changeMode(mode : String) {
+        when (mode){
+            "USER" -> {
+                isManagerMode = false
+
+            }
+            "MANAGER" -> isManagerMode = true
+        }
         getSharedPreferences("prefs", Context.MODE_PRIVATE).edit().putBoolean("mode", isManagerMode).apply()
         navigationView.menu.findItem(R.id.menu_manager).isVisible = isManagerMode
+        navigationView.menu.findItem(R.id.nav_login).isVisible = !isManagerMode
         modeText.text = getString(R.string.app_mode, modeString())
         mainLayout.snackbar("Switched to ${modeText.text}")
     }
@@ -299,12 +317,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onStop() {
         super.onStop()
         getSharedPreferences("prefs", Context.MODE_PRIVATE).edit().putStringSet("requests", requests.keys).apply()
+        //todo log out manager
     }
 
 
     override fun onDestroy() {
         super.onDestroy()
         getSharedPreferences("prefs", Context.MODE_PRIVATE).edit().putStringSet("requests", requests.keys).apply()
+        //todo log out manager
     }
 }
 

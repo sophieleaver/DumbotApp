@@ -23,7 +23,7 @@ class ModeChangeFragment : Fragment(), View.OnClickListener {
     }
 
     override fun onClick(v: View?) {
-        (activity as MainActivity).changeMode()
+//        (activity as MainActivity).changeMode()
     }
 
 
