@@ -100,11 +100,10 @@ class SettingsFragment : Fragment() {
         with(requireActivity()) {
             getSharedPreferences("prefs", Context.MODE_PRIVATE)
                 .edit()
-                .putInt("bench", bench)
+                .putString("bench", currentBench)
                 .apply()
             dialog.cancel()
-            Log.d(fragTag, "currentBench = $currentBench, set bench is $bench")
-            toast("Updated to Bench #$bench")
+            Log.d(fragTag, "currentBench = $currentBench")
         }
     }
 

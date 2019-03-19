@@ -108,11 +108,11 @@ class OverviewFragment : Fragment() {
                         val weight = snap.child("weight").value.toString()
                         var bench = ""
                         if (requestType == "collecting") {
-                            bench = snap.child("s_point").value.toString()
-                            bench = convertIDtoBench(bench)
+                            bench = snap.child("start_node").value.toString()
+//                            bench = convertIDtoBench(bench)
                         } else if (requestType == "delivering") {
-                            bench = snap.child("e_point").value.toString()
-                            bench = convertIDtoBench(bench)
+                            bench = snap.child("end_node").value.toString()
+//                            bench = convertIDtoBench(bench)
                         }
 
                         setActiveRequestStatus(holder, dumbotNo, requestType, weight, bench)
@@ -149,13 +149,10 @@ class OverviewFragment : Fragment() {
 
         fun setActiveRequestStatus(holder : ViewHolder, dumbotNo: Int, requestType : String, weight : String, bench : String){
             holder.apply {
-                //set button to ? and orange
                 overviewButton.text = getString(R.string.more_info)
                 overviewButton.setBackgroundColor(Color.rgb(214, 215, 215))
-                //overviewButton.setBackgroundResource(R.drawable.orange_circle)
 
-                //set text to about the request
-                dumbotStatus.text = getString(R.string.dumbbell, requestType)
+                dumbotStatus.text = "${requestType.capitalize()} Dumbbell"
 
                 //set dialog to more information about request
                 overviewButton.setOnClickListener {

@@ -71,9 +71,9 @@ class LoginFragment : Fragment(), View.OnClickListener  {
                 val dialog = builder.create()
                 dialog.show()
 
-                registerEmailForm = view!!.findViewById(R.id.text_register_email)
-                registerPasswordForm = view!!.findViewById(R.id.text_register_password)
-                confirmPasswordForm = view!!.findViewById(R.id.text_confirm_password)
+                registerEmailForm = registerView!!.findViewById(R.id.text_register_email)
+                registerPasswordForm = registerView!!.findViewById(R.id.text_register_password)
+                confirmPasswordForm = registerView!!.findViewById(R.id.text_confirm_password)
 
                 //cancel making a new account
                 registerView.button_register_cancelled.setOnClickListener {dialog.cancel()}
@@ -81,22 +81,14 @@ class LoginFragment : Fragment(), View.OnClickListener  {
                 //register
                 registerView.button_create_new_account.setOnClickListener {
                     createAccount(
-                        "email@test.com", "password"
-//                        emailForm!!.text.toString(),
-//                        passwordForm!!.text.toString()
+//                        "email@test.com", "password"
+                        registerEmailForm!!.text.toString(),
+                        registerPasswordForm!!.text.toString(),
+                        dialog
                     )
-                    dialog.cancel()
+
                 }
             }
-        }
-    }
-
-    override fun onStart() {
-        super.onStart()
-        //if user already logged in show a different UI
-        val currentUser = auth.currentUser
-        if (currentUser != null){
-            updateUI("MANAGER")
         }
     }
 
@@ -158,63 +150,61 @@ class LoginFragment : Fragment(), View.OnClickListener  {
             }
     }
 
-//    private fun validateFormRegister(): Boolean {
-//        var valid = true
-//
-//        val email = registerEmailForm!!.text.toString()
-////        if (TextUtils.isEmpty(email)) {
-////            registerEmailForm!!.error = "Required."
-////            valid = false
-////        } else {
-////            registerEmailForm!!.error = null
-////        }
-////
-////        val password = registerPasswordForm!!.text.toString()
-////        val confirmPassword = confirmPasswordForm!!.text.toString()
-////
-////        if (TextUtils.isEmpty(password)) { //check password form not empty
-////            registerPasswordForm!!.error = "Required."
-////            valid = false
-////        }
-////        else if (TextUtils.isEmpty(confirmPassword)){ //check second password form not empty
-////            confirmPasswordForm!!.error = "Required."
-////        }
-////        else if(password != confirmPassword){ //check the two passwords match
-////            confirmPasswordForm!!.error = "Passwords Do Not Match."
-////        }
-////        else{
-////            registerPasswordForm!!.error = null
-////        }
-//
-//
-//        return valid
-//    }
+    private fun validateFormRegister(): Boolean {
+        var valid = true
+        val email = registerEmailForm!!.text.toString()
+        if (TextUtils.isEmpty(email)) {
+            registerEmailForm!!.error = "Required."
+            valid = false
+        } else {
+            registerEmailForm!!.error = null
+        }
 
-    private fun createAccount(email: String, password: String) {
+        val password = registerPasswordForm!!.text.toString()
+        val confirmPassword = confirmPasswordForm!!.text.toString()
+
+        if (TextUtils.isEmpty(password)) { //check password form not empty
+            registerPasswordForm!!.error = "Required."
+            valid = false
+        }
+        else if (TextUtils.isEmpty(confirmPassword)){ //check second password form not empty
+            confirmPasswordForm!!.error = "Required."
+        }
+        else if(password != confirmPassword){ //check the two passwords match
+            confirmPasswordForm!!.error = "Passwords Do Not Match."
+        }
+        else{
+            registerPasswordForm!!.error = null
+        }
+
+
+        return valid
+    }
+
+    private fun createAccount(email: String, password: String, dialog : AlertDialog) {
         Log.d(tag, "createAccount:$email")
 
-//        if (!validateFormRegister()) { //checks email, authentication number, and password have been entered and are of correct form
-//            return
-//        }
+        if (!validateFormRegister()) { //checks email, authentication number, and password have been entered and are of correct form
+            return
+        }
 
         auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(requireActivity()) { task ->
             if (task.isSuccessful) {
 
                 //create new database entry for user
                 updateUI("MANAGER")
+                dialog.cancel()
 
             } else {
                 // If sign in fails, display a message to the user.
                 Log.w(tag, "createUserWithEmail:failure", task.exception)
-                Toast.makeText(context, "Invalid email or password, please try again or check network connection", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Invalid email or password", Toast.LENGTH_SHORT).show()
                 //updateUI(null)
 
             }
 
         }
     }
-
-
 
 
 

@@ -63,7 +63,7 @@ class TimerFragment : Fragment() {
         //Number picker
 
         view.input_total_stock.minValue = 0
-        view.input_total_stock.maxValue = 15
+        view.input_total_stock.maxValue = 60
         view.input_total_stock.value = 1
 
 
