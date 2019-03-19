@@ -276,7 +276,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 newFragment = loginFragment
                 mainToolbar.title = "Manager Log In"}
 
-            else -> modeChangeFragment
+            else -> {newFragment = modeChangeFragment}
         }
 
         if (newFragment == modeChangeFragment){
