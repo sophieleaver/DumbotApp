@@ -171,6 +171,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setupFragments()
         listenToCurrentRequestsStatus()
         showNewFragment(orderFragment)
+        navigationView.menu.findItem(R.id.nav_login).isVisible = !isManagerMode
     }
 
     private fun setupFragments() {
@@ -238,15 +239,43 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Handle navigation view item clicks here.
-        val newFragment = when (item.itemId) {
-            R.id.nav_order -> orderFragment
-            R.id.nav_current_sessions -> currentOrdersFragment
-            R.id.nav_timer -> timerFragment
-            R.id.nav_overview -> if (isManagerMode) overviewFragment else restrictedFragment
-            R.id.nav_analytics -> if (isManagerMode) analyticsFragment else restrictedFragment
-            R.id.nav_weights -> if (isManagerMode) weightsFragment else restrictedFragment
-            R.id.nav_settings -> if (isManagerMode) settingsFragment else restrictedFragment
-            R.id.nav_login -> loginFragment
+        var newFragment : Fragment = orderFragment
+            when (item.itemId) {
+            R.id.nav_order -> {
+                newFragment = orderFragment
+                mainToolbar.title = "Order Weights" }
+            R.id.nav_current_sessions -> {
+                newFragment = currentOrdersFragment
+                mainToolbar.title = "Current Workout" }
+            R.id.nav_timer -> {
+                newFragment = timerFragment
+                mainToolbar.title = "Set a Workout Timer" }
+
+            R.id.nav_overview ->
+                if (isManagerMode){
+                    newFragment = overviewFragment
+                    mainToolbar.title = "DumBot Overview"}
+                else {newFragment = restrictedFragment}
+
+            R.id.nav_analytics -> if (isManagerMode){
+                newFragment = analyticsFragment
+                mainToolbar.title = "Gym Analytics and Data"}
+            else {newFragment = restrictedFragment}
+
+            R.id.nav_weights -> if (isManagerMode){
+                newFragment = weightsFragment
+                mainToolbar.title = "Edit Dumbbell Stock"}
+            else {newFragment = restrictedFragment}
+
+            R.id.nav_settings -> if (isManagerMode){
+                newFragment = settingsFragment
+                mainToolbar.title = "Gym Settings"}
+            else {newFragment = restrictedFragment}
+
+            R.id.nav_login -> {
+                newFragment = loginFragment
+                mainToolbar.title = "Manager Log In"}
+
             else -> modeChangeFragment
         }
 

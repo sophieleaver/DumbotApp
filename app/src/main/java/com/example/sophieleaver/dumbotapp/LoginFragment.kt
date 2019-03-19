@@ -194,6 +194,7 @@ class LoginFragment : Fragment(), View.OnClickListener  {
                 //create new database entry for user
                 updateUI("MANAGER")
                 dialog.cancel()
+
             } else {
                 // If sign in fails, display a message to the user.
                 Log.w(tag, "createUserWithEmail:failure", task.exception)
