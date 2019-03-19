@@ -182,7 +182,7 @@ class OrderFragment : Fragment() {
 
             val newRequest = Request(requestID, seconds, status, weightValue, bench)
             requests[requestID] = newRequest
-            requireActivity().toast("${requests.values}")
+//            requireActivity().toast("${requests.values}")
             requestReference.child(requestID).setValue(newRequest)
             weightReference.child("$weightValue/$path/$bench").setValue("$status|$seconds")
                 .addOnCompleteListener { task ->

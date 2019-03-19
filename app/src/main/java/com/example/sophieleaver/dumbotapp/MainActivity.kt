@@ -33,7 +33,6 @@ var currentBench: String = "B7"
 var isManagerMode: Boolean = false
 var requests: MutableMap<String, Request> = HashMap() // id and request
 
-
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     private lateinit var mainLayout: View
@@ -104,7 +103,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                                 Log.d("MainActivity", it.id)
                                 val size = requests.size
                                 requests.remove(it.id)
-                                longToast(size - requests.size)
+                                //longToast(size - requests.size)
                                 currentOrdersFragment.currentDBRecyclerView.adapter!!.notifyDataSetChanged()
 
                             }

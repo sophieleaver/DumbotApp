@@ -3,6 +3,7 @@ package com.example.sophieleaver.dumbotapp
 import android.annotation.TargetApi
 import android.app.AlertDialog
 import android.content.Intent
+import android.icu.lang.UCharacter.GraphemeClusterBreak.T
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
 import android.os.Build
@@ -169,9 +170,15 @@ class LoginFragment : Fragment(), View.OnClickListener  {
         }
         else if (TextUtils.isEmpty(confirmPassword)){ //check second password form not empty
             confirmPasswordForm!!.error = "Required."
+            valid = false
+        }
+        else if (password.length < 8){
+            registerPasswordForm!!.error = "Password too short."
+            valid = false
         }
         else if(password != confirmPassword){ //check the two passwords match
             confirmPasswordForm!!.error = "Passwords Do Not Match."
+            valid = false
         }
         else{
             registerPasswordForm!!.error = null

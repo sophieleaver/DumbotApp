@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import kotlinx.android.synthetic.main.change_bench_layout.view.*
+
 import kotlinx.android.synthetic.main.change_opening_hours.view.*
 import kotlinx.android.synthetic.main.change_opening_hours_spinners.*
 import kotlinx.android.synthetic.main.change_opening_hours_spinners.view.*
