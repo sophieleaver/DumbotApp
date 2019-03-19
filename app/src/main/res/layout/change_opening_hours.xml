@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <Button
+        android:id="@+id/button_monday"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_width="180dp"
+        android:layout_height="50dp"
+        android:text="Monday"
+        android:fontFamily="@font/muli"
+        android:textSize="24sp"
+
+        android:layout_marginTop="10dp"
+
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/button_tuesday"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_width="180dp"
+        android:layout_height="50dp"
+        android:text="Tuesday"
+        android:fontFamily="@font/muli"
+        android:textSize="24sp"
+
+        android:layout_marginTop="10dp"
+
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/button_monday" />
+
+    <Button
+        android:id="@+id/button_wednesday"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_width="180dp"
+        android:layout_height="50dp"
+        android:text="Wednesday"
+        android:fontFamily="@font/muli"
+        android:textSize="24sp"
+
+        android:layout_marginTop="10dp"
+
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/button_tuesday" />
+
+    <Button
+        android:id="@+id/button_thursday"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_width="180dp"
+        android:layout_height="50dp"
+        android:text="Thursday"
+        android:fontFamily="@font/muli"
+        android:textSize="24sp"
+
+        android:layout_marginTop="10dp"
+
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/button_wednesday" />
+
+    <Button
+        android:id="@+id/button_friday"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_width="180dp"
+        android:layout_height="50dp"
+        android:text="Friday"
+        android:fontFamily="@font/muli"
+        android:textSize="24sp"
+
+        android:layout_marginTop="10dp"
+
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/button_thursday" />
+
+    <Button
+        android:id="@+id/button_saturday"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_width="180dp"
+        android:layout_height="50dp"
+        android:text="Saturday"
+        android:fontFamily="@font/muli"
+        android:textSize="24sp"
+
+        android:layout_marginTop="10dp"
+
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/button_friday" />
+
+    <Button
+        android:id="@+id/button_sunday"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_width="180dp"
+        android:layout_height="50dp"
+        android:text="Sunday"
+        android:fontFamily="@font/muli"
+        android:textSize="24sp"
+
+        android:layout_marginTop="10dp"
+
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/button_saturday" />
+
+
+
+</android.support.constraint.ConstraintLayout>
