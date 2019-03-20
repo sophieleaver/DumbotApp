@@ -242,13 +242,16 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             when (item.itemId) {
             R.id.nav_order -> {
                 newFragment = orderFragment
-                mainToolbar.title = "Order Weights" }
+                mainToolbar.title = "Order Weights"
+            }
             R.id.nav_current_sessions -> {
                 newFragment = currentOrdersFragment
-                mainToolbar.title = "Current Workout" }
+                mainToolbar.title = "Current Workout"
+            }
             R.id.nav_timer -> {
                 newFragment = timerFragment
-                mainToolbar.title = "Set a Workout Timer" }
+                mainToolbar.title = "Set a Workout Timer"
+            }
 
             R.id.nav_overview ->
                 if (isManagerMode){
@@ -275,7 +278,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 newFragment = loginFragment
                 mainToolbar.title = "Manager Log In"}
 
-            else -> {newFragment = modeChangeFragment}
+            else -> newFragment = modeChangeFragment
         }
 
         if (newFragment == modeChangeFragment){

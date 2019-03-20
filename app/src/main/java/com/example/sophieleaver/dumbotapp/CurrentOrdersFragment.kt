@@ -245,7 +245,7 @@ class CurrentOrdersFragment : Fragment() {
 
                         holder.timer.visibility = View.VISIBLE
                         holder.description.text = getString(R.string.current_dumbbell)
-                        holder.button.text = getString(R.string.more_info)
+                        holder.button.text = getString(R.string.return_dumbbell)
                         holder.timer.base = baseTime
                         holder.timer.start()
 

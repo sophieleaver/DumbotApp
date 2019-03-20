@@ -20,8 +20,6 @@ class TimerFragment : Fragment() {
             return (nowSeconds + secondsRemaining) * 1000
         }
 
-
-
         fun newInstance() = TimerFragment()
 
         val nowSeconds: Long
@@ -49,11 +47,6 @@ class TimerFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreate(savedInstanceState)
         val view = inflater.inflate(R.layout.fragment_timer, container, false)
-
-
-//        (activity as AppCompatActivity).setSupportActionBar(timer_toolbar)
-//        (activity as AppCompatActivity).supportActionBar?.setIcon(R.drawable.ic_timer)
-//        (activity as AppCompatActivity).supportActionBar?.title = "      Timer"
 
         view.textView_countdown.bringToFront()
         view.textView_countdown.visibility = View.INVISIBLE

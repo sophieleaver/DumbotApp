@@ -62,8 +62,8 @@ class OrderFragment : Fragment() {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val newDumbbells: MutableList<Dumbbell> = mutableListOf()
                 for (dumbbellSnapshot in dataSnapshot.children) {
-                    //                    Log.d("WeightsFragment", "${dumbbell.key} => ${dumbbell.value.toString()}")
                     val dumbbell = dumbbellSnapshot.getValue(Dumbbell::class.java)
+//                    Log.d("WeightsFragment", "${dumbbell.key} => ${dumbbell.value.toString()}")
                     if (dumbbell != null) newDumbbells += dumbbell
                 }
                 weights = newDumbbells

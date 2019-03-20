@@ -27,16 +27,16 @@ import kotlinx.android.synthetic.main.view_register_account.view.*
 import org.jetbrains.anko.find
 import org.jetbrains.anko.toast
 
-class LoginFragment : Fragment(), View.OnClickListener  {
+class LoginFragment : Fragment(), View.OnClickListener {
 
-    lateinit var auth: FirebaseAuth
+    private lateinit var auth: FirebaseAuth
     val ref = FirebaseDatabase.getInstance().reference
 
     private var emailForm: EditText? = null
     private var passwordForm: EditText? = null
-    private var registerEmailForm : EditText? = null
-    private var registerPasswordForm : EditText? = null
-    private var confirmPasswordForm : EditText? = null
+    private var registerEmailForm: EditText? = null
+    private var registerPasswordForm: EditText? = null
+    private var confirmPasswordForm: EditText? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,7 +53,7 @@ class LoginFragment : Fragment(), View.OnClickListener  {
     }
 
     override fun onClick(v: View?) {
-        when (v?.id){
+        when (v?.id) {
 
             R.id.button_login -> {
                 emailForm = view!!.findViewById(R.id.editText_email)
@@ -73,11 +73,11 @@ class LoginFragment : Fragment(), View.OnClickListener  {
                 dialog.show()
 
                 registerEmailForm = registerView!!.findViewById(R.id.text_register_email)
-                registerPasswordForm = registerView!!.findViewById(R.id.text_register_password)
-                confirmPasswordForm = registerView!!.findViewById(R.id.text_confirm_password)
+                registerPasswordForm = registerView.findViewById(R.id.text_register_password)
+                confirmPasswordForm = registerView.findViewById(R.id.text_confirm_password)
 
                 //cancel making a new account
-                registerView.button_register_cancelled.setOnClickListener {dialog.cancel()}
+                registerView.button_register_cancelled.setOnClickListener { dialog.cancel() }
 
                 //register
                 registerView.button_create_new_account.setOnClickListener {
@@ -110,8 +110,7 @@ class LoginFragment : Fragment(), View.OnClickListener  {
         if (TextUtils.isEmpty(password)) {
             passwordForm!!.error = "Required."
             valid = false
-        }
-        else {
+        } else {
             passwordForm!!.error = null
         }
 
@@ -120,35 +119,37 @@ class LoginFragment : Fragment(), View.OnClickListener  {
 
     private fun signIn(email: String, password: String) {
         Log.d(tag, "signIn:$email")
-        if (!validateFormLogin()) {
-            return
-        }
+        if (validateFormLogin()) {
 
-        // sign user in with email and password provided
-        auth.signInWithEmailAndPassword(email, password)
-            .addOnCompleteListener(requireActivity()) { task ->
-                if (task.isSuccessful) {
 
-                    // Sign in success, update UI with the signed-in user's information
-                    Log.d(tag, "signInWithEmail:success")
-                    val user = auth.currentUser
-                    requireActivity().toast("Log In is Successful")
+            // sign user in with email and password provided
+            auth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(requireActivity()) { task ->
+                    if (task.isSuccessful) {
 
-                    emailForm!!.text.clear()
-                    passwordForm!!.text.clear()
+                        // Sign in success, update UI with the signed-in user's information
+                        Log.d(tag, "signInWithEmail:success")
+                        val user = auth.currentUser
+                        requireActivity().toast("Log In is Successful")
 
-                    updateUI("MANAGER")
+                        emailForm!!.text.clear()
+                        passwordForm!!.text.clear()
 
-                } else {
+                        updateUI("MANAGER")
 
-                    // If sign in fails, display a message to the user.
-                    Log.w(tag, "signInWithEmail:failure", task.exception)
-                    Toast.makeText(context, "Email or password incorrect, please re-enter",
-                        Toast.LENGTH_SHORT).show()
+                    } else {
 
-                    updateUI(null)
+                        // If sign in fails, display a message to the user.
+                        Log.w(tag, "signInWithEmail:failure", task.exception)
+                        Toast.makeText(
+                            context, "Email or password incorrect, please re-enter",
+                            Toast.LENGTH_SHORT
+                        ).show()
+
+                        updateUI(null)
+                    }
                 }
-            }
+        }
     }
 
     private fun validateFormRegister(): Boolean {
@@ -167,20 +168,16 @@ class LoginFragment : Fragment(), View.OnClickListener  {
         if (TextUtils.isEmpty(password)) { //check password form not empty
             registerPasswordForm!!.error = "Required."
             valid = false
-        }
-        else if (TextUtils.isEmpty(confirmPassword)){ //check second password form not empty
+        } else if (TextUtils.isEmpty(confirmPassword)) { //check second password form not empty
             confirmPasswordForm!!.error = "Required."
             valid = false
-        }
-        else if (password.length < 8){
+        } else if (password.length < 8) {
             registerPasswordForm!!.error = "Password too short."
             valid = false
-        }
-        else if(password != confirmPassword){ //check the two passwords match
+        } else if (password != confirmPassword) { //check the two passwords match
             confirmPasswordForm!!.error = "Passwords Do Not Match."
             valid = false
-        }
-        else{
+        } else {
             registerPasswordForm!!.error = null
         }
 
@@ -188,35 +185,33 @@ class LoginFragment : Fragment(), View.OnClickListener  {
         return valid
     }
 
-    private fun createAccount(email: String, password: String, dialog : AlertDialog) {
+    private fun createAccount(email: String, password: String, dialog: AlertDialog) {
         Log.d(tag, "createAccount:$email")
 
-        if (!validateFormRegister()) { //checks email, authentication number, and password have been entered and are of correct form
-            return
-        }
+        if (validateFormRegister()) { //checks email, authentication number, and password have been entered and are of correct form
 
-        auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(requireActivity()) { task ->
-            if (task.isSuccessful) {
+            auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(requireActivity()) { task ->
+                if (task.isSuccessful) {
 
-                //create new database entry for user
-                updateUI("MANAGER")
-                dialog.cancel()
+                    //create new database entry for user
+                    updateUI("MANAGER")
+                    dialog.cancel()
 
-            } else {
-                // If sign in fails, display a message to the user.
-                Log.w(tag, "createUserWithEmail:failure", task.exception)
-                Toast.makeText(context, "Invalid email or password", Toast.LENGTH_SHORT).show()
-                //updateUI(null)
+                } else {
+                    // If sign in fails, display a message to the user.
+                    Log.w(tag, "createUserWithEmail:failure", task.exception)
+                    Toast.makeText(context, "Invalid email or password", Toast.LENGTH_SHORT).show()
+                    //updateUI(null)
+
+                }
 
             }
-
         }
     }
 
 
-
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
-    private fun updateUI(mode : String?) {
+    private fun updateUI(mode: String?) {
         if (mode != null) {
             (activity as MainActivity).changeMode(mode)
             (activity as MainActivity).showOrderFragment()

@@ -82,7 +82,16 @@
     <string name="emergency_stop">EMERGENCY STOP</string>
     <string name="number">#%1$d</string>
     <string name="manager_login">Manager Login</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="change_bench_number">Change bench number</string>
+    <string name="permission_denied">Permission Denied</string>
+    <string name="permission_denied_detail">You do not have the permissions to enter this section. Please enter Manager Mode to use this feature.</string>
+    <string name="return_dumbbell">Return Dumbbell</string>
+    <string name="not_in_queue">You are not in the queue for any dumbbells</string>
+    <string name="confirm">Confirm</string>
+    <string name="leaving_the_queue_cannot_be_undone">Leaving the queue cannot be undone</string>
+    <string name="register_manager_account">Register Manager Account</string>
+    <string name="first_time_log_in">First time logging in?  Create your manager account here:</string>
+    <string name="password">Password</string>
+    <string name="email">Email</string>
+    <string name="feeling_lost">FEELING LOST?</string>
 </resources>

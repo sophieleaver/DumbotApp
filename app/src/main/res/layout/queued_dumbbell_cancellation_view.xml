@@ -23,7 +23,7 @@
     <Button
         android:id="@+id/button_confirm_que"
         style="@style/Widget.AppCompat.Button.Colored"
-        android:text="Confirm"
+        android:text="@string/confirm"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
@@ -40,7 +40,7 @@
     <Button
         android:id="@+id/button_return_que"
         style="@style/Widget.AppCompat.Button"
-        android:text="Back"
+        android:text="@string/back"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -56,7 +56,7 @@
 
     <TextView
         android:id="@+id/textView27"
-        android:text="Leaving the queue cannot be undone"
+        android:text="@string/leaving_the_queue_cannot_be_undone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"

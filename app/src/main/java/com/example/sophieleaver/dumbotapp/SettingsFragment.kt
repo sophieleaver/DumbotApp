@@ -10,17 +10,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import kotlinx.android.synthetic.main.change_bench_layout.view.*
-
 import kotlinx.android.synthetic.main.change_opening_hours.view.*
-import kotlinx.android.synthetic.main.change_opening_hours_spinners.*
 import kotlinx.android.synthetic.main.change_opening_hours_spinners.view.*
 import kotlinx.android.synthetic.main.fragment_settings.*
 import kotlinx.android.synthetic.main.fragment_settings.view.*
-import kotlinx.android.synthetic.main.fragment_timer.view.*
-import org.jetbrains.anko.toast
-import java.time.LocalDateTime
-import java.time.ZoneOffset
-import java.util.*
 
 
 class SettingsFragment : Fragment() {
@@ -28,9 +21,9 @@ class SettingsFragment : Fragment() {
 
     @SuppressLint("InflateParams")
     override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_settings, container, false)
@@ -59,7 +52,7 @@ class SettingsFragment : Fragment() {
 
         }
 
-        view.button_change_opening_hours.setOnClickListener{
+        view.button_change_opening_hours.setOnClickListener {
             val builder = AlertDialog.Builder(context)
             val alertView = layoutInflater.inflate(R.layout.change_opening_hours, null)
             builder.setView(alertView)
@@ -69,7 +62,7 @@ class SettingsFragment : Fragment() {
             dialog.show()
 
             with(alertView) {
-                button_monday.setOnClickListener {changeWorkingHours(1, dialog, view) }
+                button_monday.setOnClickListener { changeWorkingHours(1, dialog, view) }
                 button_tuesday.setOnClickListener { changeWorkingHours(2, dialog, view) }
                 button_wednesday.setOnClickListener { changeWorkingHours(3, dialog, view) }
                 button_thursday.setOnClickListener { changeWorkingHours(4, dialog, view) }
@@ -80,15 +73,15 @@ class SettingsFragment : Fragment() {
         }
 
         //get opening hours from sharedprefs
-        val sharedPref = with(requireActivity()){getSharedPreferences("prefs", Context.MODE_PRIVATE)}
+        val sharedPref = with(requireActivity()) { getSharedPreferences("prefs", Context.MODE_PRIVATE) }
 
-        for(i in 1..7){
+        for (i in 1..7) {
             val openingHour = sharedPref.getInt(i.toString() + "OpenHour", 7)
             val openingMinute = sharedPref.getInt(i.toString() + "OpenMinute", 0)
-            val closingHour = sharedPref.getInt(i.toString() + "CloseHour",21 )
+            val closingHour = sharedPref.getInt(i.toString() + "CloseHour", 21)
             val closingMinute = sharedPref.getInt(i.toString() + "CloseMinute", 0)
 
-            setText(i, openingHour,openingMinute,closingHour,closingMinute,view)
+            setText(i, openingHour, openingMinute, closingHour, closingMinute, view)
 
         }
 
@@ -108,7 +101,8 @@ class SettingsFragment : Fragment() {
         }
     }
 
-    private fun changeWorkingHours(day: Int, dialog: AlertDialog, view:View){
+//    todo - refactor
+    private fun changeWorkingHours(day: Int, dialog: AlertDialog, view: View) {
         dialog.cancel()
         val builder = AlertDialog.Builder(context)
         val alertView = layoutInflater.inflate(R.layout.change_opening_hours_spinners, null)
@@ -149,24 +143,24 @@ class SettingsFragment : Fragment() {
         }
 
         //when done button is pressed add time to sharedpref and update the display in settings
-        alertView.button_done.setOnClickListener{
+        alertView.button_done.setOnClickListener {
             //check if closing time is before opening time
-            if(closingHour < openHour || closingHour == openHour && closingMinute < openMinute){
+            if (closingHour < openHour || closingHour == openHour && closingMinute < openMinute) {
                 val builder3 = AlertDialog.Builder(context)
                 builder3.setMessage("Error: closing time needs to be after opening time")
-                builder3.setPositiveButton("OK") { dialog3, _ -> dialog3.cancel()}
+                builder3.setPositiveButton("OK") { dialog3, _ -> dialog3.cancel() }
                 val dialog3: AlertDialog = builder3.create()
                 dialog3.show()
-            }else{
+            } else {
                 //update the display in settings
-                setText(day, openHour, openMinute, closingHour, closingMinute,view)
+                setText(day, openHour, openMinute, closingHour, closingMinute, view)
                 //put open hour and minutes in shared preferences
-                when(day){
+                when (day) {
                     1 -> {
                         with(requireActivity()) {
                             getSharedPreferences("prefs", Context.MODE_PRIVATE)
                                 .edit()
-                                .putInt("1OpenHour",openHour)
+                                .putInt("1OpenHour", openHour)
                                 .putInt("1OpenMinute", openMinute)
                                 .putInt("1CloseHour", closingHour)
                                 .putInt("1CloseMinute", closingMinute)
@@ -179,7 +173,7 @@ class SettingsFragment : Fragment() {
                         with(requireActivity()) {
                             getSharedPreferences("prefs", Context.MODE_PRIVATE)
                                 .edit()
-                                .putInt("2OpenHour",openHour)
+                                .putInt("2OpenHour", openHour)
                                 .putInt("2OpenMinute", openMinute)
                                 .putInt("2CloseHour", closingHour)
                                 .putInt("2CloseMinute", closingMinute)
@@ -191,55 +185,55 @@ class SettingsFragment : Fragment() {
                         with(requireActivity()) {
                             getSharedPreferences("prefs", Context.MODE_PRIVATE)
                                 .edit()
-                                .putInt("3OpenHour",openHour)
+                                .putInt("3OpenHour", openHour)
                                 .putInt("3OpenMinute", openMinute)
                                 .putInt("3CloseHour", closingHour)
                                 .putInt("3CloseMinute", closingMinute)
                                 .apply()
                         }
                     }
-                    4 ->{
+                    4 -> {
 
                         with(requireActivity()) {
                             getSharedPreferences("prefs", Context.MODE_PRIVATE)
                                 .edit()
-                                .putInt("4OpenHour",openHour)
+                                .putInt("4OpenHour", openHour)
                                 .putInt("4OpenMinute", openMinute)
                                 .putInt("4CloseHour", closingHour)
                                 .putInt("4CloseMinute", closingMinute)
                                 .apply()
                         }
                     }
-                    5 ->{
+                    5 -> {
 
                         with(requireActivity()) {
                             getSharedPreferences("prefs", Context.MODE_PRIVATE)
                                 .edit()
-                                .putInt("5OpenHour",openHour)
+                                .putInt("5OpenHour", openHour)
                                 .putInt("5OpenMinute", openMinute)
                                 .putInt("5CloseHour", closingHour)
                                 .putInt("5CloseMinute", closingMinute)
                                 .apply()
                         }
                     }
-                    6 ->{
+                    6 -> {
 
                         with(requireActivity()) {
                             getSharedPreferences("prefs", Context.MODE_PRIVATE)
                                 .edit()
-                                .putInt("6OpenHour",openHour)
+                                .putInt("6OpenHour", openHour)
                                 .putInt("6OpenMinute", openMinute)
                                 .putInt("6CloseHour", closingHour)
                                 .putInt("6CloseMinute", closingMinute)
                                 .apply()
                         }
                     }
-                    7 ->{
+                    7 -> {
 
                         with(requireActivity()) {
                             getSharedPreferences("prefs", Context.MODE_PRIVATE)
                                 .edit()
-                                .putInt("7OpenHour",openHour)
+                                .putInt("7OpenHour", openHour)
                                 .putInt("7OpenMinute", openMinute)
                                 .putInt("7CloseHour", closingHour)
                                 .putInt("7CloseMinute", closingMinute)
@@ -249,7 +243,7 @@ class SettingsFragment : Fragment() {
                 }
                 val builder2 = AlertDialog.Builder(context)
                 builder2.setMessage("Opening hours will be updated at next app start or at midnight")
-                builder2.setPositiveButton("OK") { dialog2, _ -> dialog2.cancel()}
+                builder2.setPositiveButton("OK") { dialog2, _ -> dialog2.cancel() }
                 val dialog2: AlertDialog = builder2.create()
                 dialog2.show()
                 newDialog.cancel()
@@ -259,91 +253,110 @@ class SettingsFragment : Fragment() {
 
     }
 
-    private fun setText(day:Int, openHour:Int, openMinute:Int, closingHour:Int, closingMinute:Int, view:View){
-        when(day){
+    private fun setText(day: Int, openHour: Int, openMinute: Int, closingHour: Int, closingMinute: Int, view: View) {
+        when (day) {
             1 -> {
-                if(openMinute <10 && closingMinute <10){
-                    view.text_monday.text = "Monday: " + openHour + ":0" + openMinute + " to " + closingHour + ":0"  + closingMinute
+                if (openMinute < 10 && closingMinute < 10) {
+                    view.text_monday.text =
+                        "Monday: " + openHour + ":0" + openMinute + " to " + closingHour + ":0" + closingMinute
 
-                }else if(closingMinute <10){
-                    view.text_monday.text = "Monday: " + openHour + ":" + openMinute + " to " + closingHour + ":0"  + closingMinute
+                } else if (closingMinute < 10) {
+                    view.text_monday.text =
+                        "Monday: " + openHour + ":" + openMinute + " to " + closingHour + ":0" + closingMinute
 
-                }else if(openMinute <10){
-                    view.text_monday.text = "Monday: " + openHour + ":0" + openMinute + " to " + closingHour + ":"  + closingMinute
+                } else if (openMinute < 10) {
+                    view.text_monday.text =
+                        "Monday: " + openHour + ":0" + openMinute + " to " + closingHour + ":" + closingMinute
 
                 }
             }
             2 -> {
-                if(openMinute <10 && closingMinute <10){
-                    view.text_tuesday.text = "Tuesday: " + openHour + ":0" + openMinute + " to " + closingHour + ":0"  + closingMinute
+                if (openMinute < 10 && closingMinute < 10) {
+                    view.text_tuesday.text =
+                        "Tuesday: " + openHour + ":0" + openMinute + " to " + closingHour + ":0" + closingMinute
 
-                }else if(closingMinute <10){
-                    view.text_tuesday.text = "Tuesday: " + openHour + ":" + openMinute + " to " + closingHour + ":0"  + closingMinute
+                } else if (closingMinute < 10) {
+                    view.text_tuesday.text =
+                        "Tuesday: " + openHour + ":" + openMinute + " to " + closingHour + ":0" + closingMinute
 
-                }else if(openMinute <10){
-                    view.text_tuesday.text = "Tuesday: " + openHour + ":0" + openMinute + " to " + closingHour + ":"  + closingMinute
+                } else if (openMinute < 10) {
+                    view.text_tuesday.text =
+                        "Tuesday: " + openHour + ":0" + openMinute + " to " + closingHour + ":" + closingMinute
 
                 }
             }
             3 -> {
-                if(openMinute <10 && closingMinute <10){
-                    view.text_wednesday.text = "Wednesday: " + openHour + ":0" + openMinute + " to " + closingHour + ":0"  + closingMinute
+                if (openMinute < 10 && closingMinute < 10) {
+                    view.text_wednesday.text =
+                        "Wednesday: " + openHour + ":0" + openMinute + " to " + closingHour + ":0" + closingMinute
 
-                }else if(closingMinute <10){
-                    view.text_wednesday.text = "Wednesday: " + openHour + ":" + openMinute + " to " + closingHour + ":0"  + closingMinute
+                } else if (closingMinute < 10) {
+                    view.text_wednesday.text =
+                        "Wednesday: " + openHour + ":" + openMinute + " to " + closingHour + ":0" + closingMinute
 
-                }else if(openMinute <10){
-                    view.text_wednesday.text = "Wednesday: " + openHour + ":0" + openMinute + " to " + closingHour + ":"  + closingMinute
-
-                }
-            }
-            4 ->{
-                if(openMinute <10 && closingMinute <10){
-                    view.text_thursday.text = "Thursday: " + openHour + ":0" + openMinute + " to " + closingHour + ":0"  + closingMinute
-
-                }
-                else if(closingMinute <10){
-                    view.text_thursday.text = "Thursday: " + openHour + ":" + openMinute + " to " + closingHour + ":0"  + closingMinute
-
-                }else if(openMinute <10){
-                    view.text_thursday.text = "Thursday: " + openHour + ":0" + openMinute + " to " + closingHour + ":"  + closingMinute
+                } else if (openMinute < 10) {
+                    view.text_wednesday.text =
+                        "Wednesday: " + openHour + ":0" + openMinute + " to " + closingHour + ":" + closingMinute
 
                 }
             }
-            5 ->{
-                if(openMinute <10 && closingMinute <10){
-                    view.text_friday.text = "Friday: " + openHour + ":0" + openMinute + " to " + closingHour + ":0"  + closingMinute
+            4 -> {
+                if (openMinute < 10 && closingMinute < 10) {
+                    view.text_thursday.text =
+                        "Thursday: " + openHour + ":0" + openMinute + " to " + closingHour + ":0" + closingMinute
 
-                }else if(closingMinute <10){
-                    view.text_friday.text = "Friday: " + openHour + ":" + openMinute + " to " + closingHour + ":0"  + closingMinute
+                } else if (closingMinute < 10) {
+                    view.text_thursday.text =
+                        "Thursday: " + openHour + ":" + openMinute + " to " + closingHour + ":0" + closingMinute
 
-                }else if(openMinute <10){
-                    view.text_friday.text = "Friday: " + openHour + ":0" + openMinute + " to " + closingHour + ":"  + closingMinute
-
-                }
-            }
-            6 ->{
-                if(openMinute <10 && closingMinute <10){
-                    view.text_saturday.text = "Saturday: " + openHour + ":0" + openMinute + " to " + closingHour + ":0"  + closingMinute
-
-                }else if(closingMinute <10){
-                    view.text_saturday.text = "Saturday: " + openHour + ":" + openMinute + " to " + closingHour + ":0"  + closingMinute
-
-                }else if(openMinute <10){
-                    view.text_saturday.text = "Saturday: " + openHour + ":0" + openMinute + " to " + closingHour + ":"  + closingMinute
+                } else if (openMinute < 10) {
+                    view.text_thursday.text =
+                        "Thursday: " + openHour + ":0" + openMinute + " to " + closingHour + ":" + closingMinute
 
                 }
             }
-            7 ->{
-                if(openMinute <10 && closingMinute <10){
-                    view.text_sunday.text = "Sunday: " + openHour + ":0" + openMinute + " to " + closingHour + ":0"  + closingMinute
+            5 -> {
+                if (openMinute < 10 && closingMinute < 10) {
+                    view.text_friday.text =
+                        "Friday: " + openHour + ":0" + openMinute + " to " + closingHour + ":0" + closingMinute
+
+                } else if (closingMinute < 10) {
+                    view.text_friday.text =
+                        "Friday: " + openHour + ":" + openMinute + " to " + closingHour + ":0" + closingMinute
+
+                } else if (openMinute < 10) {
+                    view.text_friday.text =
+                        "Friday: " + openHour + ":0" + openMinute + " to " + closingHour + ":" + closingMinute
 
                 }
-                else if(closingMinute <10){
-                    view.text_sunday.text = "Sunday: " + openHour + ":" + openMinute + " to " + closingHour + ":0"  + closingMinute
+            }
+            6 -> {
+                if (openMinute < 10 && closingMinute < 10) {
+                    view.text_saturday.text =
+                        "Saturday: " + openHour + ":0" + openMinute + " to " + closingHour + ":0" + closingMinute
 
-                }else if(openMinute <10){
-                    view.text_sunday.text = "Sunday: " + openHour + ":0" + openMinute + " to " + closingHour + ":"  + closingMinute
+                } else if (closingMinute < 10) {
+                    view.text_saturday.text =
+                        "Saturday: " + openHour + ":" + openMinute + " to " + closingHour + ":0" + closingMinute
+
+                } else if (openMinute < 10) {
+                    view.text_saturday.text =
+                        "Saturday: " + openHour + ":0" + openMinute + " to " + closingHour + ":" + closingMinute
+
+                }
+            }
+            7 -> {
+                if (openMinute < 10 && closingMinute < 10) {
+                    view.text_sunday.text =
+                        "Sunday: " + openHour + ":0" + openMinute + " to " + closingHour + ":0" + closingMinute
+
+                } else if (closingMinute < 10) {
+                    view.text_sunday.text =
+                        "Sunday: " + openHour + ":" + openMinute + " to " + closingHour + ":0" + closingMinute
+
+                } else if (openMinute < 10) {
+                    view.text_sunday.text =
+                        "Sunday: " + openHour + ":0" + openMinute + " to " + closingHour + ":" + closingMinute
 
                 }
             }

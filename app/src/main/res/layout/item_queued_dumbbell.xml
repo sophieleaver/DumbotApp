@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -8,19 +9,19 @@
 
     <TextView
         android:id="@+id/textView_queued_dumbbell_weight"
-        android:text="10KG"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Headline3"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/divider_queued"
         app:layout_constraintHorizontal_bias="0.421"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="10KG" />
 
     <View
         android:id="@+id/divider_queued"
@@ -40,36 +41,36 @@
 
     <TextView
         android:id="@+id/textView_queued_dumbbell_status"
-        android:text="You are currently 4th in queue for this dumbbell "
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:textSize="19sp"
-        android:textAlignment="center"
-        android:fontFamily="@font/muli_light"
-        android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:fontFamily="@font/muli_light"
         android:gravity="center"
+        android:textAlignment="center"
+        android:textSize="19sp"
         android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.8"
         app:layout_constraintStart_toEndOf="@+id/divider_queued"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="You are currently 4th in queue for this dumbbell " />
 
     <TextView
         android:id="@+id/text_no_queued_dumbbells"
-        android:text="You are not in the queue for any dumbbells"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
-        android:textSize="24sp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
         android:fontFamily="@font/muli_light"
-        android:textAlignment="center"
-        android:visibility="invisible"
         android:gravity="center"
+        android:text="@string/not_in_queue"
+        android:textAlignment="center"
+        android:textSize="24sp"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -78,17 +79,17 @@
     <Button
         android:id="@+id/button_cancel_que"
         style="@style/Widget.AppCompat.Button.Colored"
-        android:text="Return Dumbbell"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:textSize="20sp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:fontFamily="@font/muli"
         android:layout_marginTop="4dp"
+        android:fontFamily="@font/muli"
         android:gravity="center"
+        android:text="@string/return_dumbbell"
         android:textAlignment="gravity"
+        android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.658"

@@ -151,8 +151,7 @@ class OverviewFragment : Fragment() {
             holder.apply {
                 overviewButton.text = getString(R.string.more_info)
                 overviewButton.setBackgroundColor(Color.rgb(214, 215, 215))
-
-                dumbotStatus.text = "${requestType.capitalize()} Dumbbell"
+                dumbotStatus.text = getString(R.string.dumbbell, requestType.capitalize())
 
                 //set dialog to more information about request
                 overviewButton.setOnClickListener {
@@ -170,11 +169,10 @@ class OverviewFragment : Fragment() {
             }
         }
 
-        //        todo - fix break cos not attached to context
         fun setIdleRequestStatus(holder : ViewHolder, dumbotNo: Int){
             holder.apply {
-                dumbotStatus.text = "Idle"
-                overviewButton.text = "More Info"
+                dumbotStatus.text = getString(R.string.idle)
+                overviewButton.text = getString(R.string.more_info)
                 overviewButton.setBackgroundColor(Color.rgb(214, 215, 215))
                 overviewButton.setOnClickListener {
                     val builder = AlertDialog.Builder(itemView.context)
@@ -187,17 +185,6 @@ class OverviewFragment : Fragment() {
             }
         }
 
-        fun convertIDtoBench(id: String): String {
-            var bench = "1"
-            when (id){
-                "B10" -> bench = "2"
-                "B13" -> bench = "3"
-                "B9" -> bench = "4"
-                "B12" -> bench = "5"
-                "B15" -> bench = "6"
-            }
-            return bench
-        }
 
         inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             var dumbot: TextView = view.text_dumbot_number
