@@ -242,7 +242,7 @@ class SettingsFragment : Fragment() {
                     }
                 }
                 val builder2 = AlertDialog.Builder(context)
-                builder2.setMessage("Opening hours will be updated at next app start or at midnight")
+                builder2.setMessage("Opening hours will be updated next time the app is started")
                 builder2.setPositiveButton("OK") { dialog2, _ -> dialog2.cancel() }
                 val dialog2: AlertDialog = builder2.create()
                 dialog2.show()
