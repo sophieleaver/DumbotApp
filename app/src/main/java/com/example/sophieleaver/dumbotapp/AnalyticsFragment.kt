@@ -37,7 +37,6 @@ class AnalyticsFragment : Fragment() {
 
     private var mSeries: BarGraphSeries<DataPoint>? = null
 
-    //behoves sa mange virkeligt?
     private var lineSeries: LineGraphSeries<DataPoint> = LineGraphSeries()
 
     private var weightUsageToday: HashMap<Double, Int> = HashMap()
@@ -95,10 +94,6 @@ class AnalyticsFragment : Fragment() {
         openingMinute = sharedPref.getInt(weekDayNr.toString() + "OpenMinute", 0)
         closingHour = sharedPref.getInt(weekDayNr.toString() + "CloseHour",21 )
         closingMinute = sharedPref.getInt(weekDayNr.toString() + "CloseMinute", 0)
-
-
-        //no requests have been made at opening time so add 0 to graph at that time
-        requestsPerHour[timeToDecimal(openingHour, openingMinute)] = 0
 
 
         //add firebase listener
@@ -541,11 +536,14 @@ class AnalyticsFragment : Fragment() {
 
             "Today" -> {
 
+                //no requests have been made at opening time so add 0 to graph at that time
+                requestsPerHour[timeToDecimal(openingHour, openingMinute)] = 0
+
                 //hours where no requests were made should have zero datapoints
                 val now = LocalDateTime.now(ZoneOffset.UTC)
                 val nowHour = now.hour
 
-                for(hour in openingHour+1 .. nowHour ){
+                for(hour in openingHour + 1 .. nowHour ){
                     if(!requestsPerHour.containsKey(hour.toDouble())){
                         requestsPerHour[hour.toDouble()] = 0
                     }
