@@ -15,11 +15,11 @@ import kotlinx.android.synthetic.main.change_opening_hours_spinners.view.*
 import kotlinx.android.synthetic.main.fragment_settings.*
 import kotlinx.android.synthetic.main.fragment_settings.view.*
 
-
+@SuppressLint("InflateParams")
 class SettingsFragment : Fragment() {
     private val fragTag = "SettingsFragment"
 
-    @SuppressLint("InflateParams")
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -73,7 +73,8 @@ class SettingsFragment : Fragment() {
         }
 
         //get opening hours from sharedprefs
-        val sharedPref = with(requireActivity()) { getSharedPreferences("prefs", Context.MODE_PRIVATE) }
+        val sharedPref =
+            with(requireActivity()) { getSharedPreferences("prefs", Context.MODE_PRIVATE) }
 
         for (i in 1..7) {
             val openingHour = sharedPref.getInt(i.toString() + "OpenHour", 7)
@@ -101,7 +102,7 @@ class SettingsFragment : Fragment() {
         }
     }
 
-//    todo - refactor
+    //    todo - refactor
     private fun changeWorkingHours(day: Int, dialog: AlertDialog, view: View) {
         dialog.cancel()
         val builder = AlertDialog.Builder(context)
@@ -253,7 +254,15 @@ class SettingsFragment : Fragment() {
 
     }
 
-    private fun setText(day: Int, openHour: Int, openMinute: Int, closingHour: Int, closingMinute: Int, view: View) {
+    @SuppressLint("SetTextI18n")
+    private fun setText(
+        day: Int,
+        openHour: Int,
+        openMinute: Int,
+        closingHour: Int,
+        closingMinute: Int,
+        view: View
+    ) {
         when (day) {
             1 -> {
                 if (openMinute < 10 && closingMinute < 10) {
@@ -348,15 +357,15 @@ class SettingsFragment : Fragment() {
             7 -> {
                 if (openMinute < 10 && closingMinute < 10) {
                     view.text_sunday.text =
-                        "Sunday: " + openHour + ":0" + openMinute + " to " + closingHour + ":0" + closingMinute
+                        "Sunday: $openHour:0$openMinute to $closingHour:0$closingMinute"
 
                 } else if (closingMinute < 10) {
                     view.text_sunday.text =
-                        "Sunday: " + openHour + ":" + openMinute + " to " + closingHour + ":0" + closingMinute
+                        "Sunday: $openHour:$openMinute to $closingHour:0$closingMinute"
 
                 } else if (openMinute < 10) {
                     view.text_sunday.text =
-                        "Sunday: " + openHour + ":0" + openMinute + " to " + closingHour + ":" + closingMinute
+                        "Sunday: $openHour:0$openMinute to $closingHour:$closingMinute"
 
                 }
             }
@@ -364,10 +373,11 @@ class SettingsFragment : Fragment() {
     }
 
 
-    private fun benchNumberToFirebaseID(bench: Int): String = when (bench) {
-        1 -> "B7"; 2 -> "B10"; 3 -> "B13"
-        4 -> "B9"; 5 -> "B12"; else -> "B15"
-    }
+    private fun benchNumberToFirebaseID(bench: Int): String =
+        when (bench) {
+            1 -> "B7"; 2 -> "B10"; 3 -> "B13"
+            4 -> "B9"; 5 -> "B12"; else -> "B15"
+        }
 
     companion object {
         @JvmStatic

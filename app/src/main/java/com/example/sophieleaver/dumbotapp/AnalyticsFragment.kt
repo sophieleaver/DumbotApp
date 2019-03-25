@@ -3,8 +3,6 @@ package com.example.sophieleaver.dumbotapp
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
-import android.os.DropBoxManager
-import android.os.Handler
 import android.support.v4.app.Fragment
 import android.util.Log
 import android.view.LayoutInflater
@@ -17,20 +15,20 @@ import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
-import com.jjoe64.graphview.*
+import com.jjoe64.graphview.GraphView
+import com.jjoe64.graphview.LegendRenderer
+import com.jjoe64.graphview.ValueDependentColor
 import com.jjoe64.graphview.helper.StaticLabelsFormatter
 import com.jjoe64.graphview.series.BarGraphSeries
 import com.jjoe64.graphview.series.DataPoint
 import com.jjoe64.graphview.series.LineGraphSeries
 import com.jjoe64.graphview.series.PointsGraphSeries
-import kotlinx.android.synthetic.main.fragment_analytics.view.*
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.temporal.WeekFields
 import java.util.*
 import java.util.concurrent.TimeUnit
-import kotlin.concurrent.fixedRateTimer
 
 
 class AnalyticsFragment : Fragment() {
@@ -61,10 +59,10 @@ class AnalyticsFragment : Fragment() {
     private lateinit var graph3: GraphView
 
     //get from sharedpref
-    private var openingHour:Int = 7
-    private var openingMinute:Int = 0
-    private var closingHour:Int = 21
-    private var closingMinute:Int = 0
+    private var openingHour: Int = 7
+    private var openingMinute: Int = 0
+    private var closingHour: Int = 21
+    private var closingMinute: Int = 0
 
     private val fragTag = "AnalyticsFragment"
 
@@ -195,9 +193,9 @@ class AnalyticsFragment : Fragment() {
                 val nowWeek = nowDate.get(weekFields.weekOfWeekBasedYear())
                 val nowMonth = now.monthValue
                 val nowYear = now.year
-                val nowWeekDayNr: Int = now.dayOfWeek.value
-                val nowDayOfMonth = now.dayOfMonth
-                val nowHour = now.hour
+//                val nowWeekDayNr: Int = now.dayOfWeek.value
+//                val nowDayOfMonth = now.dayOfMonth
+//                val nowHour = now.hour
 
                 //get date and time of the added request
                 val unixSeconds: Long = dataSnapshot.getValue(Request::class.java)!!.time
@@ -530,7 +528,7 @@ class AnalyticsFragment : Fragment() {
         Log.d(fragTag, "updateGraph3")
         graph3.removeAllSeries()
         graph3.legendRenderer.isVisible = false
-        graph3.getGridLabelRenderer().setLabelFormatter(StaticLabelsFormatter(graph3))
+        graph3.gridLabelRenderer.labelFormatter = StaticLabelsFormatter(graph3)
 
         when (type) {
 
@@ -631,7 +629,7 @@ class AnalyticsFragment : Fragment() {
                 // set week day names as labels on x axis
                 val staticLabelsFormatter = StaticLabelsFormatter(graph3)
                 staticLabelsFormatter.setHorizontalLabels(arrayOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"))
-                graph3.getGridLabelRenderer().setLabelFormatter(staticLabelsFormatter)
+                graph3.gridLabelRenderer.labelFormatter = staticLabelsFormatter
 
 
             }

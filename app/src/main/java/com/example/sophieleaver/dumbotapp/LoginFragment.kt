@@ -1,11 +1,8 @@
 package com.example.sophieleaver.dumbotapp
 
+import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.app.AlertDialog
-import android.content.Intent
-import android.icu.lang.UCharacter.GraphemeClusterBreak.T
-import android.net.ConnectivityManager
-import android.net.NetworkInfo
 import android.os.Build
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -17,20 +14,15 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
 import kotlinx.android.synthetic.main.fragment_login.view.*
 import kotlinx.android.synthetic.main.view_register_account.view.*
-import org.jetbrains.anko.find
 import org.jetbrains.anko.toast
 
 class LoginFragment : Fragment(), View.OnClickListener {
 
     private lateinit var auth: FirebaseAuth
-    val ref = FirebaseDatabase.getInstance().reference
+    private val ref = FirebaseDatabase.getInstance().reference
 
     private var emailForm: EditText? = null
     private var passwordForm: EditText? = null
@@ -52,6 +44,7 @@ class LoginFragment : Fragment(), View.OnClickListener {
         return view
     }
 
+    @SuppressLint("InflateParams")
     override fun onClick(v: View?) {
         when (v?.id) {
 
@@ -129,7 +122,7 @@ class LoginFragment : Fragment(), View.OnClickListener {
 
                         // Sign in success, update UI with the signed-in user's information
                         Log.d(tag, "signInWithEmail:success")
-                        val user = auth.currentUser
+//                        val user = auth.currentUser
                         requireActivity().toast("Log In is Successful")
 
                         emailForm!!.text.clear()
