@@ -3,8 +3,6 @@ package com.example.sophieleaver.dumbotapp
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
-import android.os.DropBoxManager
-import android.os.Handler
 import android.support.v4.app.Fragment
 import android.util.Log
 import android.view.LayoutInflater
@@ -17,20 +15,20 @@ import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
-import com.jjoe64.graphview.*
+import com.jjoe64.graphview.GraphView
+import com.jjoe64.graphview.LegendRenderer
+import com.jjoe64.graphview.ValueDependentColor
 import com.jjoe64.graphview.helper.StaticLabelsFormatter
 import com.jjoe64.graphview.series.BarGraphSeries
 import com.jjoe64.graphview.series.DataPoint
 import com.jjoe64.graphview.series.LineGraphSeries
 import com.jjoe64.graphview.series.PointsGraphSeries
-import kotlinx.android.synthetic.main.fragment_analytics.view.*
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.temporal.WeekFields
 import java.util.*
 import java.util.concurrent.TimeUnit
-import kotlin.concurrent.fixedRateTimer
 
 
 class AnalyticsFragment : Fragment() {
@@ -60,7 +58,7 @@ class AnalyticsFragment : Fragment() {
     private lateinit var graph2: GraphView
     private lateinit var graph3: GraphView
 
-    //get from sharedpref
+    //todo - get from sharedpref
     private var openingHour: Int = 7
     private var openingMinute: Int = 0
     private var closingHour: Int = 21
@@ -71,10 +69,14 @@ class AnalyticsFragment : Fragment() {
     private val ref = FirebaseDatabase.getInstance().reference
     private val requestReference = ref.child("demo2").child("log")
 
-    private var type= "Today"
+    private var type = "Today"
 
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_analytics, container, false)
 
@@ -93,10 +95,11 @@ class AnalyticsFragment : Fragment() {
         val nowMonth = now.month.value
         val nowYear = now.year
 
-        val sharedPref = with(requireActivity()){getSharedPreferences("prefs", Context.MODE_PRIVATE)}
+        val sharedPref =
+            with(requireActivity()) { getSharedPreferences("prefs", Context.MODE_PRIVATE) }
         openingHour = sharedPref.getInt(weekDayNr.toString() + "OpenHour", 7)
         openingMinute = sharedPref.getInt(weekDayNr.toString() + "OpenMinute", 0)
-        closingHour = sharedPref.getInt(weekDayNr.toString() + "CloseHour",21 )
+        closingHour = sharedPref.getInt(weekDayNr.toString() + "CloseHour", 21)
         closingMinute = sharedPref.getInt(weekDayNr.toString() + "CloseMinute", 0)
 
 
@@ -107,14 +110,21 @@ class AnalyticsFragment : Fragment() {
         val dropdown: Spinner = view.findViewById(R.id.spinner1)
 
         dropdown.apply {
-            adapter = ArrayAdapter(this@AnalyticsFragment.requireContext(),
-                    android.R.layout.simple_spinner_dropdown_item,
-                    arrayOf("Today", "This Week", "This Month", "This Year"))
+            adapter = ArrayAdapter(
+                this@AnalyticsFragment.requireContext(),
+                android.R.layout.simple_spinner_dropdown_item,
+                arrayOf("Today", "This Week", "This Month", "This Year")
+            )
 
             // Set an on item selected listener for spinner object
             onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
 
-                override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
+                override fun onItemSelected(
+                    parent: AdapterView<*>,
+                    view: View,
+                    position: Int,
+                    id: Long
+                ) {
 
                     when (parent.getItemAtPosition(position).toString()) {
 
@@ -174,27 +184,27 @@ class AnalyticsFragment : Fragment() {
                 val newMonth = newNow.month.value
                 val newYear = newNow.year
 
-                if(newWeek != nowWeek){
+                if (newWeek != nowWeek) {
                     requestsPerWeekDay.clear()
                     benchUsageWeek.clear()
                     weightUsageWeek.clear()
                 }
-                if(newMonth != nowMonth){
+                if (newMonth != nowMonth) {
                     requestsPerDayOfMonth.clear()
                     benchUsageMonth.clear()
                     weightUsageMonth.clear()
                 }
-                if(newYear!= nowYear){
+                if (newYear != nowYear) {
                     requestsPerMonth.clear()
                     weightUsageYear.clear()
                     benchUsageYear.clear()
 
                 }
-                 //update opening hours
+                //update opening hours
                 val newWeekDayNr: Int = newNow.dayOfWeek.value
                 openingHour = sharedPref.getInt(newWeekDayNr.toString() + "OpenHour", 7)
                 openingMinute = sharedPref.getInt(newWeekDayNr.toString() + "OpenMinute", 0)
-                closingHour = sharedPref.getInt(newWeekDayNr.toString() + "CloseHour",21 )
+                closingHour = sharedPref.getInt(newWeekDayNr.toString() + "CloseHour", 21)
                 closingMinute = sharedPref.getInt(newWeekDayNr.toString() + "CloseMinute", 0)
 
                 updateGraph1()
@@ -205,7 +215,11 @@ class AnalyticsFragment : Fragment() {
         }
 
         val timer = Timer()
-        timer.schedule(timerTaskDaily, midnight.time, TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS))
+        timer.schedule(
+            timerTaskDaily,
+            midnight.time,
+            TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS)
+        )
 
 
         return view
@@ -227,9 +241,9 @@ class AnalyticsFragment : Fragment() {
                 val nowWeek = nowDate.get(weekFields.weekOfWeekBasedYear())
                 val nowMonth = now.monthValue
                 val nowYear = now.year
-                val nowWeekDayNr: Int = now.dayOfWeek.value
-                val nowDayOfMonth = now.dayOfMonth
-                val nowHour = now.hour
+//                val nowWeekDayNr: Int = now.dayOfWeek.value
+//                val nowDayOfMonth = now.dayOfMonth
+//                val nowHour = now.hour
 
                 //get date and time of the added request
                 val unixSeconds: Long = dataSnapshot.getValue(Request::class.java)!!.time
@@ -238,31 +252,46 @@ class AnalyticsFragment : Fragment() {
                 val requestWeek = requestDate.get(weekFields.weekOfWeekBasedYear())
                 val requestMonth = requestDate.monthValue
                 val requestYear = requestDate.year
-                val requestDateTime = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime()
+                val requestDateTime =
+                    date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime()
                 val requestHour = requestDateTime.hour
                 val requestMinute = requestDateTime.minute
                 val requestWeekDayNr = requestDateTime.dayOfWeek.value
                 val requestDayOfMonth = requestDateTime.dayOfMonth
 
-                Log.d(fragTag, "requestDate: $requestDate nowDate: $nowDate requestWeek: $requestWeek nowWeek: $nowWeek")
+                Log.d(
+                    fragTag,
+                    "requestDate: $requestDate nowDate: $nowDate requestWeek: $requestWeek nowWeek: $nowWeek"
+                )
 
                 val type: String = dataSnapshot.getValue(LoggedRequest::class.java)!!.type
 
 
                 // check that the weight is valid and that the weight is being delivered,
                 // and that the request was made during the open hours of the gym
-                if (isInOpenHours(requestHour, requestMinute, requestWeekDayNr) && dataSnapshot.getValue(LoggedRequest::class.java)!!.weight.length < 4 && dataSnapshot.getValue(LoggedRequest::class.java)!!.weight != "" && type == "delivering") {
+                if (isInOpenHours(
+                        requestHour,
+                        requestMinute,
+                        requestWeekDayNr
+                    ) && dataSnapshot.getValue(LoggedRequest::class.java)!!.weight.length < 4 && dataSnapshot.getValue(
+                        LoggedRequest::class.java
+                    )!!.weight != "" && type == "delivering"
+                ) {
 
 
-                    val weight: Double = dataSnapshot.getValue(LoggedRequest::class.java)!!.weight.toDouble()
-                    val bench: Int = dataSnapshot.getValue(LoggedRequest::class.java)!!.end_node.substring(1).toInt()
+                    val weight: Double =
+                        dataSnapshot.getValue(LoggedRequest::class.java)!!.weight.toDouble()
+                    val bench: Int =
+                        dataSnapshot.getValue(LoggedRequest::class.java)!!.end_node.substring(1)
+                            .toInt()
 
                     if (requestDate == nowDate) {
                         weightUsageToday[weight] = weightUsageToday.getOrDefault(weight, 0) + 1
                         benchUsageToday[bench] = benchUsageToday.getOrDefault(bench, 0) + 1
 
                         //if closing time is 21:30 requestsPerHour will store requests made in last 30 mins under key 22
-                        requestsPerHour[requestHour + 1.0] = requestsPerHour.getOrDefault(requestHour + 1.0, 0) + 1
+                        requestsPerHour[requestHour + 1.0] =
+                            requestsPerHour.getOrDefault(requestHour + 1.0, 0) + 1
 
                     }
 
@@ -270,7 +299,8 @@ class AnalyticsFragment : Fragment() {
                         weightUsageWeek[weight] = weightUsageWeek.getOrDefault(weight, 0) + 1
                         benchUsageWeek[bench] = benchUsageWeek.getOrDefault(bench, 0) + 1
 
-                        requestsPerWeekDay[requestWeekDayNr] = requestsPerWeekDay.getOrDefault(requestWeekDayNr, 0) + 1
+                        requestsPerWeekDay[requestWeekDayNr] =
+                            requestsPerWeekDay.getOrDefault(requestWeekDayNr, 0) + 1
 
                     }
 
@@ -278,7 +308,8 @@ class AnalyticsFragment : Fragment() {
                         weightUsageMonth[weight] = weightUsageMonth.getOrDefault(weight, 0) + 1
                         benchUsageMonth[bench] = benchUsageMonth.getOrDefault(bench, 0) + 1
 
-                        requestsPerDayOfMonth[requestDayOfMonth] = requestsPerDayOfMonth.getOrDefault(requestDayOfMonth, 0) + 1
+                        requestsPerDayOfMonth[requestDayOfMonth] =
+                            requestsPerDayOfMonth.getOrDefault(requestDayOfMonth, 0) + 1
 
 
                     }
@@ -286,7 +317,8 @@ class AnalyticsFragment : Fragment() {
                     if (requestYear == nowYear) {
                         weightUsageYear[weight] = weightUsageYear.getOrDefault(weight, 0) + 1
                         benchUsageYear[bench] = benchUsageYear.getOrDefault(bench, 0) + 1
-                        requestsPerMonth[requestMonth] = requestsPerMonth.getOrDefault(requestMonth, 0) + 1
+                        requestsPerMonth[requestMonth] =
+                            requestsPerMonth.getOrDefault(requestMonth, 0) + 1
 
 
                     }
@@ -329,7 +361,7 @@ class AnalyticsFragment : Fragment() {
 
     }
 
-    private fun updateGraph1(){
+    private fun updateGraph1() {
         Log.d(fragTag, "updateGraph1")
         graph1.removeAllSeries()
 
@@ -339,7 +371,8 @@ class AnalyticsFragment : Fragment() {
                 val spc = getSpacingAccordingToSize(weightUsageToday.keys.size)
 
                 mSeries = BarGraphSeries(weightUsageToday.toSortedMap().map {
-                    DataPoint(it.key, it.value.toDouble()) }.toTypedArray()).apply {
+                    DataPoint(it.key, it.value.toDouble())
+                }.toTypedArray()).apply {
                     valueDependentColor = ValueDependentColor { data ->
                         Color.rgb(data.x.toInt() * 255 / 4, Math.abs(data.y * 255 / 6).toInt(), 100)
                     }
@@ -355,16 +388,17 @@ class AnalyticsFragment : Fragment() {
                     it.addSeries(mSeries)
                 }
 
-                if(!weightUsageToday.isEmpty()){
-                    graph1.viewport.setMaxX(weightUsageToday.keys.max()!!.toDouble() + 2 )
-                    graph1.viewport.setMaxY(weightUsageToday.values.max()!!.toDouble() + 5 )
+                if (!weightUsageToday.isEmpty()) {
+                    graph1.viewport.setMaxX(weightUsageToday.keys.max()!!.toDouble() + 2)
+                    graph1.viewport.setMaxY(weightUsageToday.values.max()!!.toDouble() + 5)
                 }
             }
             "Week" -> {
                 val spc = getSpacingAccordingToSize(weightUsageWeek.keys.size)
 
                 mSeries = BarGraphSeries(weightUsageWeek.toSortedMap().map {
-                    DataPoint(it.key, it.value.toDouble()) }.toTypedArray()).apply {
+                    DataPoint(it.key, it.value.toDouble())
+                }.toTypedArray()).apply {
                     valueDependentColor = ValueDependentColor { data ->
                         Color.rgb(data.x.toInt() * 255 / 4, Math.abs(data.y * 255 / 6).toInt(), 100)
                     }
@@ -379,16 +413,17 @@ class AnalyticsFragment : Fragment() {
                     it.addSeries(mSeries)
                 }
 
-                if(!weightUsageWeek.isEmpty()){
+                if (!weightUsageWeek.isEmpty()) {
                     graph1.viewport.setMaxX(weightUsageWeek.keys.max()!!.toDouble() + 2)
-                    graph1.viewport.setMaxY(weightUsageWeek.values.max()!!.toDouble() + 5 )
+                    graph1.viewport.setMaxY(weightUsageWeek.values.max()!!.toDouble() + 5)
                 }
             }
             "Month" -> {
                 val spc = getSpacingAccordingToSize(weightUsageMonth.keys.size)
 
                 mSeries = BarGraphSeries(weightUsageMonth.toSortedMap().map {
-                    DataPoint(it.key, it.value.toDouble()) }.toTypedArray()).apply {
+                    DataPoint(it.key, it.value.toDouble())
+                }.toTypedArray()).apply {
                     valueDependentColor = ValueDependentColor { data ->
                         Color.rgb(data.x.toInt() * 255 / 4, Math.abs(data.y * 255 / 6).toInt(), 100)
                     }
@@ -403,16 +438,17 @@ class AnalyticsFragment : Fragment() {
                     it.removeAllSeries()
                     it.addSeries(mSeries)
                 }
-                if(!weightUsageMonth.isEmpty()){
+                if (!weightUsageMonth.isEmpty()) {
                     graph1.viewport.setMaxX(weightUsageMonth.keys.max()!!.toDouble() + 2)
-                    graph1.viewport.setMaxY(weightUsageMonth.values.max()!!.toDouble() + 5 )
+                    graph1.viewport.setMaxY(weightUsageMonth.values.max()!!.toDouble() + 5)
                 }
             }
             "Year" -> {
                 val spc = getSpacingAccordingToSize(weightUsageYear.keys.size)
 
                 mSeries = BarGraphSeries(weightUsageYear.toSortedMap().map {
-                    DataPoint(it.key, it.value.toDouble()) }.toTypedArray()).apply {
+                    DataPoint(it.key, it.value.toDouble())
+                }.toTypedArray()).apply {
                     valueDependentColor = ValueDependentColor { data ->
                         Color.rgb(data.x.toInt() * 255 / 4, Math.abs(data.y * 255 / 6).toInt(), 100)
                     }
@@ -427,9 +463,9 @@ class AnalyticsFragment : Fragment() {
                     it.removeAllSeries()
                     it.addSeries(mSeries)
                 }
-                if(!weightUsageYear.isEmpty()){
+                if (!weightUsageYear.isEmpty()) {
                     graph1.viewport.setMaxX(weightUsageYear.keys.max()!!.toDouble() + 2)
-                    graph1.viewport.setMaxY(weightUsageYear.values.max()!!.toDouble() + 5 )
+                    graph1.viewport.setMaxY(weightUsageYear.values.max()!!.toDouble() + 5)
                 }
             }
         }
@@ -452,7 +488,7 @@ class AnalyticsFragment : Fragment() {
         val staticLabelsFormatter = StaticLabelsFormatter(graph2)
 
         //get from bench layout in settings? - set size to the max bench number in settings
-        val defalutLabels = Array<String>(10 , {"B$it"})
+        val defaultLabels = Array(10) { "B$it" }
 
         when (type) {
 
@@ -460,7 +496,8 @@ class AnalyticsFragment : Fragment() {
                 val spc = getSpacingAccordingToSize(benchUsageToday.keys.size)
 
                 mSeries = BarGraphSeries(benchUsageToday.toSortedMap().map {
-                    DataPoint(it.key.toDouble(), it.value.toDouble()) }.toTypedArray()).apply {
+                    DataPoint(it.key.toDouble(), it.value.toDouble())
+                }.toTypedArray()).apply {
                     valueDependentColor = ValueDependentColor { data ->
                         Color.rgb(data.x.toInt() * 255 / 4, Math.abs(data.y * 255 / 6).toInt(), 100)
                     }
@@ -473,27 +510,28 @@ class AnalyticsFragment : Fragment() {
                     it.title = "Request counts from each bench today"
                     it.addSeries(mSeries)
                 }
-                if(!benchUsageToday.isEmpty()){
+                if (!benchUsageToday.isEmpty()) {
                     graph2.viewport.setMaxX(benchUsageToday.keys.max()!!.toDouble() + 2)
-                    graph2.viewport.setMaxY(benchUsageToday.values.max()!!.toDouble() + 5 )
+                    graph2.viewport.setMaxY(benchUsageToday.values.max()!!.toDouble() + 5)
 
                     // set bench names as labels on x axis
                     val maxKeyToday = benchUsageToday.keys.max()
-                    val benchesToday = Array<String>(maxKeyToday!!+ 3 , {"B$it"})
+                    val benchesToday = Array(maxKeyToday!! + 3) { "B$it" }
                     staticLabelsFormatter.setHorizontalLabels(benchesToday)
 
-                }else{
-                    staticLabelsFormatter.setHorizontalLabels(defalutLabels)
+                } else {
+                    staticLabelsFormatter.setHorizontalLabels(defaultLabels)
 
                 }
 
-                graph2.getGridLabelRenderer().setLabelFormatter(staticLabelsFormatter)
+                graph2.gridLabelRenderer.labelFormatter = staticLabelsFormatter
             }
             "Week" -> {
                 val spc = getSpacingAccordingToSize(benchUsageWeek.keys.size)
 
                 mSeries = BarGraphSeries(benchUsageWeek.toSortedMap().map {
-                    DataPoint(it.key.toDouble(), it.value.toDouble()) }.toTypedArray()).apply {
+                    DataPoint(it.key.toDouble(), it.value.toDouble())
+                }.toTypedArray()).apply {
                     valueDependentColor = ValueDependentColor { data ->
                         Color.rgb(data.x.toInt() * 255 / 4, Math.abs(data.y * 255 / 6).toInt(), 100)
                     }
@@ -506,27 +544,28 @@ class AnalyticsFragment : Fragment() {
                     it.title = "Request counts from each bench this week"
                     it.addSeries(mSeries)
                 }
-                if(!benchUsageWeek.isEmpty()){
+                if (!benchUsageWeek.isEmpty()) {
                     graph2.viewport.setMaxX(benchUsageWeek.keys.max()!!.toDouble() + 2)
-                    graph2.viewport.setMaxY(benchUsageWeek.values.max()!!.toDouble() + 5 )
+                    graph2.viewport.setMaxY(benchUsageWeek.values.max()!!.toDouble() + 5)
 
                     // set bench names as labels on x axis
                     val maxKeyWeek = benchUsageWeek.keys.max()
-                    val benchesThisWeek = Array<String>(maxKeyWeek!!+ 3, {"B$it"})
+                    val benchesThisWeek = Array(maxKeyWeek!! + 3) { "B$it" }
                     staticLabelsFormatter.setHorizontalLabels(benchesThisWeek)
 
-                }else{
-                    staticLabelsFormatter.setHorizontalLabels(defalutLabels)
+                } else {
+                    staticLabelsFormatter.setHorizontalLabels(defaultLabels)
 
                 }
-                graph2.getGridLabelRenderer().setLabelFormatter(staticLabelsFormatter)
+                graph2.gridLabelRenderer.labelFormatter = staticLabelsFormatter
 
             }
             "Month" -> {
                 val spc = getSpacingAccordingToSize(benchUsageMonth.keys.size)
 
                 mSeries = BarGraphSeries(benchUsageMonth.toSortedMap().map {
-                    DataPoint(it.key.toDouble(), it.value.toDouble()) }.toTypedArray()).apply {
+                    DataPoint(it.key.toDouble(), it.value.toDouble())
+                }.toTypedArray()).apply {
                     valueDependentColor = ValueDependentColor { data ->
                         Color.rgb(data.x.toInt() * 255 / 4, Math.abs(data.y * 255 / 6).toInt(), 100)
                     }
@@ -541,20 +580,20 @@ class AnalyticsFragment : Fragment() {
                     it.title = "Request counts from each bench this month"
                     it.addSeries(mSeries)
                 }
-                if(!benchUsageMonth.isEmpty()){
+                if (!benchUsageMonth.isEmpty()) {
                     graph2.viewport.setMaxX(benchUsageMonth.keys.max()!!.toDouble() + 2)
-                    graph2.viewport.setMaxY(benchUsageMonth.values.max()!!.toDouble() + 5 )
+                    graph2.viewport.setMaxY(benchUsageMonth.values.max()!!.toDouble() + 5)
 
                     // set bench names as labels on x axis
                     val maxKeyMonth = benchUsageMonth.keys.max()
-                    val benchesThisMonth = Array<String>(maxKeyMonth!!+ 3, {"B$it"})
+                    val benchesThisMonth = Array(maxKeyMonth!! + 3) { "B$it" }
                     staticLabelsFormatter.setHorizontalLabels(benchesThisMonth)
 
-                }else{
-                    staticLabelsFormatter.setHorizontalLabels(defalutLabels)
+                } else {
+                    staticLabelsFormatter.setHorizontalLabels(defaultLabels)
 
                 }
-                graph2.getGridLabelRenderer().setLabelFormatter(staticLabelsFormatter)
+                graph2.gridLabelRenderer.labelFormatter = staticLabelsFormatter
 
 
             }
@@ -562,7 +601,8 @@ class AnalyticsFragment : Fragment() {
                 val spc = getSpacingAccordingToSize(benchUsageYear.keys.size)
 
                 mSeries = BarGraphSeries(benchUsageYear.toSortedMap().map {
-                    DataPoint(it.key.toDouble(), it.value.toDouble()) }.toTypedArray()).apply {
+                    DataPoint(it.key.toDouble(), it.value.toDouble())
+                }.toTypedArray()).apply {
                     valueDependentColor = ValueDependentColor { data ->
                         Color.rgb(data.x.toInt() * 255 / 4, Math.abs(data.y * 255 / 6).toInt(), 100)
                     }
@@ -577,20 +617,20 @@ class AnalyticsFragment : Fragment() {
                     it.addSeries(mSeries)
 
                 }
-                if(!benchUsageYear.isEmpty()){
+                if (!benchUsageYear.isEmpty()) {
                     graph2.viewport.setMaxX(benchUsageYear.keys.max()!!.toDouble() + 2)
-                    graph2.viewport.setMaxY(benchUsageYear.values.max()!!.toDouble() + 5 )
+                    graph2.viewport.setMaxY(benchUsageYear.values.max()!!.toDouble() + 5)
 
                     // set bench names as labels on x axis
                     val maxKeyYear = benchUsageYear.keys.max()
-                    val benchesThisYear = Array<String>(maxKeyYear!!+ 3, {"B$it"})
+                    val benchesThisYear = Array(maxKeyYear!! + 3) { "B$it" }
                     staticLabelsFormatter.setHorizontalLabels(benchesThisYear)
 
-                }else{
-                    staticLabelsFormatter.setHorizontalLabels(defalutLabels)
+                } else {
+                    staticLabelsFormatter.setHorizontalLabels(defaultLabels)
 
                 }
-                graph2.getGridLabelRenderer().setLabelFormatter(staticLabelsFormatter)
+                graph2.gridLabelRenderer.labelFormatter = staticLabelsFormatter
 
 
             }
@@ -623,29 +663,37 @@ class AnalyticsFragment : Fragment() {
                 val now = LocalDateTime.now(ZoneOffset.UTC)
                 val nowHour = now.hour
 
-                for(hour in openingHour + 1 .. nowHour ){
-                    if(!requestsPerHour.containsKey(hour.toDouble())){
+                for (hour in openingHour + 1..nowHour) {
+                    if (!requestsPerHour.containsKey(hour.toDouble())) {
                         requestsPerHour[hour.toDouble()] = 0
                     }
                 }
 
                 //if closing hour is 7:30 requests made between 7:00 and 7:30 should be added at 7:30 coordinate, not 8
-                if(requestsPerHour.containsKey(closingHour.toDouble() + 1.0)){
+                if (requestsPerHour.containsKey(closingHour.toDouble() + 1.0)) {
 
-                    val requestsMadeInLastMinutes = requestsPerHour.getOrDefault(closingHour.toDouble() + 1.0, 0)
+                    val requestsMadeInLastMinutes =
+                        requestsPerHour.getOrDefault(closingHour.toDouble() + 1.0, 0)
                     requestsPerHour.remove(closingHour.toDouble() + 1.0)
 
                     lineSeries = LineGraphSeries(requestsPerHour.toSortedMap().map {
-                        DataPoint(it.key, it.value.toDouble()) }.toTypedArray()).apply {
+                        DataPoint(it.key, it.value.toDouble())
+                    }.toTypedArray()).apply {
                         title = "opening time"
                     }
-                    lineSeries.appendData(DataPoint(timeToDecimal(closingHour, closingMinute), requestsMadeInLastMinutes.toDouble()), true, 25)
+                    lineSeries.appendData(
+                        DataPoint(
+                            timeToDecimal(closingHour, closingMinute),
+                            requestsMadeInLastMinutes.toDouble()
+                        ), true, 25
+                    )
                     requestsPerHour[closingHour.toDouble() + 1.0] = requestsMadeInLastMinutes
 
-                }else{
+                } else {
 
                     lineSeries = LineGraphSeries(requestsPerHour.toSortedMap().map {
-                        DataPoint(it.key, it.value.toDouble()) }.toTypedArray()).apply {
+                        DataPoint(it.key, it.value.toDouble())
+                    }.toTypedArray()).apply {
                         title = "opening time"
                     }
                 }
@@ -676,15 +724,15 @@ class AnalyticsFragment : Fragment() {
                     it.legendRenderer.align = LegendRenderer.LegendAlign.TOP
 
                 }
-                if(!requestsPerHour.isEmpty()){
-                    graph3.viewport.setMaxY(requestsPerHour.values.max()!!.toDouble() + 5 )
+                if (!requestsPerHour.isEmpty()) {
+                    graph3.viewport.setMaxY(requestsPerHour.values.max()!!.toDouble() + 5)
                 }
 
                 // set the time as labels on x axis
-                val time = Array<String>(25, {i -> i.toString() + ":00"})
+                val time = Array(25) { i -> "$i:00" }
                 val staticLabelsFormatter = StaticLabelsFormatter(graph3)
                 staticLabelsFormatter.setHorizontalLabels(time)
-                graph3.getGridLabelRenderer().setLabelFormatter(staticLabelsFormatter)
+                graph3.gridLabelRenderer.labelFormatter = staticLabelsFormatter
 
             }
             "Week" -> {
@@ -692,14 +740,15 @@ class AnalyticsFragment : Fragment() {
                 val now = LocalDateTime.now(ZoneOffset.UTC)
                 val nowDayOfWeek = now.dayOfWeek.value
 
-                for(day in 1 .. nowDayOfWeek ){
-                    if(!requestsPerWeekDay.containsKey(day)){
+                for (day in 1..nowDayOfWeek) {
+                    if (!requestsPerWeekDay.containsKey(day)) {
                         requestsPerWeekDay[day] = 0
                     }
                 }
 
                 lineSeries = LineGraphSeries(requestsPerWeekDay.toSortedMap().map {
-                    DataPoint(it.key.toDouble(), it.value.toDouble()) }.toTypedArray())
+                    DataPoint(it.key.toDouble(), it.value.toDouble())
+                }.toTypedArray())
 
                 graph3.let {
                     it.addSeries(lineSeries)
@@ -708,14 +757,25 @@ class AnalyticsFragment : Fragment() {
                     it.viewport.setMaxX(8.0)
                     it.viewport.setMinY(0.0)
                 }
-                if(!requestsPerWeekDay.isEmpty()){
-                    graph3.viewport.setMaxY(requestsPerWeekDay.values.max()!!.toDouble() + 5 )
+                if (!requestsPerWeekDay.isEmpty()) {
+                    graph3.viewport.setMaxY(requestsPerWeekDay.values.max()!!.toDouble() + 5)
                 }
 
 
                 // set week day names as labels on x axis
                 val staticLabelsFormatter = StaticLabelsFormatter(graph3)
-                staticLabelsFormatter.setHorizontalLabels(arrayOf( "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday", ""))
+                staticLabelsFormatter.setHorizontalLabels(
+                    arrayOf(
+                        "Monday",
+                        "Tuesday",
+                        "Wednesday",
+                        "Thursday",
+                        "Friday",
+                        "Saturday",
+                        "Sunday",
+                        ""
+                    )
+                )
                 graph3.gridLabelRenderer.labelFormatter = staticLabelsFormatter
 
 
@@ -726,14 +786,15 @@ class AnalyticsFragment : Fragment() {
                 val now = LocalDateTime.now(ZoneOffset.UTC)
                 val nowDayOfMonth = now.dayOfMonth
 
-                for(day in 1 .. nowDayOfMonth ){
-                    if(!requestsPerDayOfMonth.containsKey(day)){
+                for (day in 1..nowDayOfMonth) {
+                    if (!requestsPerDayOfMonth.containsKey(day)) {
                         requestsPerDayOfMonth[day] = 0
                     }
                 }
 
                 lineSeries = LineGraphSeries(requestsPerDayOfMonth.toSortedMap().map {
-                    DataPoint(it.key.toDouble(), it.value.toDouble()) }.toTypedArray())
+                    DataPoint(it.key.toDouble(), it.value.toDouble())
+                }.toTypedArray())
 
                 graph3.let {
                     it.addSeries(lineSeries)
@@ -742,29 +803,30 @@ class AnalyticsFragment : Fragment() {
                     it.viewport.setMaxX(32.0)
                     it.viewport.setMinY(0.0)
                 }
-                if(!requestsPerDayOfMonth.isEmpty()){
-                    graph3.viewport.setMaxY(requestsPerDayOfMonth.values.max()!!.toDouble() + 5 )
+                if (!requestsPerDayOfMonth.isEmpty()) {
+                    graph3.viewport.setMaxY(requestsPerDayOfMonth.values.max()!!.toDouble() + 5)
                 }
 
-                graph3.getGridLabelRenderer().setLabelFormatter(StaticLabelsFormatter(graph3))
+                graph3.gridLabelRenderer.labelFormatter = StaticLabelsFormatter(graph3)
 
 
             }
 
-            "Year" ->{
+            "Year" -> {
 
                 //months where no requests were made should have zero datapoints
                 val now = LocalDateTime.now(ZoneOffset.UTC)
                 val nowMonthOfYear = now.monthValue
 
-                for(month in 1 .. nowMonthOfYear ){
-                    if(!requestsPerMonth.containsKey(month)){
+                for (month in 1..nowMonthOfYear) {
+                    if (!requestsPerMonth.containsKey(month)) {
                         requestsPerMonth[month] = 0
                     }
                 }
 
                 lineSeries = LineGraphSeries(requestsPerMonth.toSortedMap().map {
-                    DataPoint(it.key.toDouble(), it.value.toDouble()) }.toTypedArray())
+                    DataPoint(it.key.toDouble(), it.value.toDouble())
+                }.toTypedArray())
 
                 graph3.let {
                     it.addSeries(lineSeries)
@@ -773,14 +835,29 @@ class AnalyticsFragment : Fragment() {
                     it.viewport.setMaxX(13.0)
                     it.viewport.setMinY(0.0)
                 }
-                if(!requestsPerMonth.isEmpty()){
-                    graph3.viewport.setMaxY(requestsPerMonth.values.max()!!.toDouble() + 5 )
+                if (!requestsPerMonth.isEmpty()) {
+                    graph3.viewport.setMaxY(requestsPerMonth.values.max()!!.toDouble() + 5)
                 }
 
                 // set months as labels on x axis
                 val staticLabelsFormatter = StaticLabelsFormatter(graph3)
-                staticLabelsFormatter.setHorizontalLabels(arrayOf("J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"))
-                graph3.getGridLabelRenderer().setLabelFormatter(staticLabelsFormatter)
+                staticLabelsFormatter.setHorizontalLabels(
+                    arrayOf(
+                        "J",
+                        "F",
+                        "M",
+                        "A",
+                        "M",
+                        "J",
+                        "J",
+                        "A",
+                        "S",
+                        "O",
+                        "N",
+                        "D"
+                    )
+                )
+                graph3.gridLabelRenderer.labelFormatter = staticLabelsFormatter
 
 
             }
@@ -799,27 +876,28 @@ class AnalyticsFragment : Fragment() {
 
 
     //returns true to exact opening time and exact closing time
-    private fun isInOpenHours(hour:Int, minutes:Int, dayOfWeek:Int):Boolean{
+    private fun isInOpenHours(hour: Int, minutes: Int, dayOfWeek: Int): Boolean {
 
-        val sharedPref = with(requireActivity()){getSharedPreferences("prefs", Context.MODE_PRIVATE)}
+        val sharedPref =
+            with(requireActivity()) { getSharedPreferences("prefs", Context.MODE_PRIVATE) }
         val requestOpeningHour = sharedPref.getInt(dayOfWeek.toString() + "OpenHour", 7)
         val requestOpeningMinute = sharedPref.getInt(dayOfWeek.toString() + "OpenMinute", 0)
-        val requestClosingHour = sharedPref.getInt(dayOfWeek.toString() + "CloseHour",21 )
+        val requestClosingHour = sharedPref.getInt(dayOfWeek.toString() + "CloseHour", 21)
         val requestClosingMinute = sharedPref.getInt(dayOfWeek.toString() + "CloseMinute", 0)
 
-        if(((hour == requestOpeningHour && minutes >= requestOpeningMinute) || (hour > requestOpeningHour)) && ((hour < requestClosingHour) || (hour == requestClosingHour && minutes <= requestClosingMinute))){
+        if (((hour == requestOpeningHour && minutes >= requestOpeningMinute) || (hour > requestOpeningHour)) && ((hour < requestClosingHour) || (hour == requestClosingHour && minutes <= requestClosingMinute))) {
             return true
         }
         return false
     }
 
 
-    private fun timeToDecimal(hour:Int, minutes:Int): Double{
-        return (hour + (minutes /60.toDouble()) )
+    private fun timeToDecimal(hour: Int, minutes: Int): Double {
+        return (hour + (minutes / 60.toDouble()))
 
     }
 
-    private fun getSpacingAccordingToSize(size:Int):Int{
+    private fun getSpacingAccordingToSize(size: Int): Int {
         when (size) {
 
             1 -> return 80
