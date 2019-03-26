@@ -209,7 +209,7 @@ class AnalyticsFragment : Fragment() {
 
                 updateGraph1()
                 updateGraph2()
-                updateGraph3()
+//                updateGraph3()
 
             }
         }
@@ -326,7 +326,7 @@ class AnalyticsFragment : Fragment() {
                 }
                 updateGraph1()
                 updateGraph2()
-                updateGraph3()
+//                updateGraph3()
 
             }
 

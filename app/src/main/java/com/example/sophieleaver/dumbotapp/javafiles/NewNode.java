@@ -1,5 +1,10 @@
 package com.example.sophieleaver.dumbotapp.javafiles;
 
+import com.example.sophieleaver.dumbotapp.test.NodeType;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import de.blox.graphview.Node;
 
 public class NewNode extends Node {
@@ -8,9 +13,15 @@ public class NewNode extends Node {
     private Node rightNode;
     private Node topNode;
     private Node bottomNode;
+    private NodeType type = NodeType.JUNCTION;
 
     public NewNode(Object data) {
         super(data);
+    }
+
+    public NewNode(Object data, NodeType type) {
+        super(data);
+        this.type = type;
     }
 
     Node getLeftNode() {
@@ -43,6 +54,35 @@ public class NewNode extends Node {
 
     void setBottomNode(Node bottomNode) {
         this.bottomNode = bottomNode;
+    }
+
+    public NodeType getType() {
+        return type;
+    }
+
+    public void setType(NodeType type) {
+        this.type = type;
+    }
+
+    public List<Node> getConnectedNodes() {
+        List<Node> result = new ArrayList<>();
+        if (leftNode != null) {
+            result.add(leftNode);
+        }
+
+        if (rightNode != null) {
+            result.add(rightNode);
+        }
+
+        if (topNode != null) {
+            result.add(topNode);
+        }
+
+        if (bottomNode != null) {
+            result.add(bottomNode);
+        }
+
+        return result;
     }
 
     public void setupNodes(Node leftNode, Node rightNode, Node topNode, Node bottomNode) {
