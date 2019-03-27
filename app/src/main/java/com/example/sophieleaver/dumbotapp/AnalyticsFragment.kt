@@ -209,7 +209,7 @@ class AnalyticsFragment : Fragment() {
 
                 updateGraph1()
                 updateGraph2()
-//                updateGraph3()
+                updateGraph3()
 
             }
         }
@@ -323,10 +323,11 @@ class AnalyticsFragment : Fragment() {
 
                     }
 
+                    updateGraph1()
+                    updateGraph2()
+                    updateGraph3()
                 }
-                updateGraph1()
-                updateGraph2()
-//                updateGraph3()
+
 
             }
 
@@ -663,7 +664,7 @@ class AnalyticsFragment : Fragment() {
                 val now = LocalDateTime.now(ZoneOffset.UTC)
                 val nowHour = now.hour
 
-                for (hour in openingHour + 1..nowHour) {
+                for (hour in openingHour + 1..closingHour) {
                     if (!requestsPerHour.containsKey(hour.toDouble())) {
                         requestsPerHour[hour.toDouble()] = 0
                     }
@@ -729,7 +730,7 @@ class AnalyticsFragment : Fragment() {
                 }
 
                 // set the time as labels on x axis
-                val time = Array(25) { i -> "$i:00" }
+                val time = Array(25) { (it + 1).toString() + ":00" }
                 val staticLabelsFormatter = StaticLabelsFormatter(graph3)
                 staticLabelsFormatter.setHorizontalLabels(time)
                 graph3.gridLabelRenderer.labelFormatter = staticLabelsFormatter
