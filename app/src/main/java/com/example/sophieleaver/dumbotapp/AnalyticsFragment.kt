@@ -664,11 +664,22 @@ class AnalyticsFragment : Fragment() {
                 val now = LocalDateTime.now(ZoneOffset.UTC)
                 val nowHour = now.hour
 
-                for (hour in openingHour + 1..closingHour) {
-                    if (!requestsPerHour.containsKey(hour.toDouble())) {
-                        requestsPerHour[hour.toDouble()] = 0
+                //if we're in open hours then append zeros until now
+                if(nowHour<= closingHour){
+                    for (hour in openingHour + 1..nowHour) {
+                        if (!requestsPerHour.containsKey(hour.toDouble())) {
+                            requestsPerHour[hour.toDouble()] = 0
+                        }
+                    }
+                //if were after open hours just append zeros up until closing hour
+                }else{
+                    for (hour in openingHour + 1..closingHour) {
+                        if (!requestsPerHour.containsKey(hour.toDouble())) {
+                            requestsPerHour[hour.toDouble()] = 0
+                        }
                     }
                 }
+
 
                 //if closing hour is 7:30 requests made between 7:00 and 7:30 should be added at 7:30 coordinate, not 8
                 if (requestsPerHour.containsKey(closingHour.toDouble() + 1.0)) {
