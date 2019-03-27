@@ -45,7 +45,6 @@ class OrderFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         with(view) {
             orderDumbbellRecyclerView = order_dumbbell_list
-            findViewById<TextView>(R.id.text_workout_station).text = getString(R.string.workout_station, currentBench)
 
             //when button pressed, alert dialog opened to change the bench
             button_see_workout.setOnClickListener {
@@ -55,6 +54,12 @@ class OrderFragment : Fragment() {
         setupRecyclerView()
     }
 
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+        if (!hidden){
+            view!!.findViewById<TextView>(R.id.text_workout_station).text = getString(R.string.workout_station, currentBench)
+        }
+    }
 
     private fun getWeightData() {
 
