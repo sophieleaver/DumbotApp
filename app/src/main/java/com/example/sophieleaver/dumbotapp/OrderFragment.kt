@@ -20,6 +20,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import kotlinx.android.synthetic.main.fragment_order_weights.view.*
 import kotlinx.android.synthetic.main.item_order_dumbbell.view.*
+import org.jetbrains.anko.longToast
 import org.jetbrains.anko.toast
 import java.time.LocalDateTime
 import java.time.ZoneOffset
@@ -62,13 +63,11 @@ class OrderFragment : Fragment() {
     }
 
     private fun getWeightData() {
-
         weightReference.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val newDumbbells: MutableList<Dumbbell> = mutableListOf()
                 for (dumbbellSnapshot in dataSnapshot.children) {
                     val dumbbell = dumbbellSnapshot.getValue(Dumbbell::class.java)
-//                    Log.d("WeightsFragment", "${dumbbell.key} => ${dumbbell.value.toString()}")
                     if (dumbbell != null) newDumbbells += dumbbell
                 }
                 weights = newDumbbells
@@ -187,9 +186,9 @@ class OrderFragment : Fragment() {
 
             val newRequest = Request(requestID, seconds, status, weightValue, bench)
             requests[requestID] = newRequest
-//            requireActivity().toast("${requests.values}")
+           requireActivity().toast("${requests.values}")
             requestReference.child(requestID).setValue(newRequest)
-            weightReference.child("$weightValue/$path/$bench").setValue("$status|$seconds")
+            weightReference.child("$weightValue/$path/$requestID").setValue("$bench")
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         (activity as MainActivity).onSuccessfulOrder(weightValue)

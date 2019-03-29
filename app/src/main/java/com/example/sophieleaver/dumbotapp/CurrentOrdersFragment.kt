@@ -266,6 +266,9 @@ class CurrentOrdersFragment : Fragment() {
                             currentSessionView.button_return_cur.setOnClickListener { dialog.cancel() }
 
                             currentSessionView.button_end_workout.setOnClickListener {
+                                ref.child("demo2/weights/${request.weight.toInt()}/activeRequests/${request.id}").removeValue()
+                                requireActivity().toast("demo2/weights/${request.weight.toInt()}/activeRequests/${request.id}")
+
                                 //set entry in request hashmap to collecting
                                 val now3 = LocalDateTime.now(ZoneOffset.UTC)
                                 val unixSeconds = now3.atZone(ZoneOffset.UTC)?.toEpochSecond()

@@ -265,8 +265,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 mainToolbar.title = "Order Weights"
             }
             R.id.nav_current_sessions -> {
-                newFragment = currentOrdersFragment
-                mainToolbar.title = "Current Workout"
+                //
+                val currentWorkout = CurrentOrdersFragment.newInstance()
+                newFragment = currentWorkout //pls do not remove it means we refresh when you go back onto it which is good for demo disasters
+                supportFragmentManager.beginTransaction().add(R.id.content_frame, currentWorkout, "fragment_current").commit()
+                supportFragmentManager.beginTransaction().show(currentWorkout).commit()
+//                newFragment = currentOrdersFragment
+//                mainToolbar.title = "Current Workout"
             }
             R.id.nav_timer -> {
                 newFragment = timerFragment
