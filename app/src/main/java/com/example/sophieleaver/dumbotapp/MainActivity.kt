@@ -24,9 +24,10 @@ import org.jetbrains.anko.design.snackbar
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.util.*
-
-//todo - change requests in sharedpreferences on cancel/return
-//todo - proper auth
+import android.net.ConnectivityManager
+import android.support.v7.app.AlertDialog
+import android.widget.Button
+import org.jetbrains.anko.toast
 
 var currentBench: String = "B7"
 var isManagerMode: Boolean = false
@@ -55,7 +56,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private var ref = FirebaseDatabase.getInstance().reference
     private var logRef = ref.child("demo2").child("log")
-//    private lateinit var auth : FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -73,10 +73,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             modeText.text = getString(R.string.app_mode, modeString())
             loadRequests(getStringSet("requests", null)?.toMutableList())
         }
-
-        //        listenToCurrentRequestsStatus()
-
-
     }
 
     private fun listenToCurrentRequestsStatus() {
@@ -265,8 +261,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 mainToolbar.title = "Order Weights"
             }
             R.id.nav_current_sessions -> {
-                newFragment = currentOrdersFragment
-                mainToolbar.title = "Current Workout"
+                //
+                val currentWorkout = CurrentOrdersFragment.newInstance()
+                newFragment = currentWorkout //pls do not remove it means we refresh when you go back onto it which is good for demo disasters
+                supportFragmentManager.beginTransaction().add(R.id.content_frame, currentWorkout, "fragment_current").commit()
+                supportFragmentManager.beginTransaction().show(currentWorkout).commit()
+//                newFragment = currentOrdersFragment
+//                mainToolbar.title = "Current Workout"
             }
             R.id.nav_timer -> {
                 newFragment = timerFragment
@@ -314,6 +315,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
 
             else -> newFragment = modeChangeFragment
+
         }
 
         if (newFragment == modeChangeFragment) {
@@ -335,6 +337,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         // set new fragment as active fragment
         activeFragment = newFragment
+
+        //do not let user proceed if there is no network connection
+        checkNetwork()
     }
 
     fun showTimeFragment() {
@@ -388,6 +393,37 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         getSharedPreferences("prefs", Context.MODE_PRIVATE).edit()
             .putStringSet("requests", requests.keys).apply()
         //todo log out manager
+    }
+
+    private fun isNetworkAvailable(): Boolean {
+        val connectivityManager =
+            getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val activeNetworkInfo = connectivityManager.activeNetworkInfo
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected
+    }
+
+    fun checkNetwork(){
+        if (!isNetworkAvailable()){
+            val builder = AlertDialog.Builder(this)
+            builder.setTitle("NO NETWORK CONNECTION")
+            builder.setMessage("The DumBot app requires an internet connection to function.\nPlease check your connection and try again.")
+            builder.setNeutralButton("RETRY CONNECTION", null)
+            val dialog = builder.create()
+
+            dialog.setOnShowListener {
+                val button : Button = dialog.getButton(AlertDialog.BUTTON_NEUTRAL)
+                button.setOnClickListener {
+                    if (isNetworkAvailable()){
+                        dialog.cancel()
+                        toast("reconnecting...")
+                    } else {
+                        toast("No connection found, please try again.")
+                    }
+                }
+            }
+            dialog.show()
+            dialog.setCanceledOnTouchOutside(false)
+        }
     }
 }
 

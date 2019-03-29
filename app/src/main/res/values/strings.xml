@@ -90,11 +90,14 @@
     <string name="confirm">Confirm</string>
     <string name="leaving_the_queue_cannot_be_undone">Leaving the queue cannot be undone</string>
     <string name="register_manager_account">Register Manager Account</string>
-    <string name="first_time_log_in">First time logging in?  Create your manager account here:</string>
+    <string name="first_time_log_in">First time logging in? \n Create your manager account here:</string>
     <string name="password">Password</string>
     <string name="email">Email</string>
     <string name="feeling_lost">FEELING LOST?</string>
 
     <string name="log_out">Log Out</string>
     <string name="dumbot_map">DumBot Map</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

@@ -49,6 +49,7 @@ class LoginFragment : Fragment(), View.OnClickListener {
         when (v?.id) {
 
             R.id.button_login -> {
+                (activity as MainActivity).checkNetwork()
                 emailForm = view!!.findViewById(R.id.editText_email)
                 passwordForm = view!!.findViewById(R.id.editText_password)
 
@@ -193,7 +194,7 @@ class LoginFragment : Fragment(), View.OnClickListener {
                 } else {
                     // If sign in fails, display a message to the user.
                     Log.w(tag, "createUserWithEmail:failure", task.exception)
-                    Toast.makeText(context, "Invalid email or password", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "No network connection or invalid email and password", Toast.LENGTH_SHORT).show()
                     //updateUI(null)
 
                 }

@@ -43,6 +43,9 @@ class CurrentOrdersFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_current_orders, container, false)
         //requireActivity().toast(requests.values.size)
 
+//        requests.put("123", Request("1553020567383", 1553020567, "current", "2", "B6"))
+//        requests.put("124", Request("124", 124, "collecting", "5", "B7"))
+
         currentDBRecyclerView = view.recyclerView_current_dumbbells
         currentDBRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         currentDBRecyclerView.adapter = CurrentDumbbellAdapter()
@@ -51,7 +54,7 @@ class CurrentOrdersFragment : Fragment() {
 //        queuedDBRecyclerView.layoutManager = LinearLayoutManager(requireContext())
 //        queuedDBRecyclerView.adapter = QueuedDumbbellAdapter()
 
-//                    adapter.notifyDataSetChanged()
+//        adapter.notifyDataSetChanged()
 
         view.fab_timer.setOnClickListener { (requireActivity() as MainActivity).showTimeFragment() }
 
@@ -263,6 +266,9 @@ class CurrentOrdersFragment : Fragment() {
                             currentSessionView.button_return_cur.setOnClickListener { dialog.cancel() }
 
                             currentSessionView.button_end_workout.setOnClickListener {
+                                ref.child("demo2/weights/${request.weight.toInt()}/activeRequests/${request.id}").removeValue()
+                                requireActivity().toast("demo2/weights/${request.weight.toInt()}/activeRequests/${request.id}")
+
                                 //set entry in request hashmap to collecting
                                 val now3 = LocalDateTime.now(ZoneOffset.UTC)
                                 val unixSeconds = now3.atZone(ZoneOffset.UTC)?.toEpochSecond()

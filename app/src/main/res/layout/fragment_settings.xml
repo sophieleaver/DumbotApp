@@ -29,7 +29,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="24dp"
             android:fontFamily="@font/muli"
-            android:text="@string/change_bench_number"
+            android:text="Change Bench Number"
             android:textSize="20sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
