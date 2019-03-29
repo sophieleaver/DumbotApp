@@ -126,37 +126,11 @@ class AnalyticsFragment : Fragment() {
                     id: Long
                 ) {
 
-                    when (parent.getItemAtPosition(position).toString()) {
+                    type = parent.getItemAtPosition(position).toString()
+                    updateGraph1()
+                    updateGraph2()
+                    updateGraph3()
 
-                        "Today" -> {
-                            type = "Today"
-                            updateGraph1()
-                            updateGraph2()
-                            updateGraph3()
-
-                        }
-                        "This Week" -> {
-                            type = "Week"
-                            updateGraph1()
-                            updateGraph2()
-                            updateGraph3()
-
-                        }
-                        "This Month" -> {
-                            type = "Month"
-                            updateGraph1()
-                            updateGraph2()
-                            updateGraph3()
-
-                        }
-                        "This Year" -> {
-                            type = "Year"
-                            updateGraph1()
-                            updateGraph2()
-                            updateGraph3()
-
-                        }
-                    }
                 }
 
                 override fun onNothingSelected(parent: AdapterView<*>) {

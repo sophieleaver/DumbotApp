@@ -13,7 +13,8 @@ import android.widget.TextView
 import android.widget.Toast
 import com.example.sophieleaver.dumbotapp.javafiles.NewGraph
 import com.example.sophieleaver.dumbotapp.javafiles.NewNode
-import com.example.sophieleaver.dumbotapp.javafiles.PerpendicularLinesAlgorithm
+import com.example.sophieleaver.dumbotapp.test.PerpLinesKotlinAlgorithm
+import com.github.clans.fab.FloatingActionMenu
 import com.google.firebase.database.*
 import de.blox.graphview.*
 import kotlinx.android.synthetic.main.fragment_map.view.*
@@ -34,7 +35,8 @@ class MapFragment : Fragment() {
     private var nodes: MutableList<NewNode> = mutableListOf()
     private var edges: MutableList<Edge> = mutableListOf()
 
-    private var currentNode: Node? = null
+    private var currentNode: NewNode? = null
+    private lateinit var fabMenu: FloatingActionMenu
     private lateinit var graphView: GraphView
     private lateinit var adapter: BaseGraphAdapter<ViewHolder>
 
@@ -50,8 +52,14 @@ class MapFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        fabMenu = view.fabAddNode
         graphView = view.graph
         setupAdapter(createGraph())
+        setupFAB()
+    }
+
+    private fun setupFAB() {
+
     }
 
     private fun setupAdapter(graph: Graph) {
@@ -98,21 +106,63 @@ class MapFragment : Fragment() {
             }
         }
 
-        adapter.algorithm = PerpendicularLinesAlgorithm()
+        adapter.algorithm = PerpLinesKotlinAlgorithm()
         graphView.adapter = adapter
         graphView.setOnItemClickListener { _, _, position, _ ->
             adapter.getNode(position).let {
-                currentNode = it
+                currentNode = it as NewNode?
+                updateFAB()
                 Snackbar.make(graphView, "Current Node is $it", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+    private fun updateFAB() {
+        currentNode?.run {
+            fabMenu.let {
+                it.fabAddNodeLeft.visibility =
+                    if (leftNode == null) View.VISIBLE else View.INVISIBLE
+                it.fabAddNodeRight.visibility =
+                    if (rightNode == null) View.VISIBLE else View.INVISIBLE
+                it.fabAddNodeTop.visibility = if (topNode == null) View.VISIBLE else View.INVISIBLE
+                it.fabAddNodeBottom.visibility =
+                    if (bottomNode == null) View.VISIBLE else View.INVISIBLE
+
+//                it.fabAddNodeLeft.set
+            }
+        }
+    }
+
+    private fun addNode(direction: Direction) {
+        val newNode = NewNode("New Node ${nodes.size + 1}")
+
+        when (direction) {
+            Direction.LEFT -> {
+                currentNode!!.leftNode = newNode
+                newNode.rightNode = currentNode
+            }
+            Direction.RIGHT -> {
+                currentNode!!.rightNode = newNode
+                newNode.leftNode = currentNode
+            }
+            Direction.TOP -> {
+                currentNode!!.topNode = newNode
+                newNode.bottomNode = currentNode
+            }
+            Direction.BOTTOM -> {
+                currentNode!!.bottomNode = newNode
+                newNode.topNode = currentNode
+            }
+        }
+
+        nodes.add(newNode)
     }
 
     private fun loadGraph() {
         reference.child("layout").addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 with(dataSnapshot.children) {
-                    //                    createNodes(find { it.key == "nodes" }?.getValue(String::class.java))
+                    //createNodes(find { it.key == "nodes" }?.getValue(String::class.java))
 //                    setupAngles(find { it.key == "angles" }?.getValue(String::class.java))
 //                    createEdges(find { it.key == "edges" }?.getValue(String::class.java))
                 }
@@ -244,5 +294,9 @@ class MapFragment : Fragment() {
          */
         @JvmStatic
         fun newInstance() = MapFragment()
+    }
+
+    enum class Direction {
+        LEFT, RIGHT, TOP, BOTTOM
     }
 }

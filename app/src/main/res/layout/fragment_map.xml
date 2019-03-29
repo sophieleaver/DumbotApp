@@ -12,7 +12,7 @@
         app:maxZoom="5.5" />
 
     <com.github.clans.fab.FloatingActionMenu
-        android:id="@+id/addNode"
+        android:id="@+id/fabAddNode"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
@@ -22,7 +22,7 @@
         app:menu_icon="@drawable/ic_add">
 
         <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/addNodeLeft"
+            android:id="@+id/fabAddNodeLeft"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
@@ -33,7 +33,7 @@
             app:fab_size="mini" />
 
         <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/addNodeRight"
+            android:id="@+id/fabAddNodeRight"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
@@ -44,7 +44,7 @@
             app:fab_size="mini" />
 
         <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/addNodeTop"
+            android:id="@+id/fabAddNodeTop"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
@@ -55,7 +55,7 @@
             app:fab_size="mini" />
 
         <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/addNodeBottom"
+            android:id="@+id/fabAddNodeBottom"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"

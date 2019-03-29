@@ -1,5 +1,7 @@
 package com.example.sophieleaver.dumbotapp.javafiles;
 
+import android.support.annotation.Nullable;
+
 import com.example.sophieleaver.dumbotapp.test.NodeType;
 
 import java.util.ArrayList;
@@ -24,35 +26,39 @@ public class NewNode extends Node {
         this.type = type;
     }
 
-    Node getLeftNode() {
+    @Nullable
+    public Node getLeftNode() {
         return leftNode;
     }
 
-    void setLeftNode(Node leftNode) {
+    public void setLeftNode(Node leftNode) {
         this.leftNode = leftNode;
     }
 
-    Node getRightNode() {
+    @Nullable
+    public Node getRightNode() {
         return rightNode;
     }
 
-    void setRightNode(Node rightNode) {
+    public void setRightNode(Node rightNode) {
         this.rightNode = rightNode;
     }
 
-    Node getTopNode() {
+    @Nullable
+    public Node getTopNode() {
         return topNode;
     }
 
-    void setTopNode(Node topNode) {
+    public void setTopNode(Node topNode) {
         this.topNode = topNode;
     }
 
-    Node getBottomNode() {
+    @Nullable
+    public Node getBottomNode() {
         return bottomNode;
     }
 
-    void setBottomNode(Node bottomNode) {
+    public void setBottomNode(Node bottomNode) {
         this.bottomNode = bottomNode;
     }
 

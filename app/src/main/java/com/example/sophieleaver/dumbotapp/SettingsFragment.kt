@@ -156,92 +156,17 @@ class SettingsFragment : Fragment() {
                 //update the display in settings
                 setText(day, openHour, openMinute, closingHour, closingMinute, view)
                 //put open hour and minutes in shared preferences
-                when (day) {
-                    1 -> {
-                        with(requireActivity()) {
-                            getSharedPreferences("prefs", Context.MODE_PRIVATE)
-                                .edit()
-                                .putInt("1OpenHour", openHour)
-                                .putInt("1OpenMinute", openMinute)
-                                .putInt("1CloseHour", closingHour)
-                                .putInt("1CloseMinute", closingMinute)
-                                .apply()
-                        }
 
-                    }
-                    2 -> {
-
-                        with(requireActivity()) {
-                            getSharedPreferences("prefs", Context.MODE_PRIVATE)
-                                .edit()
-                                .putInt("2OpenHour", openHour)
-                                .putInt("2OpenMinute", openMinute)
-                                .putInt("2CloseHour", closingHour)
-                                .putInt("2CloseMinute", closingMinute)
-                                .apply()
-                        }
-                    }
-                    3 -> {
-
-                        with(requireActivity()) {
-                            getSharedPreferences("prefs", Context.MODE_PRIVATE)
-                                .edit()
-                                .putInt("3OpenHour", openHour)
-                                .putInt("3OpenMinute", openMinute)
-                                .putInt("3CloseHour", closingHour)
-                                .putInt("3CloseMinute", closingMinute)
-                                .apply()
-                        }
-                    }
-                    4 -> {
-
-                        with(requireActivity()) {
-                            getSharedPreferences("prefs", Context.MODE_PRIVATE)
-                                .edit()
-                                .putInt("4OpenHour", openHour)
-                                .putInt("4OpenMinute", openMinute)
-                                .putInt("4CloseHour", closingHour)
-                                .putInt("4CloseMinute", closingMinute)
-                                .apply()
-                        }
-                    }
-                    5 -> {
-
-                        with(requireActivity()) {
-                            getSharedPreferences("prefs", Context.MODE_PRIVATE)
-                                .edit()
-                                .putInt("5OpenHour", openHour)
-                                .putInt("5OpenMinute", openMinute)
-                                .putInt("5CloseHour", closingHour)
-                                .putInt("5CloseMinute", closingMinute)
-                                .apply()
-                        }
-                    }
-                    6 -> {
-
-                        with(requireActivity()) {
-                            getSharedPreferences("prefs", Context.MODE_PRIVATE)
-                                .edit()
-                                .putInt("6OpenHour", openHour)
-                                .putInt("6OpenMinute", openMinute)
-                                .putInt("6CloseHour", closingHour)
-                                .putInt("6CloseMinute", closingMinute)
-                                .apply()
-                        }
-                    }
-                    7 -> {
-
-                        with(requireActivity()) {
-                            getSharedPreferences("prefs", Context.MODE_PRIVATE)
-                                .edit()
-                                .putInt("7OpenHour", openHour)
-                                .putInt("7OpenMinute", openMinute)
-                                .putInt("7CloseHour", closingHour)
-                                .putInt("7CloseMinute", closingMinute)
-                                .apply()
-                        }
-                    }
+                with(requireActivity()) {
+                    getSharedPreferences("prefs", Context.MODE_PRIVATE)
+                        .edit()
+                        .putInt("${day}OpenHour", openHour)
+                        .putInt("${day}OpenMinute", openMinute)
+                        .putInt("${day}CloseHour", closingHour)
+                        .putInt("${day}CloseMinute", closingMinute)
+                        .apply()
                 }
+
                 val builder2 = AlertDialog.Builder(context)
                 builder2.setMessage("Opening hours will be updated next time the app is started")
                 builder2.setPositiveButton("OK") { dialog2, _ -> dialog2.cancel() }
@@ -263,6 +188,11 @@ class SettingsFragment : Fragment() {
         closingMinute: Int,
         view: View
     ) {
+        val days: Map<Int, String> = mapOf(
+            1 to "Monday", 2 to "Tuesday", 3 to "Wednesday",
+            4 to "Thursday", 5 to "Friday", 6 to "Saturday", 7 to "Sunday"
+        )
+
         when (day) {
             1 -> {
                 if (openMinute < 10 && closingMinute < 10) {
