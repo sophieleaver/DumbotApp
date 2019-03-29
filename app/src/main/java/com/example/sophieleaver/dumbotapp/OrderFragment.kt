@@ -3,6 +3,7 @@ package com.example.sophieleaver.dumbotapp
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.res.ColorStateList
+import android.icu.text.DecimalFormat
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
@@ -30,6 +31,7 @@ class OrderFragment : Fragment() {
     private val fragTag = "OrderFragment"
 
     private val ref = FirebaseDatabase.getInstance().reference
+    private val decimalFormat = DecimalFormat("##.##")
 
     private val requestReference = ref.child("demo2").child("requests")
     private val weightReference = ref.child("demo2").child("weights")
@@ -129,7 +131,8 @@ class OrderFragment : Fragment() {
                     )
                     else Triple(R.string.wait_queue_info, requestedWeight.totalStock, requestedWeight.waitQueue.size)
 
-                weightValue.text = getString(R.string.weight, requestedWeight.weightValue)
+                weightValue.text =
+                    getString(R.string.weight, decimalFormat.format(requestedWeight.weightValue))
                 available.text = getString(availableTextResId)
                 orderButton.text = getString(orderButtonTextResId)
                 availabilityInfo.text = getString(dumbbellDetails.first, dumbbellDetails.second, dumbbellDetails.third)

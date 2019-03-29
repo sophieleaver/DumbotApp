@@ -1,5 +1,6 @@
 package com.example.sophieleaver.dumbotapp
 
+import android.icu.text.DecimalFormat
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
@@ -20,7 +21,7 @@ import org.jetbrains.anko.toast
 
 
 data class Dumbbell(
-    var weightValue: Int = 0,
+    var weightValue: Double = 0.0,
     var totalStock: Int = 0,
     val activeRequests: MutableMap<String, String> = mutableMapOf(),
     val waitQueue: MutableMap<String, String> = mutableMapOf(),
@@ -30,6 +31,7 @@ data class Dumbbell(
 class WeightsFragment : Fragment() {
     private val database = FirebaseDatabase.getInstance().reference
     private val weightReference = database.child("demo2").child("weights")
+    private val decimalFormat = DecimalFormat("##.##")
 
     private var dumbbellList: List<Dumbbell> = emptyList()
     private lateinit var dumbbellRecyclerView: RecyclerView
@@ -104,7 +106,8 @@ class WeightsFragment : Fragment() {
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val dumbbell: Dumbbell? = dumbbellList[position]
             dumbbell?.let {
-                holder.weightValue.text = getString(R.string.weight, it.weightValue)
+                holder.weightValue.text =
+                    getString(R.string.weight, decimalFormat.format(it.weightValue))
                 holder.currentStock.text =
                     getString(R.string.current_stock, it.totalStock - it.activeRequests.size)
                 holder.totalStock.text = getString(R.string.total_stock, it.totalStock)

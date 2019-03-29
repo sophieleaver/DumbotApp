@@ -21,8 +21,6 @@ import org.jetbrains.anko.longToast
 import org.jetbrains.anko.toast
 import java.util.*
 
-// todo - deal with decimal weights?
-
 class NewWeightDialog : DialogFragment() {
 
     private val database: DatabaseReference =
@@ -76,11 +74,6 @@ class NewWeightDialog : DialogFragment() {
         with(toolbar) {
             setNavigationOnClickListener { dismiss() }
             title = "Add New Weight"
-//            inflateMenu(R.menu.menu_add_dumbbell)
-//            setOnMenuItemClickListener {
-//                saveNewWeight()
-//                return@setOnMenuItemClickListener true
-//            }
         }
 
         saveNewWeightButton.setOnClickListener {
@@ -105,7 +98,10 @@ class NewWeightDialog : DialogFragment() {
                         )
                     )
                     setPositiveButton("Save New Weight") { _, _ ->
-                        saveNewWeight(weightValue.toString().toInt(), totalStock.toString().toInt())
+                        saveNewWeight(
+                            weightValue.toString().toDouble(),
+                            totalStock.toString().toInt()
+                        )
                     }
                     setNegativeButton("Cancel") { dialogInterface, _ -> dialogInterface.dismiss() }
                     create()
@@ -150,7 +146,7 @@ class NewWeightDialog : DialogFragment() {
 
         arguments?.let {
 
-            weightValueText.setText(it.getInt("weightValue").toString())
+            weightValueText.setText(it.getDouble("weightValue").toString())
             totalStockText.setText(it.getInt("totalStock").toString())
             newWeight.storageLocation.addAll(it.getStringArrayList("storageLocation")!!)
             storageAreaList.adapter!!.notifyDataSetChanged()
@@ -177,7 +173,7 @@ class NewWeightDialog : DialogFragment() {
                             weightValueText.text.toString().toInt()
                         )
                     )
-                    setPositiveButton("Remove Weight") { _, _ -> removeWeight(weightValueText.text.toString().toInt()) }
+                    setPositiveButton("Remove Weight") { _, _ -> removeWeight(weightValueText.text.toString().toDouble()) }
                     setNegativeButton("Cancel") { dialogInterface, _ -> dialogInterface.dismiss() }
                     create()
                     show()
@@ -208,7 +204,7 @@ class NewWeightDialog : DialogFragment() {
                         )
                     )
                     setPositiveButton("Save Edited Weight") { _, _ ->
-                        editWeight(weightValue.toString().toInt(), totalStock.toString().toInt())
+                        editWeight(weightValue.toString().toDouble(), totalStock.toString().toInt())
                     }
                     setNegativeButton("Cancel") { dialogInterface, _ -> dialogInterface.dismiss() }
                     create()
@@ -219,13 +215,14 @@ class NewWeightDialog : DialogFragment() {
     }
 
     @Suppress("IMPLICIT_CAST_TO_ANY")
-    private fun removeWeight(weightValue: Int) {
-        database.child("weights/$weightValue")
+    private fun removeWeight(weightValue: Double) {
+        database.child("weights/${weightValue.toString().replace(".", "-")}")
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     dataSnapshot.getValue(Dumbbell::class.java)?.let {
                         if ((it.activeRequests.isNullOrEmpty()) and (it.waitQueue.isNullOrEmpty())) {
-                            database.child("weights/$weightValue").removeValue()
+                            database.child("weights/${weightValue.toString().replace(".", "-")}")
+                                .removeValue()
                                 .addOnCompleteListener { task ->
                                     val resultText = if (task.isSuccessful) {
                                         "Successfully removed " +
@@ -263,8 +260,8 @@ class NewWeightDialog : DialogFragment() {
             })
     }
 
-    private fun editWeight(weightValue: Int, newTotalStock: Int) {
-        database.child("weights/$weightValue")
+    private fun editWeight(weightValue: Double, newTotalStock: Int) {
+        database.child("weights/${weightValue.toString().replace(".", "-")}")
             .updateChildren(mapOf("totalStock" to newTotalStock, "storageLocation" to newWeight.storageLocation))
             .addOnSuccessListener {
                 requireActivity().toast("Successfully edited $weightValue kg weight")
@@ -277,9 +274,10 @@ class NewWeightDialog : DialogFragment() {
             }
     }
 
-    private fun saveNewWeight(weightValue: Int, totalStock: Int) {
+    private fun saveNewWeight(weightValue: Double, totalStock: Int) {
 
-        database.child("weights/$weightValue").setValue(newWeight.apply {
+        database.child("weights/${weightValue.toString().replace(".", "-")}")
+            .setValue(newWeight.apply {
             this.weightValue = weightValue
             this.totalStock = totalStock
         }).addOnSuccessListener {
@@ -300,7 +298,7 @@ class NewWeightDialog : DialogFragment() {
             val exampleDialog = NewWeightDialog().apply {
                 weightToEdit?.let {
                     arguments = Bundle().apply {
-                        putInt("weightValue", it.weightValue)
+                        putDouble("weightValue", it.weightValue)
                         putInt("totalStock", it.totalStock)
                         putStringArrayList(
                             "storageLocation",

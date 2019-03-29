@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.ActionBar
 import android.app.AlertDialog
 import android.graphics.Color
+import android.icu.text.DecimalFormat
 import android.os.Bundle
 import android.os.SystemClock
 import android.support.v4.app.Fragment
@@ -17,11 +18,8 @@ import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.cancel_collection_view.view.*
 import kotlinx.android.synthetic.main.cancel_delivery_view.view.*
 import kotlinx.android.synthetic.main.current_dumbbell_view.view.*
-import kotlinx.android.synthetic.main.fragment_current_orders.*
 import kotlinx.android.synthetic.main.fragment_current_orders.view.*
 import kotlinx.android.synthetic.main.item_current_dumbbell.view.*
-import kotlinx.android.synthetic.main.item_queued_dumbbell.view.*
-import kotlinx.android.synthetic.main.queued_dumbbell_cancellation_view.view.*
 import kotlinx.android.synthetic.main.reset_warning_view.view.*
 import org.jetbrains.anko.toast
 import java.time.LocalDateTime
@@ -37,7 +35,8 @@ class CurrentOrdersFragment : Fragment() {
     lateinit var currentDBRecyclerView: RecyclerView
     private lateinit var queuedDBRecyclerView: RecyclerView
 
-    val ref = FirebaseDatabase.getInstance().reference
+    private val ref = FirebaseDatabase.getInstance().reference
+    private val decimalFormat = DecimalFormat("##.##")
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
@@ -155,7 +154,8 @@ class CurrentOrdersFragment : Fragment() {
 
                     val type = request.type
                     holder.id = request.id
-                    holder.weight.text = getString(R.string.weight, request.weight.toInt())
+                    holder.weight.text =
+                        getString(R.string.weight, decimalFormat.format(request.weight.toDouble()))
 
                     holder.emptyText.visibility = View.INVISIBLE
                     holder.background.setBackgroundColor(Color.WHITE)

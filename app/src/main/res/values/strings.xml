@@ -12,7 +12,7 @@
     <string name="storage_location">Storage Location: %1$s</string>
     <string name="current_stock">Currently Available: %1$d</string>
     <string name="total_stock">Total Stock: %1$d</string>
-    <string name="weight">%1$d KG</string>
+    <string name="weight">%1$s KG</string>
     <string name="dumbot">DumBot</string>
     <string name="text_change_station">Change Station</string>
     <string name="order">Order</string>
