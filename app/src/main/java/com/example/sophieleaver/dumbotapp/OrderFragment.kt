@@ -20,7 +20,6 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import kotlinx.android.synthetic.main.fragment_order_weights.view.*
 import kotlinx.android.synthetic.main.item_order_dumbbell.view.*
-import org.jetbrains.anko.longToast
 import org.jetbrains.anko.toast
 import java.time.LocalDateTime
 import java.time.ZoneOffset
@@ -107,14 +106,9 @@ class OrderFragment : Fragment() {
         override fun getItemCount(): Int = weights.size
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            //todo implement for next demo
-            //            if (maximumWeightLimitReached()) {
-            //                holder.orderButton.isEnabled = false
-            //                holder.orderButton.backgroundTintList = ColorStateList.valueOf(Color.GRAY)
-            //            } else {
             holder.orderButton.backgroundTintList =
                 ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.colorDumbbellAvailable))
-            //            }
+
             val requestedWeight = weights[position]
 
             holder.apply {
@@ -188,7 +182,7 @@ class OrderFragment : Fragment() {
             requests[requestID] = newRequest
            requireActivity().toast("${requests.values}")
             requestReference.child(requestID).setValue(newRequest)
-            weightReference.child("$weightValue/$path/$requestID").setValue("$bench")
+            weightReference.child("$weightValue/$path/$requestID").setValue(bench)
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         (activity as MainActivity).onSuccessfulOrder(weightValue)
@@ -203,9 +197,6 @@ class OrderFragment : Fragment() {
             )
         }
 
-//        private fun maximumWeightLimitReached(): Boolean = requests.values.count {
-//            (it.type == "delivering") or (it.type == "current")
-//        } >= 2
 
         inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             val weightValue: TextView = view.text_total_stock
