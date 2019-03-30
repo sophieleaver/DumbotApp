@@ -3,212 +3,203 @@ package com.example.sophieleaver.dumbotapp.test
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RectF
-import android.util.Log
-import com.example.sophieleaver.dumbotapp.javafiles.NewGraph
-import com.example.sophieleaver.dumbotapp.javafiles.NewNode
+import com.example.sophieleaver.dumbotapp.javafiles.PerpendicularChildrenNode
 import de.blox.graphview.*
 import de.blox.graphview.Node
-import de.blox.graphview.Vector
 import de.blox.graphview.edgerenderer.EdgeRenderer
 import de.blox.graphview.edgerenderer.StraightEdgeRenderer
-import java.util.*
 
 class PerpLinesKotlinAlgorithm : Algorithm {
 
+    private val clusterPadding = 100
+    private val graphMargin = 48
+
     private var initEdgeLength = 20
     private var graphSize = Size(0, 0)
-    private var edgeRenderer: EdgeRenderer =
-        StraightEdgeRenderer() // or ArrowEdgeRender() or custom implementation
-
-    private var maxLeft: Float = 0.toFloat()
-    private var maxRight: Float = 0.toFloat()
-    private var maxTop: Float = 0.toFloat()
-    private var maxBottom: Float = 0.toFloat()
+    private var edgeRenderer: EdgeRenderer = StraightEdgeRenderer()
+    private var maxLeft: Float = 0f
+    private var maxRight: Float = 0f
+    private var maxTop: Float = 0f
+    private var maxBottom: Float = 0f
 
     override fun run(graph: Graph) {
 
-        initPositionNodes(graph as NewGraph)
+        calculateNodePositions(graph)
 
         positionNodes(graph)
 
         calculateGraphSize(graph)
     }
 
-    private fun initPositionNodes(graph: NewGraph) {
+    private fun calculateNodePositions(graph: Graph) {
 
-        val frontier = ArrayList<Node>()
-        val addedNodes = ArrayList<Node>()
-
-        val firstNode = graph.nodes[0]
-        initEdgeLength += firstNode.width
         val tempGraphSize = graph.nodeCount * initEdgeLength
+        val midPoint = tempGraphSize / 2f
+
         graphSize = Size(tempGraphSize, tempGraphSize)
 
-        val midPoint = tempGraphSize / 2f
         maxLeft = midPoint
         maxRight = midPoint
         maxTop = midPoint
         maxBottom = midPoint
 
+        initEdgeLength = graph.getNode(0).width + 20
+
         graph.getNode(0).setPos(Vector(midPoint, midPoint))
 
-        frontier.add(firstNode)
+        val addedNodes = mutableListOf<Node>()
+        val frontier = mutableListOf<Node>(graph.getNode(0))
 
-        var currentNode: NewNode
+        while (frontier.isNotEmpty()) {
+            with(frontier.removeAt(0) as PerpendicularChildrenNode) {
 
-        while (!frontier.isEmpty()) {
-            currentNode = frontier.removeAt(0) as NewNode
+                if (leftNode != null && !addedNodes.contains(leftNode!!)) {
+                    frontier.add(leftNode!!)
+                    drawLeftNode(
+                        graph.getNode(this.data) as PerpendicularChildrenNode,
+                        graph,
+                        addedNodes,
+                        frontier
+                    )
+                }
 
-            if (currentNode.leftNode != null && !addedNodes.contains(currentNode.leftNode!!)) {
-                frontier.add(currentNode.leftNode!!)
-                drawLeftNode(graph.getNode(currentNode) as NewNode, graph, addedNodes, frontier)
+                if (rightNode != null && !addedNodes.contains(rightNode!!)) {
+                    frontier.add(rightNode!!)
+                    drawRightNode(
+                        graph.getNode(this.data) as PerpendicularChildrenNode,
+                        graph,
+                        addedNodes,
+                        frontier
+                    )
+                }
+
+                if (topNode != null && !addedNodes.contains(topNode!!)) {
+                    frontier.add(topNode!!)
+                    drawTopNode(
+                        graph.getNode(this.data) as PerpendicularChildrenNode,
+                        graph,
+                        addedNodes,
+                        frontier
+                    )
+                }
+
+                if (bottomNode != null && !addedNodes.contains(bottomNode!!)) {
+                    frontier.add(bottomNode!!)
+                    drawBottomNode(
+                        graph.getNode(this.data) as PerpendicularChildrenNode,
+                        graph,
+                        addedNodes,
+                        frontier
+                    )
+                }
+
+                if (!addedNodes.contains(this)) addedNodes.add(this)
             }
-
-            if (currentNode.rightNode != null && !addedNodes.contains(currentNode.rightNode!!)) {
-                frontier.add(currentNode.rightNode!!)
-                drawRightNode(graph.getNode(currentNode) as NewNode, graph, addedNodes, frontier)
-            }
-
-            if (currentNode.topNode != null && !addedNodes.contains(currentNode.topNode!!)) {
-                frontier.add(currentNode.topNode!!)
-                drawTopNode(graph.getNode(currentNode) as NewNode, graph, addedNodes, frontier)
-            }
-
-            if (currentNode.bottomNode != null && !addedNodes.contains(currentNode.bottomNode!!)) {
-                frontier.add(currentNode.bottomNode!!)
-                drawBottomNode(graph.getNode(currentNode) as NewNode, graph, addedNodes, frontier)
-            }
-
-            if (!addedNodes.contains(currentNode)) addedNodes.add(currentNode)
         }
 
     }
 
     private fun drawBottomNode(
-        currentNode: NewNode,
+        currentNode: PerpendicularChildrenNode,
         graph: Graph,
         addedNodes: List<Node>,
         frontier: List<Node>
     ) {
         val newY = currentNode.y + initEdgeLength
-        graph.getNode(currentNode.bottomNode).setPos(Vector(currentNode.x, newY))
+        graph.getNode(currentNode.bottomNode!!.data).setPos(Vector(currentNode.x, newY))
 
         if (newY > maxBottom) {
 
-            val nodesToEdit = ArrayList<Node>()
-            nodesToEdit.addAll(frontier)
-            nodesToEdit.addAll(addedNodes)
-            nodesToEdit.add(currentNode)
-
-            val difference = Math.abs(maxBottom - newY)
-            val shiftAmount = difference / 2f
+            val nodesToEdit = frontier + addedNodes + currentNode
+            val shiftAmount = Math.abs(maxBottom - newY) / 2f
             for (node in nodesToEdit) {
-                graph.getNode(node).y = node.y - shiftAmount
+                graph.getNode(node.data).y = node.y - shiftAmount
             }
-            maxBottom = graph.getNode(currentNode.bottomNode).y
+            maxBottom = graph.getNode(currentNode.bottomNode!!.data).y
         }
 
     }
 
     private fun drawTopNode(
-        currentNode: NewNode,
+        currentNode: PerpendicularChildrenNode,
         graph: Graph,
         addedNodes: List<Node>,
         frontier: List<Node>
     ) {
         val newY = currentNode.y - initEdgeLength
-        graph.getNode(currentNode.topNode).setPos(Vector(currentNode.x, newY))
+        graph.getNode(currentNode.topNode!!.data).setPos(Vector(currentNode.x, newY))
 
         if (newY < maxTop) {
 
-            val nodesToEdit = ArrayList<Node>()
-            nodesToEdit.addAll(frontier)
-            nodesToEdit.addAll(addedNodes)
-            nodesToEdit.add(currentNode)
-
-            val difference = Math.abs(maxTop - newY)
-            val shiftAmount = difference / 2f
+            val nodesToEdit = frontier + addedNodes + currentNode
+            val shiftAmount = Math.abs(maxTop - newY) / 2f
             for (node in nodesToEdit) {
-                graph.getNode(node).y = node.y + shiftAmount
+                graph.getNode(node.data).y = node.y + shiftAmount
             }
-            maxTop = graph.getNode(currentNode.topNode).y
+            maxTop = graph.getNode(currentNode.topNode!!.data).y
         }
 
     }
 
     private fun drawRightNode(
-        currentNode: NewNode,
+        currentNode: PerpendicularChildrenNode,
         graph: Graph,
         addedNodes: List<Node>,
         frontier: List<Node>
     ) {
         val newX = currentNode.x + initEdgeLength
-        graph.getNode(currentNode.rightNode).setPos(Vector(newX, currentNode.y))
+        graph.getNode(currentNode.rightNode!!.data).setPos(Vector(newX, currentNode.y))
 
         if (newX > maxRight) {
 
-            val nodesToEdit = ArrayList<Node>()
-            nodesToEdit.addAll(frontier)
-            nodesToEdit.addAll(addedNodes)
-            nodesToEdit.add(currentNode)
-
-            val difference = Math.abs(maxRight - newX)
-            val shiftAmount = difference / 2f
+            val nodesToEdit = frontier + addedNodes + currentNode
+            val shiftAmount = Math.abs(maxRight - newX) / 2f
             for (node in nodesToEdit) {
-                graph.getNode(node).x = node.x - shiftAmount
+                graph.getNode(node.data).x = node.x - shiftAmount
             }
-            maxRight = graph.getNode(currentNode.rightNode).x
+            maxRight = graph.getNode(currentNode.rightNode!!.data).x
         }
 
     }
 
     private fun drawLeftNode(
-        currentNode: NewNode,
+        currentNode: PerpendicularChildrenNode,
         graph: Graph,
         addedNodes: List<Node>,
         frontier: List<Node>
     ) {
-        //currentNode = graph node
         val newX = currentNode.x - initEdgeLength
 
-        //edit left graph node
-        graph.getNode(currentNode.leftNode).setPos(Vector(newX, currentNode.y))
+        graph.getNode(currentNode.leftNode!!.data).setPos(Vector(newX, currentNode.y))
 
         if (newX < maxLeft) {
 
-            val nodesToEdit = ArrayList<Node>()
-            nodesToEdit.addAll(frontier)
-            nodesToEdit.addAll(addedNodes)
-            nodesToEdit.add(currentNode)
-
-            val difference = Math.abs(maxLeft - newX)
-            val shiftAmount = difference / 2f
+            val nodesToEdit = frontier + addedNodes + currentNode
+            val shiftAmount = Math.abs(maxLeft - newX) / 2f
             for (node in nodesToEdit) {
-                graph.getNode(node).x = node.x + shiftAmount
+                graph.getNode(node.data).x = node.x + shiftAmount
             }
-            maxLeft = graph.getNode(currentNode.leftNode).x
+            maxLeft = graph.getNode(currentNode.leftNode!!.data).x
         }
 
     }
 
     private fun positionNodes(graph: Graph) {
         val offset = getOffset(graph) //leftmost & topmost value of a node - add padding
-        val nodesVisited = ArrayList<Node>()
-        val nodeClusters = ArrayList<NodeCluster>()
+        val nodesVisited: MutableList<Node> = mutableListOf()
+        val nodeClusters: MutableList<NodeCluster> = mutableListOf()
+
         for (node in graph.nodes) {
             node.setPos(Vector(node.x - offset.x, node.y - offset.y))
         }
 
         for (node in graph.nodes) {
-            if (nodesVisited.contains(node)) {
-                continue
-            }
+            if (nodesVisited.contains(node)) continue
 
             nodesVisited.add(node)
-            var cluster = findClusterOf(nodeClusters, node)
+            var cluster = nodeClusters.find { it.contains(node) }
             if (cluster == null) {
-                cluster = NodeCluster()
-                cluster.add(node)
+                cluster = NodeCluster().apply { add(node) }
                 nodeClusters.add(cluster)
             }
 
@@ -219,18 +210,15 @@ class PerpLinesKotlinAlgorithm : Algorithm {
     }
 
     private fun positionCluster(nodeClusters: MutableList<NodeCluster>) {
-        Log.d("TestAlgo", "positionCluster()")
         combineSingleNodeCluster(nodeClusters)
 
         var cluster = nodeClusters[0]
         // move first cluster to 0,0
         cluster.offset(-cluster.rect!!.left + 24, -cluster.rect!!.top + 24)
 
-        Log.d("TestAlgo", "Starting loop through " + nodeClusters.size + " clusters")
         for (i in 1 until nodeClusters.size) {
             val nextCluster = nodeClusters[i]
-            val xDiff = cluster.rect!!.right - nextCluster.rect!!.left + CLUSTER_PADDING
-            Log.d("TestAlgo", "cluster top = " + cluster.rect!!.top)
+            val xDiff = cluster.rect!!.right - nextCluster.rect!!.left + clusterPadding
             val yDiff = cluster.rect!!.top - nextCluster.rect!!.top
             nextCluster.offset(xDiff, yDiff)
             cluster = nextCluster
@@ -284,20 +272,10 @@ class PerpLinesKotlinAlgorithm : Algorithm {
         }
     }
 
-    private fun findClusterOf(clusters: List<NodeCluster>, node: Node): NodeCluster? {
-        for (cluster in clusters) {
-            if (cluster.contains(node)) {
-                return cluster
-            }
-        }
-
-        return null
-    }
-
 
     private fun getOffset(graph: Graph): Vector {
-        var offsetX = java.lang.Float.MAX_VALUE
-        var offsetY = java.lang.Float.MAX_VALUE
+        var offsetX = Float.MAX_VALUE
+        var offsetY = Float.MAX_VALUE
         for (node in graph.nodes) {
             offsetX = Math.min(offsetX, node.x)
             offsetY = Math.min(offsetY, node.y)
@@ -330,11 +308,11 @@ class PerpLinesKotlinAlgorithm : Algorithm {
             bottom = Math.max(bottom.toFloat(), node.y + node.height).toInt()
         }
 
-        graphSize = Size(right - left + 48, bottom - top + 48)
+        graphSize = Size(right - left + graphMargin, bottom - top + graphMargin)
     }
 
-    private class NodeCluster {
-        val nodes = ArrayList<Node>()
+    private inner class NodeCluster {
+        val nodes: MutableList<Node> = mutableListOf()
         var rect: RectF? = null
 
         internal fun add(node: Node) {
@@ -350,33 +328,20 @@ class PerpLinesKotlinAlgorithm : Algorithm {
             }
         }
 
-        internal operator fun contains(node: Node): Boolean {
-            return nodes.contains(node)
-        }
+        internal operator fun contains(node: Node): Boolean = nodes.contains(node)
 
-        internal fun size(): Int {
-            return nodes.size
-        }
+        internal fun size(): Int = nodes.size
 
         internal fun concat(cluster: NodeCluster) {
             for (node in cluster.nodes) {
-                node.setPos(Vector(rect!!.right + CLUSTER_PADDING, rect!!.top))
-                add(node)
+                add(node.apply { setPos(Vector(rect!!.right + clusterPadding, rect!!.top)) })
             }
         }
 
         internal fun offset(xDiff: Float, yDiff: Float) {
-            for (node in nodes) {
-                node.setPos(node.position.add(xDiff, yDiff))
-            }
-
+            nodes.forEach { it.setPos(it.position.add(xDiff, yDiff)) }
             rect!!.offset(xDiff, yDiff)
         }
-    }
-
-    companion object {
-
-        private val CLUSTER_PADDING = 100
     }
 }
 

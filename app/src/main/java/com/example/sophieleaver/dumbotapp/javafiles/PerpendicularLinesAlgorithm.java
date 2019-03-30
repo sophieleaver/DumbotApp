@@ -21,8 +21,8 @@ import de.blox.graphview.edgerenderer.StraightEdgeRenderer;
 
 public class PerpendicularLinesAlgorithm implements Algorithm {
 
-    private static final int CLUSTER_PADDING = 100;
-    private int initEdgeLength = 20;
+    private static final int CLUSTER_PADDING = 0;
+    private int initEdgeLength = 0;
     private Size graphSize = new Size(0, 0);
     private EdgeRenderer edgeRenderer = new StraightEdgeRenderer(); // or ArrowEdgeRender() or custom implementation
 
@@ -34,19 +34,19 @@ public class PerpendicularLinesAlgorithm implements Algorithm {
     @Override
     public void run(@NotNull Graph graph) {
 
-        initPositionNodes((NewGraph) graph);
+        initPositionNodes(graph);
 
         positionNodes(graph);
 
         calculateGraphSize(graph);
     }
 
-    private void initPositionNodes(NewGraph graph) {
+    private void initPositionNodes(Graph graph) {
 
         List<Node> frontier = new ArrayList<>();
         List<Node> addedNodes = new ArrayList<>();
 
-        Node firstNode = graph.getNodes().get(0);
+        Node firstNode = graph.getNode(0);
         initEdgeLength += firstNode.getWidth();
         int tempGraphSize = graph.getNodeCount() * initEdgeLength;
         graphSize = new Size(tempGraphSize, tempGraphSize);
@@ -61,29 +61,29 @@ public class PerpendicularLinesAlgorithm implements Algorithm {
 
         frontier.add(firstNode);
 
-        NewNode currentNode;
+        PerpendicularChildrenNode currentNode;
 
         while (!frontier.isEmpty()) {
-            currentNode = (NewNode) frontier.remove(0);
+            currentNode = (PerpendicularChildrenNode) frontier.remove(0);
 
             if (currentNode.getLeftNode() != null && !addedNodes.contains(currentNode.getLeftNode())) {
                 frontier.add(currentNode.getLeftNode());
-                drawLeftNode((NewNode) graph.getNode(currentNode), graph, addedNodes, frontier);
+                drawLeftNode((PerpendicularChildrenNode) getNode(graph, currentNode), graph, addedNodes, frontier);
             }
 
             if (currentNode.getRightNode() != null && !addedNodes.contains(currentNode.getRightNode())) {
                 frontier.add(currentNode.getRightNode());
-                drawRightNode((NewNode) graph.getNode(currentNode), graph, addedNodes, frontier);
+                drawRightNode((PerpendicularChildrenNode) getNode(graph, currentNode), graph, addedNodes, frontier);
             }
 
             if (currentNode.getTopNode() != null && !addedNodes.contains(currentNode.getTopNode())) {
                 frontier.add(currentNode.getTopNode());
-                drawTopNode((NewNode) graph.getNode(currentNode), graph, addedNodes, frontier);
+                drawTopNode((PerpendicularChildrenNode) getNode(graph, currentNode), graph, addedNodes, frontier);
             }
 
             if (currentNode.getBottomNode() != null && !addedNodes.contains(currentNode.getBottomNode())) {
                 frontier.add(currentNode.getBottomNode());
-                drawBottomNode((NewNode) graph.getNode(currentNode), graph, addedNodes, frontier);
+                drawBottomNode((PerpendicularChildrenNode) getNode(graph, currentNode), graph, addedNodes, frontier);
             }
 
             if (!addedNodes.contains(currentNode)) addedNodes.add(currentNode);
@@ -91,9 +91,9 @@ public class PerpendicularLinesAlgorithm implements Algorithm {
 
     }
 
-    private void drawBottomNode(NewNode currentNode, Graph graph, List<Node> addedNodes, List<Node> frontier) {
+    private void drawBottomNode(PerpendicularChildrenNode currentNode, Graph graph, List<Node> addedNodes, List<Node> frontier) {
         float newY = currentNode.getY() + initEdgeLength;
-        graph.getNode(currentNode.getBottomNode()).setPos(new Vector(currentNode.getX(), newY));
+        getNode(graph, currentNode.getBottomNode()).setPos(new Vector(currentNode.getX(), newY));
 
         if (newY > maxBottom) {
 
@@ -105,16 +105,16 @@ public class PerpendicularLinesAlgorithm implements Algorithm {
             float difference = Math.abs(maxBottom - newY);
             float shiftAmount = difference / 2f;
             for (Node node : nodesToEdit) {
-                graph.getNode(node).setY(node.getY() - shiftAmount);
+                getNode(graph, node).setY(node.getY() - shiftAmount);
             }
-            maxBottom = graph.getNode(currentNode.getBottomNode()).getY();
+            maxBottom = getNode(graph, currentNode.getBottomNode()).getY();
         }
 
     }
 
-    private void drawTopNode(NewNode currentNode, Graph graph, List<Node> addedNodes, List<Node> frontier) {
+    private void drawTopNode(PerpendicularChildrenNode currentNode, Graph graph, List<Node> addedNodes, List<Node> frontier) {
         float newY = currentNode.getY() - initEdgeLength;
-        graph.getNode(currentNode.getTopNode()).setPos(new Vector(currentNode.getX(), newY));
+        getNode(graph, currentNode.getTopNode()).setPos(new Vector(currentNode.getX(), newY));
 
         if (newY < maxTop) {
 
@@ -126,16 +126,16 @@ public class PerpendicularLinesAlgorithm implements Algorithm {
             float difference = Math.abs(maxTop - newY);
             float shiftAmount = difference / 2f;
             for (Node node : nodesToEdit) {
-                graph.getNode(node).setY(node.getY() + shiftAmount);
+                getNode(graph, node).setY(node.getY() + shiftAmount);
             }
-            maxTop = graph.getNode(currentNode.getTopNode()).getY();
+            maxTop = getNode(graph, currentNode.getTopNode()).getY();
         }
 
     }
 
-    private void drawRightNode(NewNode currentNode, Graph graph, List<Node> addedNodes, List<Node> frontier) {
+    private void drawRightNode(PerpendicularChildrenNode currentNode, Graph graph, List<Node> addedNodes, List<Node> frontier) {
         float newX = currentNode.getX() + initEdgeLength;
-        graph.getNode(currentNode.getRightNode()).setPos(new Vector(newX, currentNode.getY()));
+        getNode(graph, currentNode.getRightNode()).setPos(new Vector(newX, currentNode.getY()));
 
         if (newX > maxRight) {
 
@@ -147,19 +147,19 @@ public class PerpendicularLinesAlgorithm implements Algorithm {
             float difference = Math.abs(maxRight - newX);
             float shiftAmount = difference / 2f;
             for (Node node : nodesToEdit) {
-                graph.getNode(node).setX(node.getX() - shiftAmount);
+                getNode(graph, node).setX(node.getX() - shiftAmount);
             }
-            maxRight = graph.getNode(currentNode.getRightNode()).getX();
+            maxRight = getNode(graph, currentNode.getRightNode()).getX();
         }
 
     }
 
-    private void drawLeftNode(NewNode currentNode, Graph graph, List<Node> addedNodes, List<Node> frontier) {
+    private void drawLeftNode(PerpendicularChildrenNode currentNode, Graph graph, List<Node> addedNodes, List<Node> frontier) {
         //currentNode = graph node
         float newX = currentNode.getX() - initEdgeLength;
 
         //edit left graph node
-        graph.getNode(currentNode.getLeftNode()).setPos(new Vector(newX, currentNode.getY()));
+        getNode(graph, currentNode.getLeftNode()).setPos(new Vector(newX, currentNode.getY()));
 
         if (newX < maxLeft) {
 
@@ -171,11 +171,18 @@ public class PerpendicularLinesAlgorithm implements Algorithm {
             float difference = Math.abs(maxLeft - newX);
             float shiftAmount = difference / 2f;
             for (Node node : nodesToEdit) {
-                graph.getNode(node).setX(node.getX() + shiftAmount);
+                getNode(graph, node).setX(node.getX() + shiftAmount);
             }
-            maxLeft = graph.getNode(currentNode.getLeftNode()).getX();
+            maxLeft = getNode(graph, currentNode.getLeftNode()).getX();
         }
 
+    }
+
+    private Node getNode(Graph graph, Object data) {
+        if (data instanceof Node) {
+            data = ((Node) data).getData();
+        }
+        return graph.getNode(data);
     }
 
     private void positionNodes(Graph graph) {

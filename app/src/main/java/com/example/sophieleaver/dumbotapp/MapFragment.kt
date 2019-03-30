@@ -5,17 +5,18 @@ import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
+import android.support.v7.app.AlertDialog
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
-import com.example.sophieleaver.dumbotapp.javafiles.NewGraph
-import com.example.sophieleaver.dumbotapp.javafiles.NewNode
-import com.example.sophieleaver.dumbotapp.test.PerpLinesKotlinAlgorithm
+import com.example.sophieleaver.dumbotapp.javafiles.PerpendicularChildrenNode
+import com.example.sophieleaver.dumbotapp.javafiles.PerpendicularLinesAlgorithm
 import com.github.clans.fab.FloatingActionMenu
 import com.google.firebase.database.*
+import com.otaliastudios.zoom.Alignment
 import de.blox.graphview.*
 import kotlinx.android.synthetic.main.fragment_map.view.*
 
@@ -32,13 +33,14 @@ class MapFragment : Fragment() {
     private val reference: DatabaseReference =
         FirebaseDatabase.getInstance().reference.child("demo2")
 
-    private var nodes: MutableList<NewNode> = mutableListOf()
-    private var edges: MutableList<Edge> = mutableListOf()
-
-    private var currentNode: NewNode? = null
     private lateinit var fabMenu: FloatingActionMenu
     private lateinit var graphView: GraphView
     private lateinit var adapter: BaseGraphAdapter<ViewHolder>
+
+    private var nodes: List<PerpendicularChildrenNode> = mutableListOf()
+    private var edges: List<Edge> = mutableListOf()
+
+    private var currentNode: PerpendicularChildrenNode? = null
 
 
     override fun onCreateView(
@@ -52,14 +54,19 @@ class MapFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        fabMenu = view.fabAddNode
         graphView = view.graph
+        fabMenu = view.fabAddNode
         setupAdapter(createGraph())
         setupFAB()
     }
 
     private fun setupFAB() {
-
+        with(fabMenu) {
+            fabAddNodeLeft.setOnClickListener { showNodeTypeSelectionDialog(Direction.LEFT) }
+            fabAddNodeRight.setOnClickListener { showNodeTypeSelectionDialog(Direction.RIGHT) }
+            fabAddNodeTop.setOnClickListener { showNodeTypeSelectionDialog(Direction.TOP) }
+            fabAddNodeBottom.setOnClickListener { showNodeTypeSelectionDialog(Direction.BOTTOM) }
+        }
     }
 
     private fun setupAdapter(graph: Graph) {
@@ -73,21 +80,18 @@ class MapFragment : Fragment() {
             }
 
             override fun onBindViewHolder(viewHolder: ViewHolder, data: Any, position: Int) {
-                val nodeInfo = with(data as String) {
+                val nodeInfo = (data as String).run {
                     when {
                         startsWith("SA") -> Pair(
                             R.color.colorStorageNode,
                             "Storage Area ${removePrefix("SA")}"
                         )
-                        startsWith("B") -> {
-                            Pair(
-                                R.color.colorBenchNode,
-                                "Workout Station ${removePrefix("B")}"
-                            )
-                        }
-                        else -> {
-                            Pair(R.color.colorJunctionNode, "Junction $this")
-                        }
+                        startsWith("B") -> Pair(
+                            R.color.colorBenchNode,
+                            "Workout Station ${removePrefix("B")}"
+                        )
+
+                        else -> Pair(R.color.colorJunctionNode, "Junction $this")
                     }
                 }
 
@@ -106,13 +110,14 @@ class MapFragment : Fragment() {
             }
         }
 
-        adapter.algorithm = PerpLinesKotlinAlgorithm()
+        adapter.algorithm = PerpendicularLinesAlgorithm()
         graphView.adapter = adapter
         graphView.setOnItemClickListener { _, _, position, _ ->
             adapter.getNode(position).let {
-                currentNode = it as NewNode?
+                currentNode = it as PerpendicularChildrenNode
+                fabMenu.run { if (isOpened) close(true) }
                 updateFAB()
-                Snackbar.make(graphView, "Current Node is $it", Toast.LENGTH_SHORT).show()
+                Snackbar.make(graphView, "Current Node is ${it.data}", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -120,42 +125,65 @@ class MapFragment : Fragment() {
     private fun updateFAB() {
         currentNode?.run {
             fabMenu.let {
-                it.fabAddNodeLeft.visibility =
-                    if (leftNode == null) View.VISIBLE else View.INVISIBLE
-                it.fabAddNodeRight.visibility =
-                    if (rightNode == null) View.VISIBLE else View.INVISIBLE
-                it.fabAddNodeTop.visibility = if (topNode == null) View.VISIBLE else View.INVISIBLE
-                it.fabAddNodeBottom.visibility =
-                    if (bottomNode == null) View.VISIBLE else View.INVISIBLE
-
-//                it.fabAddNodeLeft.set
+                it.fabAddNodeLeft.visibility = if (leftNode == null) View.VISIBLE else View.GONE
+                it.fabAddNodeRight.visibility = if (rightNode == null) View.VISIBLE else View.GONE
+                it.fabAddNodeTop.visibility = if (topNode == null) View.VISIBLE else View.GONE
+                it.fabAddNodeBottom.visibility = if (bottomNode == null) View.VISIBLE else View.GONE
             }
         }
     }
 
-    private fun addNode(direction: Direction) {
-        val newNode = NewNode("New Node ${nodes.size + 1}")
+    private fun addNode(direction: Direction, nodePrefix: String) {
+        with(adapter) {
+            val newNode = PerpendicularChildrenNode("$nodePrefix ${nodes.size + 1}")
+            graph.run {
 
-        when (direction) {
-            Direction.LEFT -> {
-                currentNode!!.leftNode = newNode
-                newNode.rightNode = currentNode
+                when (direction) {
+                    Direction.LEFT -> {
+                        (getNode(currentNode!!.data) as PerpendicularChildrenNode).leftNode =
+                            newNode
+                        newNode.rightNode =
+                            (getNode(currentNode!!.data) as PerpendicularChildrenNode)
+                    }
+                    Direction.RIGHT -> {
+                        (getNode(currentNode!!.data) as PerpendicularChildrenNode).rightNode =
+                            newNode
+                        newNode.leftNode =
+                            (getNode(currentNode!!.data) as PerpendicularChildrenNode)
+                    }
+                    Direction.TOP -> {
+                        (getNode(currentNode!!.data) as PerpendicularChildrenNode).topNode = newNode
+                        newNode.bottomNode =
+                            (getNode(currentNode!!.data) as PerpendicularChildrenNode)
+                    }
+                    Direction.BOTTOM -> {
+                        (getNode(currentNode!!.data) as PerpendicularChildrenNode).bottomNode =
+                            newNode
+                        newNode.topNode = (getNode(currentNode!!.data) as PerpendicularChildrenNode)
+                    }
+                }
+
+                addEdge(getNode(currentNode!!.data), newNode)
+                this@MapFragment.nodes = nodes as List<PerpendicularChildrenNode>
             }
-            Direction.RIGHT -> {
-                currentNode!!.rightNode = newNode
-                newNode.leftNode = currentNode
-            }
-            Direction.TOP -> {
-                currentNode!!.topNode = newNode
-                newNode.bottomNode = currentNode
-            }
-            Direction.BOTTOM -> {
-                currentNode!!.bottomNode = newNode
-                newNode.topNode = currentNode
-            }
+
+            notifyNodeAdded(newNode)
+            graphView.zoomTo(1f, true)
+            graphView.setAlignment(Alignment.CENTER)
         }
+    }
 
-        nodes.add(newNode)
+    private fun showNodeTypeSelectionDialog(direction: Direction) {
+        val nodeOptions = mapOf("Storage Area" to "SA", "Workout Station" to "B", "Other" to "")
+
+        AlertDialog.Builder(requireContext()).apply {
+            setTitle("Select Node Type")
+            setItems(nodeOptions.keys.toTypedArray()) { _, i ->
+                addNode(direction, nodeOptions.values.toList()[i])
+            }
+            create()
+            show()
+        }
     }
 
     private fun loadGraph() {
@@ -176,23 +204,23 @@ class MapFragment : Fragment() {
     }
 
     private fun createNodes(nodeString: String?) {
-        nodes = nodeString?.removeSurrounding("[", "]")
-            ?.replace("\'", "")
-            ?.split(",")
-            ?.map { nodeId -> NewNode(nodeId) }
-            ?.toMutableList()
-            ?: mutableListOf()
+        nodeString?.let {
+            nodes = it.removeSurrounding("[", "]")
+                .replace("\'", "")
+                .split(",")
+                .map { nodeId -> PerpendicularChildrenNode(nodeId) }
+                .toList()
+        }
     }
 
     private fun createEdges(edgeString: String?) {
-        if (edgeString != null) {
-            val edgePairs =
-                edgeString.removeSurrounding("[", "]")
-                    .replace("\'", "")
-                    .split("),")
-                    .map { edge ->
-                        edge.removePrefix("(").split(",").run { Pair(this[0], this[1]) }
-                    }
+        edgeString?.let {
+            edges = it.removeSurrounding("[", "]")
+                .replace("\'", "")
+                .split("),")
+                .map { edge ->
+                    edge.removePrefix("(").split(",").run { buildEdge(this[0], this[1]) }
+                }
 
         }
     }
@@ -203,17 +231,37 @@ class MapFragment : Fragment() {
                 angleString.replace("\'", "").removeSurrounding("{", "}").trim().split("},")
                     .associateBy({
                         it.trim().removePrefix("(").substringBefore(')', "()").split(",")
-                            .run { Pair(this[0], this[1]) }
+                            .run { findEdge(this[0], this[1]) }
                     }) {
                         it.trim().substringAfter(')', "()").removePrefix(":{").removeSuffix("}")
                             .removePrefix("(")
                             .split(",(").map { test ->
                                 test.replace("):", ",").split(",")
-                                    .run { Triple(this[0], this[1], this[2]) }
+                                    .run {
+                                        Pair(
+                                            findEdge(this[0], this[1]),
+                                            Direction.valueOf(this[2])
+                                        )
+                                    }
                             }
+                            .run { mapOf(*this.toTypedArray()) }
                     }
+
+            angles.values.forEach {
+
+            }
+            mapOf(*listOf(Pair(1, 2)).toTypedArray())
         }
+
+
     }
+
+    private fun buildEdge(sourceId: String, destId: String): Edge =
+        with(nodes) { Edge(find { it.data == sourceId }, find { it.data == destId }) }
+
+    private fun findEdge(sourceId: String, destId: String): Edge =
+        edges.find { (it.source.data == sourceId) and (it.destination.data == destId) }!!
+
 
     private fun writeToFirebase() {
         val nodeString = "[${nodes.joinToString { "'${it.data}'" }}]"
@@ -228,33 +276,34 @@ class MapFragment : Fragment() {
         }
     }
 
+    //todo - add directions
     private fun createAngleString(): String {
-        val result = edges.joinToString { edge ->
+        val angleString = edges.joinToString { edge ->
             val key = "('${edge.source.data}','${edge.destination.data}'):"
             val valueDict = edge.run {
                 val sourceEdges =
-                    with((source as NewNode)) { connectedNodes.joinToString { "('${this.data}','${it.data}' )" } }
+                    with((source as PerpendicularChildrenNode)) { connectedNodes.joinToString { "('${this.data}','${it.data}' )" } }
                 val destEdges =
-                    with((destination as NewNode)) { connectedNodes.joinToString { "('${this.data}','${it.data}' )" } }
+                    with((destination as PerpendicularChildrenNode)) { connectedNodes.joinToString { "('${this.data}','${it.data}' )" } }
                 "{$sourceEdges,$destEdges}"
             }
             key + valueDict
         }
-        return "{$result}"
+        return "{$angleString}"
     }
 
-    private fun createGraph(): NewGraph {
+    private fun createGraph(): Graph {
 
-        val node1 = NewNode("1")
-        val node2 = NewNode("2")
-        val node3 = NewNode("SA3")
-        val node4 = NewNode("4")
-        val node5 = NewNode("5")
-        val node6 = NewNode("B6")
-        val node7 = NewNode("SA7")
-        val node8 = NewNode("B8")
-        val node9 = NewNode("B9")
-        val node0 = NewNode("B10")
+        val node1 = PerpendicularChildrenNode("1")
+        val node2 = PerpendicularChildrenNode("2")
+        val node3 = PerpendicularChildrenNode("SA3")
+        val node4 = PerpendicularChildrenNode("4")
+        val node5 = PerpendicularChildrenNode("5")
+        val node6 = PerpendicularChildrenNode("B6")
+        val node7 = PerpendicularChildrenNode("SA7")
+        val node8 = PerpendicularChildrenNode("B8")
+        val node9 = PerpendicularChildrenNode("B9")
+        val node0 = PerpendicularChildrenNode("B10")
 
         node1.setupNodes(node5, node3, node2, node4)
         node2.setupNodes(null, null, node6, node1)
@@ -267,7 +316,7 @@ class MapFragment : Fragment() {
         node9.setupNodes(node4, null, null, null)
         node0.setupNodes(null, null, node4, null)
 
-        return NewGraph().apply {
+        return Graph().apply {
             addEdge(node1, node2)
             addEdge(node1, node3)
             addEdge(node1, node4)
@@ -281,7 +330,7 @@ class MapFragment : Fragment() {
             addEdge(node4, node0)
 
             addEdge(node5, node8)
-        }
+        }.also { nodes = it.nodes as List<PerpendicularChildrenNode> }
     }
 
 
@@ -296,7 +345,7 @@ class MapFragment : Fragment() {
         fun newInstance() = MapFragment()
     }
 
-    enum class Direction {
-        LEFT, RIGHT, TOP, BOTTOM
+    internal enum class Direction(code: Char) {
+        LEFT('A'), RIGHT('C'), TOP('F'), BOTTOM('B')
     }
 }
