@@ -13,6 +13,7 @@
     <string name="current_stock">Currently Available: %1$d</string>
     <string name="total_stock">Total Stock: %1$d</string>
     <string name="weight">%1$s KG</string>
+    <string name="weight1">%1$s KG</string>
     <string name="dumbot">DumBot</string>
     <string name="text_change_station">Change Station</string>
     <string name="order">Order</string>
