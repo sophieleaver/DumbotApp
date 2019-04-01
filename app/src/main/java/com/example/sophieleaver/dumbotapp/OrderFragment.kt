@@ -130,7 +130,7 @@ class OrderFragment : Fragment() {
                     else Triple(R.string.wait_queue_info, requestedWeight.totalStock, requestedWeight.waitQueue.size)
 
                 weightValue.text =
-                    getString(R.string.weight, decimalFormat.format(requestedWeight.weightValue))
+                    getString(R.string.weight, decimalFormat.format(requestedWeight.weightValue)) //todo fix this?
                 available.text = getString(availableTextResId)
                 orderButton.text = getString(orderButtonTextResId)
                 availabilityInfo.text = getString(dumbbellDetails.first, dumbbellDetails.second, dumbbellDetails.third)
@@ -185,7 +185,10 @@ class OrderFragment : Fragment() {
             requests[requestID] = newRequest
            requireActivity().toast("${requests.values}")
             requestReference.child(requestID).setValue(newRequest)
-            weightReference.child("$weightValue/$path/$requestID").setValue(bench)
+
+            val formattedWeight = weightValue.replace('.', '-', true) //change the weight value from 4.0 to 4-0 for firebase
+
+            weightReference.child("$formattedWeight/$path/$requestID").setValue(bench)
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         (activity as MainActivity).onSuccessfulOrder(weightValue)

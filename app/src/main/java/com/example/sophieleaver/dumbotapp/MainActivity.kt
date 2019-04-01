@@ -265,7 +265,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 val currentWorkout = CurrentOrdersFragment.newInstance()
                 newFragment = currentWorkout //pls do not remove it means we refresh when you go back onto it which is good for demo disasters
                 supportFragmentManager.beginTransaction().add(R.id.content_frame, currentWorkout, "fragment_current").commit()
-                supportFragmentManager.beginTransaction().show(currentWorkout).commit()
+                supportFragmentManager.beginTransaction().show(currentWorkout).hide(activeFragment!!).commit()
+                activeFragment = currentWorkout
 //                newFragment = currentOrdersFragment
 //                mainToolbar.title = "Current Workout"
             }
@@ -354,7 +355,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     fun showCurrentOrdersFragment() {
         mainToolbar.title = "Current Workout"
-        showNewFragment(currentOrdersFragment)
+        val currentWorkout = CurrentOrdersFragment.newInstance()
+        supportFragmentManager.beginTransaction().add(R.id.content_frame, currentWorkout, "fragment_current").commit()
+        supportFragmentManager.beginTransaction().show(currentWorkout).commit()
+        supportFragmentManager.beginTransaction().hide(activeFragment!!).commit()
+        activeFragment = currentWorkout
+//        showNewFragment(currentOrdersFragment)
     }
 
     fun changeMode(mode: String) {
