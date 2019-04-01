@@ -94,13 +94,19 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                                 it.type = "current"
                                 it.time =
                                     LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneOffset.UTC)?.toEpochSecond()!!
+                                currentOrdersFragment.setUpRecyclerViews()
                                 currentOrdersFragment.currentDBRecyclerView.adapter!!.notifyDataSetChanged()
+                                //todo fix updating of ordered dumbbells
+
                             }
-                            "collecting" -> {
+                            "collecting" -> { //detects when collection has been completed by the dumbot
                                 Log.d("MainActivity", it.id)
-//                                val size = requests.size
-                                requests.remove(it.id)
-                                //longToast(size - requests.size)
+                                requests.remove(it.id) //remove from hashmap
+                                //increase availability on firebase
+                                val formattedWeight = it.weight.replace('.', '-', true) //change the weight value from 4.0 to 4-0 for firebase
+                                ref.child("demo2/weights/$formattedWeight/activeRequests/${it.ogID}").removeValue()
+
+                                currentOrdersFragment.setUpRecyclerViews()
                                 currentOrdersFragment.currentDBRecyclerView.adapter!!.notifyDataSetChanged()
 
                             }
@@ -119,22 +125,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         if (requestIds.isNullOrEmpty()) setupActivity()
         else {
             val requestsReference = FirebaseDatabase.getInstance().reference.child("demo2/requests")
-//            todo - this next time
-            /*requestsReference.addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(dataSnapshot: DataSnapshot) {
-                    requests = dataSnapshot.children
-                        .map { it.getValue(Request::class.java)!! }
-                        .filter { it.bench == currentBench  }
-                        .associateBy { it.id }
-                        .toMutableMap()
-                }
-
-                override fun onCancelled(databaseError: DatabaseError) {
-                    Log.w("MainActivity", "Failed to find request ${this@with}", databaseError.toException())
-                    loadRequests(requestIds)
-                }
-            })*/
-
             with(requestIds.removeAt(0)) {
                 requestsReference.child(this)
                     .addListenerForSingleValueEvent(object : ValueEventListener {
@@ -390,7 +380,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         super.onStop()
         getSharedPreferences("prefs", Context.MODE_PRIVATE).edit()
             .putStringSet("requests", requests.keys).apply()
-        //todo log out manager
     }
 
 
@@ -398,7 +387,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         super.onDestroy()
         getSharedPreferences("prefs", Context.MODE_PRIVATE).edit()
             .putStringSet("requests", requests.keys).apply()
-        //todo log out manager
     }
 
     private fun isNetworkAvailable(): Boolean {
@@ -434,7 +422,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 }
 
 data class Request(
-    var id: String = "", var time: Long = 0L, var type: String = "", val weight: String = "",
+    var id: String = "", val ogID: String = "", var time: Long = 0L, var type: String = "", val weight: String = "",
     val bench: String = ""
 )
 

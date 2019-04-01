@@ -1,5 +1,6 @@
 package com.example.sophieleaver.dumbotapp
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.support.design.widget.TextInputEditText
 import android.support.v4.app.DialogFragment
@@ -157,6 +158,7 @@ class NewWeightDialog : DialogFragment() {
         }
     }
 
+    @SuppressLint("StringFormatMatches")
     private fun setUpForEditingWeight() {
         saveNewWeightButton.text = getString(R.string.confirm_edited_weight)
         weightValueText.isEnabled = false
@@ -199,7 +201,7 @@ class NewWeightDialog : DialogFragment() {
                         getString(
                             R.string.detail_edit_weight,
                             totalStock.toString().toInt(),
-                            weightValue.toString().toInt(),
+                            weightValue.toString().toDouble(),
                             newWeight.storageLocation.joinToString()
                         )
                     )

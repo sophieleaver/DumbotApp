@@ -40,12 +40,12 @@
     <string name="confirm_edited_weight">Confirm Edited Weight</string>
     <string name="detail_edit_weight">
         Are you ready to save your edited weight inventory entry?\n
-        Your new entry states you have %1$d pairs of
-        %2$d kg dumbbells in storage location(s) %3$s.
+        Your new entry states you have %1$s pairs of
+        %2$s kg dumbbells in storage location(s) %3$s.
         If this is correct, press Save to confirm.
     </string>
     <string name="detail_delete_weight">
-        Are you sure you want to remove %1$dkg weights from your inventory?
+        Are you sure you want to remove %1$skg weights from your inventory?
         Once it is removed, users will no longer be able to order this type of weight.
     </string>
     <string name="app_mode">%1$s Mode</string>
@@ -61,7 +61,7 @@
     </string>
     <string name="dumbbell_being_delivered">This dumbbell is being delivered now</string>
     <string name="dumbbell_being_collected">Dumbbell is being collected now</string>
-    <string name="current_dumbbell">Your current dumbbell. Press the button below to return.</string>
+    <string name="current_dumbbell">You are currently using this dumbbell</string>
     <string name="more_info">More Info</string>
     <string name="dumbbell">%1$s dumbbell</string>
     <string name="cancel_dumbbell">Are you sure you would like to cancel %1$s of the %2$s dumbbell?</string>
