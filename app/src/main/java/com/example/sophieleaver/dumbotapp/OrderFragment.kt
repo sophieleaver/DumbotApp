@@ -136,6 +136,8 @@ class OrderFragment : Fragment() {
                 availabilityInfo.text = getString(dumbbellDetails.first, dumbbellDetails.second, dumbbellDetails.third)
                 orderButton.backgroundTintList =
                     ColorStateList.valueOf(ContextCompat.getColor(requireContext(), orderButtonColorResId))
+
+                if (dumbbellAvailable){
                 orderButton.setOnClickListener {
                     val builder = AlertDialog.Builder(context)
                     builder.setTitle("Confirm Order")
@@ -147,6 +149,21 @@ class OrderFragment : Fragment() {
 
                     val dialog = builder.create()
                     dialog.show()
+                }}
+                else {
+                    orderButton.setOnClickListener {
+                        //TODO if doing cancellation then rename button too
+                        val builder = AlertDialog.Builder(context)
+                        builder.setTitle("TODO")
+                        builder.setMessage("Join weight queue? / Weight is unavailable cannot perform action")
+                        builder.setPositiveButton("CONFIRM") { _, _ ->
+                           // createRequest(dumbbellAvailable, requestedWeight.weightValue.toString())
+                        }
+                        builder.setNeutralButton("CANCEL") { dialog, _ -> dialog.cancel() }
+
+                        val dialog = builder.create()
+                        dialog.show()
+                    }
                 }
                 //                if (dumbbellAvailable) {
                 //                                createRequest(
