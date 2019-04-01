@@ -104,9 +104,13 @@ class OrderFragment : Fragment() {
 
                         }
 
-                        it.ref.addValueEventListener(dumbbellWeightQueueListener)
-                        waitQueueListeners[it.getValue(Dumbbell::class.java)!!.weightValue] =
-                            dumbbellWeightQueueListener
+                        if (waitQueueListeners[it.getValue(Dumbbell::class.java)!!.weightValue] == null) {
+                            it.ref.addValueEventListener(dumbbellWeightQueueListener)
+                            waitQueueListeners.putIfAbsent(
+                                it.getValue(Dumbbell::class.java)!!.weightValue,
+                                dumbbellWeightQueueListener
+                            )
+                        }
                     }
 
             }

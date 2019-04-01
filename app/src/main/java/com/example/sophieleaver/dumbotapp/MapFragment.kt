@@ -200,7 +200,10 @@ class MapFragment : Fragment() {
                     createEdges(it.getValue(String::class.java))
                 }
 
-                setupAdapter(Graph().apply { edges.forEach { addEdge(it) } })
+                val graph = Graph()
+                edges.forEach { graph.addEdge(it.source, it.destination) }
+
+                setupAdapter(graph)
                 setupFAB()
 
             }
@@ -228,7 +231,8 @@ class MapFragment : Fragment() {
                 .replace("\'", "")
                 .split("),")
                 .map { edge ->
-                    edge.removePrefix("(").split(",").run { buildEdge(this[0], this[1]) }
+                    edge.removePrefix("(").removeSuffix(")").split(",")
+                        .run { buildEdge(this[0], this[1]) }
                 }
 
         }
@@ -252,9 +256,12 @@ class MapFragment : Fragment() {
                             .run { mapOf(*this.toTypedArray()) }
                     }
 
-            val edgeCount: MutableMap<PerpendicularChildrenNode, Int> = nodes.associateWith {
-                edges.count { edge -> (edge.source == it) or (edge.destination == it) }
-            }.toMutableMap()
+            val edgeCount: MutableMap<PerpendicularChildrenNode, Int> =
+                nodes.associateWith {
+                    angles.keys.count { edge ->
+                        edge.toList().contains(it.data)
+                    }
+                }.toMutableMap()
 
             val frontier: MutableList<PerpendicularChildrenNode> = mutableListOf(nodes.first())
             var plane1: MutableList<String>
@@ -262,7 +269,7 @@ class MapFragment : Fragment() {
 
 
             while (frontier.isNotEmpty()) {
-                val currentNode = frontier.removeAt(0)
+                val currentNode = frontier.removeAt(0).run { nodes.find { it == this } }!!
                 val nodeData = currentNode.data
 
                 val edgeDesciptions = angles.asIterable()
@@ -285,21 +292,24 @@ class MapFragment : Fragment() {
                 if (currentNode.connectedNodes.isEmpty()) {
                     val firstPlaneToSet = choosePlane(plane1, plane2)
 
-                    currentNode.leftNode =
-                        nodes.find { it.data == firstPlaneToSet.first.removeAt(0) }
+                    currentNode.leftNode = nodes.find { it.data == firstPlaneToSet.first[0] }
                     nodes.find { currentNode.leftNode == it }!!.rightNode = currentNode
                     edgeCount[currentNode] = edgeCount.getValue(currentNode) - 1
+                    edgeCount[nodes.find { currentNode.leftNode == it }!!] =
+                        edgeCount.getValue(nodes.find { currentNode.leftNode == it }!!) - 1
                     if (edgeCount[currentNode.leftNode]!! > 0) frontier.add(currentNode.leftNode as PerpendicularChildrenNode)
 
-                    if (plane1.isNotEmpty()) {
+                    if (firstPlaneToSet.first.size == 2) {
                         currentNode.rightNode =
-                            nodes.find { it.data == firstPlaneToSet.first.removeAt(0) }
+                            nodes.find { it.data == firstPlaneToSet.first[1] }
                         nodes.find { currentNode.rightNode == it }!!.leftNode = currentNode
                         edgeCount[currentNode] = edgeCount.getValue(currentNode) - 1
+                        edgeCount[nodes.find { currentNode.rightNode == it }!!] =
+                            edgeCount.getValue(nodes.find { currentNode.rightNode == it }!!) - 1
                         if (edgeCount[currentNode.rightNode]!! > 0) frontier.add(currentNode.rightNode as PerpendicularChildrenNode)
                     }
 
-                    if (plane2.isNotEmpty()) {
+                    if (firstPlaneToSet.second.isNotEmpty()) {
                         val edgeDict =
                             (angles[Pair(nodeData, currentNode.leftNode!!.data)] ?: angles[Pair(
                                 currentNode.leftNode!!.data,
@@ -313,6 +323,8 @@ class MapFragment : Fragment() {
                                 nodes.find { node -> node.data == entry.key.toList().find { edgeId -> edgeId != nodeData } }!!
                             nodes.find { it == currentNode.topNode }!!.bottomNode = currentNode
                             edgeCount[currentNode] = edgeCount.getValue(currentNode) - 1
+                            edgeCount[nodes.find { currentNode.topNode == it }!!] =
+                                edgeCount.getValue(nodes.find { currentNode.topNode == it }!!) - 1
                             if (edgeCount[currentNode.topNode!!]!! > 0) frontier.add(currentNode.topNode as PerpendicularChildrenNode)
                         }
 
@@ -321,6 +333,8 @@ class MapFragment : Fragment() {
                                 nodes.find { node -> node.data == entry.key.toList().find { edgeId -> edgeId != nodeData } }!!
                             nodes.find { it == currentNode.bottomNode }!!.topNode = currentNode
                             edgeCount[currentNode] = edgeCount.getValue(currentNode) - 1
+                            edgeCount[nodes.find { currentNode.bottomNode == it }!!] =
+                                edgeCount.getValue(nodes.find { currentNode.bottomNode == it }!!) - 1
                             if (edgeCount[currentNode.bottomNode!!]!! > 0) frontier.add(currentNode.bottomNode as PerpendicularChildrenNode)
                         }
                     }
@@ -333,6 +347,7 @@ class MapFragment : Fragment() {
                                     currentNode.leftNode!!.data,
                                     nodeData
                                 )])!!
+                                    .filter { it.key.toList().contains(nodeData) }
                                     .asIterable()
 
                             edgeDict.find { it.value == "A" }?.also { entry ->
@@ -340,6 +355,8 @@ class MapFragment : Fragment() {
                                     nodes.find { node -> node.data == entry.key.toList().find { edgeId -> edgeId != nodeData } }!!
                                 nodes.find { it == currentNode.topNode }!!.bottomNode = currentNode
                                 edgeCount[currentNode] = edgeCount.getValue(currentNode) - 1
+                                edgeCount[nodes.find { currentNode.topNode == it }!!] =
+                                    edgeCount.getValue(nodes.find { currentNode.topNode == it }!!) - 1
                                 if (edgeCount[currentNode.topNode!!]!! > 0) frontier.add(currentNode.topNode as PerpendicularChildrenNode)
                             }
 
@@ -348,6 +365,8 @@ class MapFragment : Fragment() {
                                     nodes.find { node -> node.data == entry.key.toList().find { edgeId -> edgeId != nodeData } }!!
                                 nodes.find { it == currentNode.bottomNode }!!.topNode = currentNode
                                 edgeCount[currentNode] = edgeCount.getValue(currentNode) - 1
+                                edgeCount[nodes.find { currentNode.bottomNode == it }!!] =
+                                    edgeCount.getValue(nodes.find { currentNode.bottomNode == it }!!) - 1
                                 if (edgeCount[currentNode.bottomNode!!]!! > 0) frontier.add(
                                     currentNode.bottomNode as PerpendicularChildrenNode
                                 )
@@ -358,17 +377,19 @@ class MapFragment : Fragment() {
                                     nodes.find { node -> node.data == entry.key.toList().find { edgeId -> edgeId != nodeData } }!!
                                 nodes.find { it == currentNode.rightNode }!!.leftNode = currentNode
                                 edgeCount[currentNode] = edgeCount.getValue(currentNode) - 1
+                                edgeCount[nodes.find { currentNode.rightNode == it }!!] =
+                                    edgeCount.getValue(nodes.find { currentNode.rightNode == it }!!) - 1
                                 if (edgeCount[currentNode.rightNode!!]!! > 0) frontier.add(
                                     currentNode.rightNode as PerpendicularChildrenNode
                                 )
                             }
 
                         }
-
                         currentNode.rightNode != null -> {
                             val edgeDict =
                                 (angles[Pair(nodeData, currentNode.rightNode!!.data)]
                                     ?: angles[Pair(currentNode.rightNode!!.data, nodeData)])!!
+                                    .filter { it.key.toList().contains(nodeData) }
                                     .asIterable()
 
                             edgeDict.find { it.value == "C" }?.also { entry ->
@@ -376,6 +397,8 @@ class MapFragment : Fragment() {
                                     nodes.find { node -> node.data == entry.key.toList().find { edgeId -> edgeId != nodeData } }!!
                                 nodes.find { it == currentNode.topNode }!!.bottomNode = currentNode
                                 edgeCount[currentNode] = edgeCount.getValue(currentNode) - 1
+                                edgeCount[nodes.find { currentNode.topNode == it }!!] =
+                                    edgeCount.getValue(nodes.find { currentNode.topNode == it }!!) - 1
                                 if (edgeCount[currentNode.topNode!!]!! > 0) frontier.add(currentNode.topNode as PerpendicularChildrenNode)
                             }
 
@@ -384,6 +407,8 @@ class MapFragment : Fragment() {
                                     nodes.find { node -> node.data == entry.key.toList().find { edgeId -> edgeId != nodeData } }!!
                                 nodes.find { it == currentNode.bottomNode }!!.topNode = currentNode
                                 edgeCount[currentNode] = edgeCount.getValue(currentNode) - 1
+                                edgeCount[nodes.find { currentNode.bottomNode == it }!!] =
+                                    edgeCount.getValue(nodes.find { currentNode.bottomNode == it }!!) - 1
                                 if (edgeCount[currentNode.bottomNode!!]!! > 0) frontier.add(
                                     currentNode.bottomNode as PerpendicularChildrenNode
                                 )
@@ -394,18 +419,20 @@ class MapFragment : Fragment() {
                                     nodes.find { node -> node.data == entry.key.toList().find { edgeId -> edgeId != nodeData } }!!
                                 nodes.find { it == currentNode.leftNode }!!.rightNode = currentNode
                                 edgeCount[currentNode] = edgeCount.getValue(currentNode) - 1
+                                edgeCount[nodes.find { currentNode.leftNode == it }!!] =
+                                    edgeCount.getValue(nodes.find { currentNode.leftNode == it }!!) - 1
                                 if (edgeCount[currentNode.leftNode!!]!! > 0) frontier.add(
                                     currentNode.leftNode as PerpendicularChildrenNode
                                 )
                             }
                         }
-
                         currentNode.topNode != null -> {
                             val edgeDict =
                                 (angles[Pair(nodeData, currentNode.topNode!!.data)] ?: angles[Pair(
                                     currentNode.topNode!!.data,
                                     nodeData
                                 )])!!
+                                    .filter { it.key.toList().contains(nodeData) }
                                     .asIterable()
 
                             edgeDict.find { it.value == "C" }?.also { entry ->
@@ -413,6 +440,8 @@ class MapFragment : Fragment() {
                                     nodes.find { node -> node.data == entry.key.toList().find { edgeId -> edgeId != nodeData } }!!
                                 nodes.find { it == currentNode.leftNode }!!.rightNode = currentNode
                                 edgeCount[currentNode] = edgeCount.getValue(currentNode) - 1
+                                edgeCount[nodes.find { currentNode.leftNode == it }!!] =
+                                    edgeCount.getValue(nodes.find { currentNode.leftNode == it }!!) - 1
                                 if (edgeCount[currentNode.leftNode!!]!! > 0) frontier.add(
                                     currentNode.leftNode as PerpendicularChildrenNode
                                 )
@@ -423,41 +452,8 @@ class MapFragment : Fragment() {
                                     nodes.find { node -> node.data == entry.key.toList().find { edgeId -> edgeId != nodeData } }!!
                                 nodes.find { it == currentNode.rightNode }!!.leftNode = currentNode
                                 edgeCount[currentNode] = edgeCount.getValue(currentNode) - 1
-                                if (edgeCount[currentNode.rightNode!!]!! > 0) frontier.add(
-                                    currentNode.rightNode as PerpendicularChildrenNode
-                                )
-                            }
-
-                            edgeDict.find { it.value == "F" }?.also { entry ->
-                                currentNode.topNode =
-                                    nodes.find { node -> node.data == entry.key.toList().find { edgeId -> edgeId != nodeData } }!!
-                                nodes.find { it == currentNode.topNode }!!.bottomNode = currentNode
-                                edgeCount[currentNode] = edgeCount.getValue(currentNode) - 1
-                                if (edgeCount[currentNode.topNode!!]!! > 0) frontier.add(currentNode.topNode as PerpendicularChildrenNode)
-                            }
-                        }
-
-                        currentNode.bottomNode != null -> {
-                            val edgeDict =
-                                (angles[Pair(nodeData, currentNode.bottomNode!!.data)]
-                                    ?: angles[Pair(currentNode.bottomNode!!.data, nodeData)])!!
-                                    .asIterable()
-
-                            edgeDict.find { it.value == "A" }?.also { entry ->
-                                currentNode.leftNode =
-                                    nodes.find { node -> node.data == entry.key.toList().find { edgeId -> edgeId != nodeData } }!!
-                                nodes.find { it == currentNode.leftNode }!!.rightNode = currentNode
-                                edgeCount[currentNode] = edgeCount.getValue(currentNode) - 1
-                                if (edgeCount[currentNode.leftNode!!]!! > 0) frontier.add(
-                                    currentNode.leftNode as PerpendicularChildrenNode
-                                )
-                            }
-
-                            edgeDict.find { it.value == "C" }?.also { entry ->
-                                currentNode.rightNode =
-                                    nodes.find { node -> node.data == entry.key.toList().find { edgeId -> edgeId != nodeData } }!!
-                                nodes.find { it == currentNode.rightNode }!!.leftNode = currentNode
-                                edgeCount[currentNode] = edgeCount.getValue(currentNode) - 1
+                                edgeCount[nodes.find { currentNode.rightNode == it }!!] =
+                                    edgeCount.getValue(nodes.find { currentNode.rightNode == it }!!) - 1
                                 if (edgeCount[currentNode.rightNode!!]!! > 0) frontier.add(
                                     currentNode.rightNode as PerpendicularChildrenNode
                                 )
@@ -468,8 +464,53 @@ class MapFragment : Fragment() {
                                     nodes.find { node -> node.data == entry.key.toList().find { edgeId -> edgeId != nodeData } }!!
                                 nodes.find { it == currentNode.bottomNode }!!.topNode = currentNode
                                 edgeCount[currentNode] = edgeCount.getValue(currentNode) - 1
+                                edgeCount[nodes.find { currentNode.bottomNode == it }!!] =
+                                    edgeCount.getValue(nodes.find { currentNode.bottomNode == it }!!) - 1
                                 if (edgeCount[currentNode.bottomNode!!]!! > 0) frontier.add(
                                     currentNode.bottomNode as PerpendicularChildrenNode
+                                )
+                            }
+                        }
+                        currentNode.bottomNode != null -> {
+                            val edgeDict =
+                                (angles[Pair(nodeData, currentNode.bottomNode!!.data)]
+                                    ?: angles[Pair(currentNode.bottomNode!!.data, nodeData)])!!
+                                    .filter { it.key.toList().contains(nodeData) }
+                                    .asIterable()
+
+                            edgeDict.find { it.value == "A" }?.also { entry ->
+                                currentNode.leftNode =
+                                    nodes.find { node -> node.data == entry.key.toList().find { edgeId -> edgeId != nodeData } }!!
+                                nodes.find { it == currentNode.leftNode }!!.rightNode = currentNode
+                                edgeCount[currentNode] = edgeCount.getValue(currentNode) - 1
+                                edgeCount[nodes.find { currentNode.leftNode == it }!!] =
+                                    edgeCount.getValue(nodes.find { currentNode.leftNode == it }!!) - 1
+                                if (edgeCount[currentNode.leftNode!!]!! > 0) frontier.add(
+                                    currentNode.leftNode as PerpendicularChildrenNode
+                                )
+                            }
+
+                            edgeDict.find { it.value == "C" }?.also { entry ->
+                                currentNode.rightNode =
+                                    nodes.find { node -> node.data == entry.key.toList().find { edgeId -> edgeId != nodeData } }!!
+                                nodes.find { it == currentNode.rightNode }!!.leftNode = currentNode
+                                edgeCount[currentNode] = edgeCount.getValue(currentNode) - 1
+                                edgeCount[nodes.find { currentNode.rightNode == it }!!] =
+                                    edgeCount.getValue(nodes.find { currentNode.rightNode == it }!!) - 1
+                                if (edgeCount[currentNode.rightNode!!]!! > 0) frontier.add(
+                                    currentNode.rightNode as PerpendicularChildrenNode
+                                )
+                            }
+
+                            edgeDict.find { it.value == "F" }?.also { entry ->
+                                currentNode.topNode =
+                                    nodes.find { node -> node.data == entry.key.toList().find { edgeId -> edgeId != nodeData } }!!
+                                nodes.find { it == currentNode.topNode }!!.bottomNode = currentNode
+                                edgeCount[currentNode] = edgeCount.getValue(currentNode) - 1
+                                edgeCount[nodes.find { currentNode.topNode == it }!!] =
+                                    edgeCount.getValue(nodes.find { currentNode.topNode == it }!!) - 1
+                                if (edgeCount[currentNode.topNode!!]!! > 0) frontier.add(
+                                    currentNode.topNode as PerpendicularChildrenNode
                                 )
                             }
                         }
@@ -494,9 +535,6 @@ class MapFragment : Fragment() {
 
     private fun buildEdge(sourceId: String, destId: String): Edge =
         with(nodes) { Edge(find { it.data == sourceId }, find { it.data == destId }) }
-
-    private fun findEdge(sourceId: String, destId: String): Edge =
-        edges.find { (it.source.data == sourceId) and (it.destination.data == destId) }!!
 
 
     private fun writeToFirebase() {
@@ -581,7 +619,7 @@ class MapFragment : Fragment() {
         fun newInstance() = MapFragment()
     }
 
-    enum class Direction(val code: String) {
-        LEFT("A"), RIGHT("C"), TOP("F"), BOTTOM("B")
+    enum class Direction {
+        LEFT, RIGHT, TOP, BOTTOM
     }
 }
