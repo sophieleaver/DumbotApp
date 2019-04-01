@@ -130,7 +130,7 @@ class OrderFragment : Fragment() {
                     else Triple(R.string.wait_queue_info, requestedWeight.totalStock, requestedWeight.waitQueue.size)
 
                 weightValue.text =
-                    getString(R.string.weight, decimalFormat.format(requestedWeight.weightValue)) //todo fix this?
+                    getString(R.string.weight, decimalFormat.format(requestedWeight.weightValue))
                 available.text = getString(availableTextResId)
                 orderButton.text = getString(orderButtonTextResId)
                 availabilityInfo.text = getString(dumbbellDetails.first, dumbbellDetails.second, dumbbellDetails.third)
@@ -198,9 +198,9 @@ class OrderFragment : Fragment() {
             val path = if (dumbbellAvailable) "activeRequests" else "waitQueue"
             val bench = currentBench
 
-            val newRequest = Request(requestID, seconds, status, weightValue, bench)
+            val newRequest = Request(requestID, requestID, seconds, status, weightValue, bench)
             requests[requestID] = newRequest
-           requireActivity().toast("${requests.values}")
+            //requireActivity().toast("${requests.values}")
             requestReference.child(requestID).setValue(newRequest)
 
             val formattedWeight = weightValue.replace('.', '-', true) //change the weight value from 4.0 to 4-0 for firebase
