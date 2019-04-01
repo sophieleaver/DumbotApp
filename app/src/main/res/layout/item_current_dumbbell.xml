@@ -124,6 +124,7 @@
         android:layout_marginStart="8dp"
         android:fontFamily="@font/muli_light"
         android:gravity="center"
+        android:countDown="false"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/textView_current_dumbbell_weight"

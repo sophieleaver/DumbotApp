@@ -94,7 +94,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                                 it.type = "current"
                                 it.time =
                                     LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneOffset.UTC)?.toEpochSecond()!!
+                                currentOrdersFragment.setUpRecyclerViews()
                                 currentOrdersFragment.currentDBRecyclerView.adapter!!.notifyDataSetChanged()
+                                //todo fix updating of ordered dumbbells
 
                             }
                             "collecting" -> { //detects when collection has been completed by the dumbot
@@ -104,6 +106,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                                 val formattedWeight = it.weight.replace('.', '-', true) //change the weight value from 4.0 to 4-0 for firebase
                                 ref.child("demo2/weights/$formattedWeight/activeRequests/${it.ogID}").removeValue()
 
+                                currentOrdersFragment.setUpRecyclerViews()
                                 currentOrdersFragment.currentDBRecyclerView.adapter!!.notifyDataSetChanged()
 
                             }

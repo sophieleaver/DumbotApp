@@ -41,7 +41,8 @@ class CurrentOrdersFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_current_orders, container, false)
-
+        //1554127890698
+        requests.put("1554127891220" ,Request("1554127891220","1554127891220", 1554127891, "current", "1.0", "B7"))
         currentDBRecyclerView = view.recyclerView_current_dumbbells
         currentDBRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         currentDBRecyclerView.adapter = CurrentDumbbellAdapter()
@@ -66,9 +67,6 @@ class CurrentOrdersFragment : Fragment() {
 
             warningView.button_cancel_warning.setOnClickListener { dialog.cancel() }
             warningView.button_confirm_reset.setOnClickListener {
-
-//                requests.filter { it.value.type == "delivering" }.forEach { requests.remove(it.key) }
-//                currentDBRecyclerView.adapter!!.notifyDataSetChanged()
 
                 requests.filter { it.value.type == "current" }.forEach {
                     val req = it.value
@@ -108,7 +106,7 @@ class CurrentOrdersFragment : Fragment() {
 
     }
 
-    private fun setUpRecyclerViews() {
+    fun setUpRecyclerViews() {
         currentDBRecyclerView.layoutManager = LinearLayoutManager(this.requireContext())
         currentDBRecyclerView.adapter = CurrentDumbbellAdapter()
 
@@ -136,6 +134,7 @@ class CurrentOrdersFragment : Fragment() {
         override fun getItemCount(): Int = requests.size + 1 //change
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+            holder
             if (itemCount == 1) {
                 //if there is only one item then the list is empty -> convert it into a current_description saying it is empty
                 holder.weight.visibility = View.INVISIBLE
@@ -151,7 +150,9 @@ class CurrentOrdersFragment : Fragment() {
 
                     val request: Request = requests.toList()[position].second
                     val now = LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneOffset.UTC)!!.toInstant()!!.toEpochMilli()
-                    val baseTime = SystemClock.elapsedRealtime() - (now - (request.time * 1000))
+//                    val baseTime = (SystemClock.elapsedRealtime() - (request.time * 1000 -  now))//1554127891
+                    val baseTime = SystemClock.elapsedRealtime() - (now - request.id.toLong())
+
 
                     val type = request.type
                     holder.id = request.id
@@ -206,6 +207,7 @@ class CurrentOrdersFragment : Fragment() {
                             }
                         }
                     }
+
                     if (type == "collecting") {
                         //set the collecting view
                         holder.timer.visibility = View.INVISIBLE
@@ -260,8 +262,10 @@ class CurrentOrdersFragment : Fragment() {
 
                         holder.current_description.text = getString(R.string.current_dumbbell)
                         holder.button.text = getString(R.string.return_dumbbell)
-                        holder.timer.base = baseTime
+
+
                         holder.timer.start()
+                        holder.timer.base = baseTime
 
                         holder.button.setOnClickListener {
                             val builder = AlertDialog.Builder(context)
