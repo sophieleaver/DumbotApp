@@ -91,11 +91,12 @@ class OrderFragment : Fragment() {
                                         if (!weight.waitQueue.containsValue(currentBench)) {
                                             waitQueueListeners.remove(weight.weightValue)
                                         }
+                                        createRequest(
+                                            true,
+                                            weight.weightValue.toString(),
+                                            weight.waitQueue
+                                        )
 
-                                        dataSnapshot.ref.updateChildren(mapOf("waitQueue" to weight.waitQueue)) { _, _ ->
-                                            requireActivity().toast("One of your queued dumbbells is now being delivered")
-                                            createRequest(true, weight.weightValue.toString())
-                                        }
                                     }
 
                                 }
@@ -148,7 +149,11 @@ class OrderFragment : Fragment() {
         getWeightData()
     }
 
-    private fun createRequest(dumbbellAvailable: Boolean, weightValue: String) {
+    private fun createRequest(
+        dumbbellAvailable: Boolean,
+        weightValue: String,
+        newWaitQueue: Map<String, String>? = null
+    ) {
 
         val now = LocalDateTime.now(ZoneOffset.UTC)
         val seconds =
@@ -161,7 +166,7 @@ class OrderFragment : Fragment() {
         val path = if (dumbbellAvailable) "activeRequests" else "waitQueue"
         val bench = currentBench
 
-        val newRequest = Request(requestID, seconds, status, weightValue, bench)
+        val newRequest = Request(requestID, requestID, seconds, status, weightValue, bench)
         requests[requestID] = newRequest
         requireActivity().toast("${requests.values}")
 
@@ -180,9 +185,25 @@ class OrderFragment : Fragment() {
                 if (task.isSuccessful) {
 //                    todo - change if wait queue
 //                    todo - start listening if wait queue
-                    (activity as MainActivity).onSuccessfulOrder(weightValue)
-                    if (!dumbbellAvailable && !waitQueueListeners.containsKey(weightValue.toDouble())) {
-                        listenToDumbbellWaitQueue(weightValue.toDouble(), formattedWeight)
+                    if (newWaitQueue != null) {
+                        weightReference.child(formattedWeight)
+                            .updateChildren(mapOf("waitQueue" to newWaitQueue)) { _, _ ->
+                                (activity as MainActivity).onSuccessfulOrder(weightValue)
+                                if (!dumbbellAvailable && !waitQueueListeners.containsKey(
+                                        weightValue.toDouble()
+                                    )
+                                ) {
+                                    listenToDumbbellWaitQueue(
+                                        weightValue.toDouble(),
+                                        formattedWeight
+                                    )
+                                }
+                            }
+                    } else {
+                        (activity as MainActivity).onSuccessfulOrder(weightValue)
+                        if (!dumbbellAvailable && !waitQueueListeners.containsKey(weightValue.toDouble())) {
+                            listenToDumbbellWaitQueue(weightValue.toDouble(), formattedWeight)
+                        }
                     }
                 } else {
                     Log.w(fragTag, "Failed to send request $requestID", task.exception)
@@ -214,10 +235,8 @@ class OrderFragment : Fragment() {
                                 waitQueueListeners.remove(weight.weightValue)
                             }
 
-                            dataSnapshot.ref.updateChildren(mapOf("waitQueue" to weight.waitQueue)) { _, _ ->
-                                requireActivity().toast("Your queued ${weight.weightValue} kg weight is being delivered")
-                                createRequest(true, weight.weightValue.toString())
-                            }
+                            createRequest(true, weight.weightValue.toString(), weight.waitQueue)
+
                         }
                     }
 
