@@ -13,6 +13,7 @@
     <string name="current_stock">Currently Available: %1$d</string>
     <string name="total_stock">Total Stock: %1$d</string>
     <string name="weight">%1$s KG</string>
+    <string name="weight1">%1$s KG</string>
     <string name="dumbot">DumBot</string>
     <string name="text_change_station">Change Station</string>
     <string name="order">Order</string>
@@ -60,7 +61,7 @@
     </string>
     <string name="dumbbell_being_delivered">This dumbbell is being delivered now</string>
     <string name="dumbbell_being_collected">Dumbbell is being collected now</string>
-    <string name="current_dumbbell">Your current dumbbell. Press the button below to return.</string>
+    <string name="current_dumbbell">You are currently using this dumbbell</string>
     <string name="more_info">More Info</string>
     <string name="dumbbell">%1$s dumbbell</string>
     <string name="cancel_dumbbell">Are you sure you would like to cancel %1$s of the %2$s dumbbell?</string>
@@ -97,7 +98,4 @@
 
     <string name="log_out">Log Out</string>
     <string name="dumbot_map">DumBot Map</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
