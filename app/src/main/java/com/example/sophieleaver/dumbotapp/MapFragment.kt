@@ -11,14 +11,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import android.widget.Toast
 import com.example.sophieleaver.dumbotapp.javafiles.PerpendicularChildrenNode
 import com.example.sophieleaver.dumbotapp.javafiles.PerpendicularLinesAlgorithm
 import com.github.clans.fab.FloatingActionMenu
+import com.google.firebase.auth.EmailAuthProvider
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.otaliastudios.zoom.Alignment
 import de.blox.graphview.*
+import kotlinx.android.synthetic.main.dialog_delete_graph.*
 import kotlinx.android.synthetic.main.fragment_map.view.*
+import org.jetbrains.anko.toast
 import kotlin.random.Random
 
 //todo - add notice that you have to click node before adding works
@@ -34,7 +37,8 @@ class MapFragment : Fragment() {
     private val reference: DatabaseReference =
         FirebaseDatabase.getInstance().reference.child("demo2")
 
-    private lateinit var fabMenu: FloatingActionMenu
+    private lateinit var fabMenuAddNode: FloatingActionMenu
+    private lateinit var fabMenuDeleteNode: FloatingActionMenu
     private lateinit var graphView: GraphView
     private lateinit var adapter: BaseGraphAdapter<ViewHolder>
 
@@ -56,17 +60,95 @@ class MapFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         graphView = view.graph
-        fabMenu = view.fabAddNode
+        fabMenuAddNode = view.fabAddNode
+        fabMenuDeleteNode = view.fabDeleteMenu
         loadGraph()
     }
 
     private fun setupFAB() {
-        with(fabMenu) {
+        with(fabMenuAddNode) {
             fabAddNodeLeft.setOnClickListener { showNodeTypeSelectionDialog(Direction.LEFT) }
             fabAddNodeRight.setOnClickListener { showNodeTypeSelectionDialog(Direction.RIGHT) }
             fabAddNodeTop.setOnClickListener { showNodeTypeSelectionDialog(Direction.TOP) }
             fabAddNodeBottom.setOnClickListener { showNodeTypeSelectionDialog(Direction.BOTTOM) }
         }
+
+        with(fabMenuDeleteNode) {
+            fabDeleteNode.setOnClickListener {
+                when {
+                    currentNode == null ->
+                        Snackbar.make(graphView, "No node selected", Snackbar.LENGTH_SHORT)
+                    currentNode!!.connectedNodes.size > 1 ->
+                        Snackbar.make(
+                            graphView,
+                            "Can only delete leaf nodes",
+                            Snackbar.LENGTH_SHORT
+                        )
+                    else -> showRemoveNodeDialog()
+                }
+            }
+            fabDeleteGraph.setOnClickListener { showGraphDeletionDialog() }
+        }
+    }
+
+    private fun showGraphDeletionDialog() {
+        val dialog = AlertDialog.Builder(requireContext()).run {
+            setTitle("Delete Entire Graph")
+            setMessage(getText(R.string.message_delete_graph))
+            setView(R.layout.dialog_delete_graph)
+            setPositiveButton("Delete Node") { _, _ -> deleteNode() }
+            setNeutralButton("Cancel") { dialog, _ -> dialog.cancel() }
+            create()
+        }
+
+        with(dialog) {
+            setOnShowListener {
+                (it as AlertDialog).getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = false
+                it.btn_reauthenticate.setOnClickListener { reauthenticate(this@with) }
+            }
+
+            show()
+        }
+
+    }
+
+    private fun reauthenticate(dialog: AlertDialog) {
+        with(dialog) {
+            val email = layout_email_reauth.editText!!.text.toString()
+            val password = layout_email_reauth.editText!!.text.toString()
+            if (!email.isBlank() && !password.isBlank()) {
+                val credential = EmailAuthProvider.getCredential(email, password)
+                FirebaseAuth.getInstance().currentUser!!.reauthenticate(credential)
+                    .addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = true
+                            this@MapFragment.requireActivity().toast("Successful Authentication")
+                        } else {
+                            Log.w(fragTag, "Reauthentication Failed", task.exception)
+                            dismiss()
+                            this@MapFragment.requireActivity().toast("Reauthentication Failed")
+                        }
+                    }
+            }
+        }
+    }
+
+    private fun showRemoveNodeDialog() {
+        AlertDialog.Builder(requireContext()).apply {
+            setTitle("Remove Selected Node")
+            setMessage("Are you sure you want to delete ${currentNode!!.data}?")
+            setPositiveButton("Delete Node") { _, _ -> deleteNode() }
+            setNeutralButton("Cancel") { dialog, _ -> dialog.cancel() }
+            create()
+            show()
+        }
+    }
+
+    private fun deleteNode() {
+        with(graphView.adapter.graph) {
+            removeNode(nodes.find { it == currentNode }!!)
+        }
+        currentNode = null
     }
 
     private fun setupAdapter(graph: Graph) {
@@ -115,16 +197,16 @@ class MapFragment : Fragment() {
         graphView.setOnItemClickListener { _, _, position, _ ->
             adapter.getNode(position).let {
                 currentNode = it as PerpendicularChildrenNode
-                fabMenu.run { if (isOpened) close(true) }
+                fabMenuAddNode.run { if (isOpened) close(true) }
                 updateFAB()
-                Snackbar.make(graphView, "Current Node is ${it.data}", Toast.LENGTH_SHORT).show()
+//                Snackbar.make(graphView, "Current Node is ${it.data}", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
     private fun updateFAB() {
         currentNode?.run {
-            fabMenu.let {
+            fabMenuAddNode.let {
                 it.fabAddNodeLeft.visibility = if (leftNode == null) View.VISIBLE else View.GONE
                 it.fabAddNodeRight.visibility = if (rightNode == null) View.VISIBLE else View.GONE
                 it.fabAddNodeTop.visibility = if (topNode == null) View.VISIBLE else View.GONE
@@ -167,7 +249,7 @@ class MapFragment : Fragment() {
                 this@MapFragment.nodes = nodes as List<PerpendicularChildrenNode>
             }
 
-            notifyNodeAdded(newNode)
+//            notifyNodeAdded(newNode)
             graphView.zoomTo(1f, true)
             graphView.setAlignment(Alignment.CENTER)
         }

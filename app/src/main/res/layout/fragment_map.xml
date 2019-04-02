@@ -12,6 +12,41 @@
         app:maxZoom="5.5" />
 
     <com.github.clans.fab.FloatingActionMenu
+        android:id="@+id/fabDeleteMenu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|start"
+        android:layout_margin="16dp"
+        android:clickable="true"
+        app:menu_fab_size="normal"
+        app:menu_icon="@drawable/ic_delete"
+        app:menu_labels_position="right">
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/fabDeleteNode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="@dimen/fab_margin"
+            android:src="@drawable/ic_arrow_left"
+            app:backgroundTint="@color/colorAccent"
+            app:fab_label="Remove Selected Node"
+            app:fab_size="mini" />
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/fabDeleteGraph"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="@dimen/fab_margin"
+            android:src="@drawable/ic_arrow_right"
+            app:backgroundTint="@color/colorAccent"
+            app:fab_label="Delete Entire Graph"
+            app:fab_size="mini" />
+
+    </com.github.clans.fab.FloatingActionMenu>
+
+    <com.github.clans.fab.FloatingActionMenu
         android:id="@+id/fabAddNode"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

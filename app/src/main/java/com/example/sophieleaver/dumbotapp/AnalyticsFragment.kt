@@ -462,6 +462,7 @@ class AnalyticsFragment : Fragment() {
 
         val staticLabelsFormatter = StaticLabelsFormatter(graph2)
 
+//        todo - fix benches
         //get from bench layout in settings? - set size to the max bench number in settings
         val defaultLabels = Array(10) { "B$it" }
 

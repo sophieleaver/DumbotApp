@@ -98,4 +98,8 @@
 
     <string name="log_out">Log Out</string>
     <string name="dumbot_map">DumBot Map</string>
+    <string name="message_delete_graph">
+        Are you sure you want to delete your entire graph? This action will delete all nodes your map.\nYour DumBot system will not be able to function until you have built another graph for it to traverse,and no orders will be able to be made in that time.\n <b>This action cannot be undone.</b>\n Please re-authenticate to continue.
+
+    </string>
 </resources>

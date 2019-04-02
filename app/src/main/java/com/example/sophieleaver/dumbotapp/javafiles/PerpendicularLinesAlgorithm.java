@@ -3,7 +3,6 @@ package com.example.sophieleaver.dumbotapp.javafiles;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
-import android.util.Log;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -47,7 +46,7 @@ public class PerpendicularLinesAlgorithm implements Algorithm {
         List<Node> addedNodes = new ArrayList<>();
 
         Node firstNode = graph.getNode(0);
-        initEdgeLength += firstNode.getWidth();
+        initEdgeLength = firstNode.getWidth() + 150;
         int tempGraphSize = graph.getNodeCount() * initEdgeLength;
         graphSize = new Size(tempGraphSize, tempGraphSize);
 
@@ -213,18 +212,15 @@ public class PerpendicularLinesAlgorithm implements Algorithm {
     }
 
     private void positionCluster(List<NodeCluster> nodeClusters) {
-        Log.d("TestAlgo", "positionCluster()");
         combineSingleNodeCluster(nodeClusters);
 
         NodeCluster cluster = nodeClusters.get(0);
         // move first cluster to 0,0
         cluster.offset(-cluster.rect.left + 24, -cluster.rect.top + 24);
 
-        Log.d("TestAlgo", "Starting loop through " + nodeClusters.size() + " clusters");
         for (int i = 1; i < nodeClusters.size(); i++) {
             final NodeCluster nextCluster = nodeClusters.get(i);
             final float xDiff = cluster.rect.right - nextCluster.rect.left + CLUSTER_PADDING;
-            Log.d("TestAlgo", "cluster top = " + cluster.rect.top);
             final float yDiff = cluster.rect.top - nextCluster.rect.top;
             nextCluster.offset(xDiff, yDiff);
             cluster = nextCluster;
