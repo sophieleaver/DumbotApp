@@ -1,6 +1,5 @@
 package com.example.sophieleaver.dumbotapp.javafiles;
 
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.example.sophieleaver.dumbotapp.test.NodeType;
@@ -99,44 +98,7 @@ public class PerpendicularChildrenNode extends Node {
         this.bottomNode = bottomNode;
     }
 
-    @NonNull
-    @Override
-    public String toString() {
-        String leftNodeDesc;
-        String rightNodeDesc;
-        String topNodeDesc;
-        String bottomNodeDesc;
 
-        if (leftNode != null) {
-            leftNodeDesc = (String) leftNode.getData();
-        } else {
-            leftNodeDesc = "";
-        }
-
-        if (rightNode != null) {
-            rightNodeDesc = (String) rightNode.getData();
-        } else {
-            rightNodeDesc = "";
-        }
-
-        if (topNode != null) {
-            topNodeDesc = (String) topNode.getData();
-        } else {
-            topNodeDesc = "";
-        }
-
-        if (bottomNode != null) {
-            bottomNodeDesc = (String) bottomNode.getData();
-        } else {
-            bottomNodeDesc = "";
-        }
-
-
-        String nodeDesc = String.format("{ leftNode = %s, rightNode = %s, topNode = %s, botttomNode = %s }",
-                leftNodeDesc, rightNodeDesc, topNodeDesc, bottomNodeDesc);
-
-        return super.toString() + nodeDesc;
-    }
 }
 
 

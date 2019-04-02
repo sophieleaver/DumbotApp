@@ -1,20 +1,18 @@
 package com.example.sophieleaver.dumbotapp
 
 import android.content.Context
-import android.net.ConnectivityManager
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.support.design.widget.NavigationView
 import android.support.v4.app.Fragment
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
-import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.Button
 import android.widget.TextView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
@@ -23,10 +21,13 @@ import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.nav_header_main.view.*
 import org.jetbrains.anko.design.longSnackbar
 import org.jetbrains.anko.design.snackbar
-import org.jetbrains.anko.toast
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.util.*
+import android.net.ConnectivityManager
+import android.support.v7.app.AlertDialog
+import android.widget.Button
+import org.jetbrains.anko.toast
 
 var currentBench: String = "B7"
 var isManagerMode: Boolean = false
@@ -58,7 +59,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         setContentView(R.layout.activity_main)
         mainLayout = drawer_layout
         mainToolbar = toolbar
@@ -93,19 +94,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                                 it.type = "current"
                                 it.time =
                                     LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneOffset.UTC)?.toEpochSecond()!!
-                                currentOrdersFragment.setUpRecyclerViews()
                                 currentOrdersFragment.currentDBRecyclerView.adapter!!.notifyDataSetChanged()
-                                //todo fix updating of ordered dumbbells
-
                             }
-                            "collecting" -> { //detects when collection has been completed by the dumbot
+                            "collecting" -> {
                                 Log.d("MainActivity", it.id)
-                                requests.remove(it.id) //remove from hashmap
-                                //increase availability on firebase
-                                val formattedWeight = it.weight.replace('.', '-', true) //change the weight value from 4.0 to 4-0 for firebase
-                                ref.child("demo2/weights/$formattedWeight/activeRequests/${it.ogID}").removeValue()
-
-                                currentOrdersFragment.setUpRecyclerViews()
+//                                val size = requests.size
+                                requests.remove(it.id)
+                                //longToast(size - requests.size)
                                 currentOrdersFragment.currentDBRecyclerView.adapter!!.notifyDataSetChanged()
 
                             }
@@ -124,6 +119,22 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         if (requestIds.isNullOrEmpty()) setupActivity()
         else {
             val requestsReference = FirebaseDatabase.getInstance().reference.child("demo2/requests")
+//            todo - this next time
+            /*requestsReference.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    requests = dataSnapshot.children
+                        .map { it.getValue(Request::class.java)!! }
+                        .filter { it.bench == currentBench  }
+                        .associateBy { it.id }
+                        .toMutableMap()
+                }
+
+                override fun onCancelled(databaseError: DatabaseError) {
+                    Log.w("MainActivity", "Failed to find request ${this@with}", databaseError.toException())
+                    loadRequests(requestIds)
+                }
+            })*/
+
             with(requestIds.removeAt(0)) {
                 requestsReference.child(this)
                     .addListenerForSingleValueEvent(object : ValueEventListener {
@@ -379,6 +390,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         super.onStop()
         getSharedPreferences("prefs", Context.MODE_PRIVATE).edit()
             .putStringSet("requests", requests.keys).apply()
+        //todo log out manager
     }
 
 
@@ -386,6 +398,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         super.onDestroy()
         getSharedPreferences("prefs", Context.MODE_PRIVATE).edit()
             .putStringSet("requests", requests.keys).apply()
+        //todo log out manager
     }
 
     private fun isNetworkAvailable(): Boolean {
@@ -421,7 +434,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 }
 
 data class Request(
-    var id: String = "", val ogID: String = "", var time: Long = 0L, var type: String = "", val weight: String = "",
+    var id: String = "", var time: Long = 0L, var type: String = "", val weight: String = "",
     val bench: String = ""
 )
 
