@@ -110,8 +110,8 @@ class CurrentOrdersFragment : Fragment() {
         currentDBRecyclerView.layoutManager = LinearLayoutManager(this.requireContext())
         currentDBRecyclerView.adapter = CurrentDumbbellAdapter()
 
-        queuedDBRecyclerView.layoutManager = LinearLayoutManager(this.requireContext())
-        queuedDBRecyclerView.adapter = QueuedDumbbellAdapater2()
+        //queuedDBRecyclerView.layoutManager = LinearLayoutManager(this.requireContext())
+        //queuedDBRecyclerView.adapter = QueuedDumbbellAdapater2()
     }
 
 

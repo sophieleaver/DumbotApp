@@ -16,6 +16,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
+import com.example.sophieleaver.dumbotapp.test.TestFragment
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.activity_main.*
@@ -50,6 +51,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var weightsFragment: WeightsFragment
     private lateinit var loginFragment: LoginFragment
     private lateinit var mapFragment: MapFragment
+    private lateinit var testFragment: TestFragment
+
 
     private var activeFragment: Fragment? = null
 
@@ -182,6 +185,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         weightsFragment = WeightsFragment.newInstance()
         loginFragment = LoginFragment.newInstance()
         mapFragment = MapFragment.newInstance()
+        testFragment = TestFragment.newInstance()
 
         with(supportFragmentManager) {
             beginTransaction().add(R.id.content_frame, analyticsFragment, "fragment_analytics")
@@ -210,6 +214,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 .hide(loginFragment).commit()
             beginTransaction().add(R.id.content_frame, mapFragment, "fragment_map")
                 .hide(mapFragment).commit()
+            beginTransaction().add(R.id.content_frame, testFragment, "fragment_test")
+                .hide(testFragment).commit()
             beginTransaction().add(R.id.content_frame, orderFragment, "fragment_order").commit()
         }
 
@@ -307,6 +313,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.nav_login -> {
                 newFragment = loginFragment
                 mainToolbar.title = "Manager Log In"
+            }
+
+            R.id.nav_test -> {
+                newFragment = testFragment
+                mainToolbar.title = "Generate Log Requests"
             }
 
             else -> newFragment = modeChangeFragment

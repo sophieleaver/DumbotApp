@@ -282,7 +282,10 @@ class MapFragment : Fragment() {
                     createEdges(it.getValue(String::class.java))
                 }
 
-                setupAdapter(Graph().apply { edges.forEach { addEdge(it) } })
+                val graph = Graph()
+                edges.forEach { graph.addEdge(it.source, it.destination) }
+
+                setupAdapter(graph)
                 setupFAB()
 
             }
@@ -310,7 +313,8 @@ class MapFragment : Fragment() {
                 .replace("\'", "")
                 .split("),")
                 .map { edge ->
-                    edge.removePrefix("(").split(",").run { buildEdge(this[0], this[1]) }
+                    edge.removePrefix("(").removeSuffix(")").split(",")
+                        .run { buildEdge(this[0], this[1]) }
                 }
 
         }
