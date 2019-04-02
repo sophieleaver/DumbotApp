@@ -68,7 +68,7 @@ class WeightsFragment : Fragment() {
                     val dumbbell = dumbbellSnapshot.getValue(Dumbbell::class.java)
                     if (dumbbell != null) newWeightInventory += dumbbell
                 }
-                dumbbellList = newWeightInventory
+                dumbbellList = newWeightInventory.sortedBy { it.weightValue }
                 dumbbellRecyclerView.adapter!!.notifyDataSetChanged()
             }
 
