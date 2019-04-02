@@ -200,6 +200,7 @@ class MapFragment : Fragment() {
                     createEdges(it.getValue(String::class.java))
                 }
 
+                //val test = createAngleString()
                 val graph = Graph()
                 edges.forEach { graph.addEdge(it.source, it.destination) }
 
@@ -556,10 +557,103 @@ class MapFragment : Fragment() {
             val key = "('${edge.source.data}','${edge.destination.data}'):"
             val valueDict = edge.run {
                 val sourceEdges =
-                    with((source as PerpendicularChildrenNode)) { connectedNodes.joinToString { "('${this.data}','${it.data}' )" } }
+                    with((source as PerpendicularChildrenNode)) {
+                        val backwardsEdge = "('$data','${edge.destination.data}') : 'B'"
+                        val otherEdges: Triple<String?, String?, String?> =
+                            when (edge.destination) {
+                                leftNode -> {
+                                    val node1 =
+                                        rightNode?.let { "('$data','${rightNode!!.data}'): 'F'" }
+                                    val node2 =
+                                        topNode?.let { "('$data','${topNode!!.data}'): 'A'" }
+                                    val node3 =
+                                        bottomNode?.let { "('$data','${bottomNode!!.data}'): 'C'" }
+                                    Triple(node1, node2, node3)
+                                }
+
+                                rightNode -> {
+                                    val node1 =
+                                        leftNode?.let { "('$data','${leftNode!!.data}'): 'F'" }
+                                    val node2 =
+                                        topNode?.let { "('$data','${topNode!!.data}'): 'C'" }
+                                    val node3 =
+                                        bottomNode?.let { "('$data','${bottomNode!!.data}'): 'A'" }
+                                    Triple(node1, node2, node3)
+                                }
+
+                                topNode -> {
+                                    val node1 =
+                                        rightNode?.let { "('$data','${rightNode!!.data}'): 'A'" }
+                                    val node2 =
+                                        leftNode?.let { "('$data','${leftNode!!.data}'): 'C'" }
+                                    val node3 =
+                                        bottomNode?.let { "('$data','${bottomNode!!.data}'): 'F'" }
+                                    Triple(node1, node2, node3)
+                                }
+                                else -> {
+                                    val node1 =
+                                        rightNode?.let { "('$data','${rightNode!!.data}'): 'C'" }
+                                    val node2 =
+                                        topNode?.let { "('$data','${topNode!!.data}'): 'F'" }
+                                    val node3 =
+                                        leftNode?.let { "('$data','${leftNode!!.data}'): 'A'" }
+                                    Triple(node1, node2, node3)
+                                }
+
+                            }
+                        (listOf(backwardsEdge) + otherEdges.toList().toMutableList().filterNotNull()).joinToString()
+//                        connectedNodes.map { Pair(this.data as String, it.data as String) }
+                    }
                 val destEdges =
-                    with((destination as PerpendicularChildrenNode)) { connectedNodes.joinToString { "('${this.data}','${it.data}' )" } }
-                "{$sourceEdges,$destEdges}"
+                    with((destination as PerpendicularChildrenNode)) {
+                        val otherEdges: Triple<String?, String?, String?> =
+                            when (edge.source) {
+                                leftNode -> {
+                                    val node1 =
+                                        rightNode?.let { "('$data','${rightNode!!.data}'): 'F'" }
+                                    val node2 =
+                                        topNode?.let { "('$data','${topNode!!.data}'): 'A'" }
+                                    val node3 =
+                                        bottomNode?.let { "('$data','${bottomNode!!.data}'): 'C'" }
+                                    Triple(node1, node2, node3)
+                                }
+
+                                rightNode -> {
+                                    val node1 =
+                                        leftNode?.let { "('$data','${leftNode!!.data}'): 'F'" }
+                                    val node2 =
+                                        topNode?.let { "('$data','${topNode!!.data}'): 'C'" }
+                                    val node3 =
+                                        bottomNode?.let { "('$data','${bottomNode!!.data}'): 'A'" }
+                                    Triple(node1, node2, node3)
+                                }
+
+                                topNode -> {
+                                    val node1 =
+                                        rightNode?.let { "('$data','${rightNode!!.data}'): 'A'" }
+                                    val node2 =
+                                        leftNode?.let { "('$data','${leftNode!!.data}'): 'C'" }
+                                    val node3 =
+                                        bottomNode?.let { "('$data','${bottomNode!!.data}'): 'F'" }
+                                    Triple(node1, node2, node3)
+                                }
+                                else -> {
+                                    val node1 =
+                                        rightNode?.let { "('$data','${rightNode!!.data}'): 'C'" }
+                                    val node2 =
+                                        topNode?.let { "('$data','${topNode!!.data}'): 'F'" }
+                                    val node3 =
+                                        leftNode?.let { "('$data','${leftNode!!.data}'): 'A'" }
+                                    Triple(node1, node2, node3)
+                                }
+
+                            }
+                        otherEdges.toList().toMutableList().filterNotNull().joinToString()
+//                        connectedNodes.map { Pair(this.data as String, it.data as String) }
+                    }
+                "{ ${sourceEdges.removePrefix(",")} ${if (destEdges.isNotBlank()) "," else ""} ${destEdges.removePrefix(
+                    ","
+                )} }"
             }
             key + valueDict
         }

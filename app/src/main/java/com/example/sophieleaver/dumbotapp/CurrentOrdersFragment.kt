@@ -131,7 +131,7 @@ class CurrentOrdersFragment : Fragment() {
                 )
             )
 
-        override fun getItemCount(): Int = requests.size + 1 //change
+        override fun getItemCount(): Int = requests.size
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             if (itemCount == 1) {

@@ -15,10 +15,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.fragment_order_weights.view.*
 import kotlinx.android.synthetic.main.item_order_dumbbell.view.*
 import org.jetbrains.anko.toast
@@ -42,8 +39,12 @@ class OrderFragment : Fragment() {
     private var orderDumbbellRecyclerView: RecyclerView? = null
 
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
-        inflater.inflate(R.layout.fragment_order_weights, container, false)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ):
+            View? = inflater.inflate(R.layout.fragment_order_weights, container, false)
 
     @SuppressLint("InflateParams")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -66,16 +67,13 @@ class OrderFragment : Fragment() {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 dataSnapshot.children
                     .filter {
-                        it.getValue(Dumbbell::class.java)!!.waitQueue.containsValue(
-                            currentBench
-                        )
+                        it.getValue(Dumbbell::class.java)!!.waitQueue.containsValue(currentBench)
                     }
                     .forEach {
                         val dumbbellWeightQueueListener = object : ValueEventListener {
                             override fun onCancelled(databaseError: DatabaseError) {
                                 Log.w(
-                                    fragTag,
-                                    "Failed to load weight data",
+                                    fragTag, "Failed to load weight data",
                                     databaseError.toException()
                                 )
                             }
@@ -91,11 +89,40 @@ class OrderFragment : Fragment() {
                                         if (!weight.waitQueue.containsValue(currentBench)) {
                                             waitQueueListeners.remove(weight.weightValue)
                                         }
-                                        createRequest(
-                                            true,
-                                            weight.weightValue.toString(),
-                                            weight.waitQueue
+
+                                        val newRequestId = createRequestID()
+
+                                        weightReference.child(
+                                            weight.weightValue.toString().replace(".", "-", true)
                                         )
+                                            .runTransaction(object : Transaction.Handler {
+                                                override fun onComplete(
+                                                    p0: DatabaseError?,
+                                                    p1: Boolean,
+                                                    p2: DataSnapshot?
+                                                ) {
+                                                    createRequest(
+                                                        true,
+                                                        weight.weightValue.toString(),
+                                                        newRequestId
+                                                    )
+                                                }
+
+                                                override fun doTransaction(mutableData: MutableData): Transaction.Result {
+                                                    val p =
+                                                        mutableData.getValue(Dumbbell::class.java)!!
+                                                    p.waitQueue.remove(
+                                                        nextInQueue.key,
+                                                        nextInQueue.value
+                                                    )
+                                                    p.activeRequests[newRequestId] =
+                                                        currentBench
+                                                    mutableData.value = p
+                                                    return Transaction.success(mutableData)
+
+                                                }
+
+                                            })
 
                                     }
 
@@ -123,7 +150,8 @@ class OrderFragment : Fragment() {
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
         if (!hidden) {
-            view!!.findViewById<TextView>(R.id.text_workout_station).text = getString(R.string.workout_station, currentBench)
+            view!!.findViewById<TextView>(R.id.text_workout_station).text =
+                getString(R.string.workout_station, currentBench)
         }
     }
 
@@ -135,7 +163,7 @@ class OrderFragment : Fragment() {
                     val dumbbell = dumbbellSnapshot.getValue(Dumbbell::class.java)
                     if (dumbbell != null) newDumbbells += dumbbell
                 }
-                weights = newDumbbells
+                weights = newDumbbells.sortedBy { it.weightValue }.toMutableList()
                 orderDumbbellRecyclerView!!.adapter!!.notifyDataSetChanged()
             }
 
@@ -153,19 +181,25 @@ class OrderFragment : Fragment() {
         getWeightData()
     }
 
+    private fun createRequestID(): String {
+        val now = LocalDateTime.now(ZoneOffset.UTC)
+        val milliseconds = now.atZone(ZoneOffset.UTC)?.toInstant()
+            ?.toEpochMilli() //request ID is in milli seconds
+
+        return milliseconds.toString()
+    }
+
     private fun createRequest(
         dumbbellAvailable: Boolean,
         weightValue: String,
-        newWaitQueue: Map<String, String>? = null
+        newRequestId: String? = null
     ) {
 
         val now = LocalDateTime.now(ZoneOffset.UTC)
         val seconds =
             now.atZone(ZoneOffset.UTC).toEpochSecond() //request time is always in seconds
-        val milliseconds = now.atZone(ZoneOffset.UTC)?.toInstant()
-            ?.toEpochMilli() //request ID is in milli seconds
 
-        val requestID = milliseconds.toString()
+        val requestID = newRequestId ?: createRequestID()
         val status = if (dumbbellAvailable) "delivering" else "waiting"
         val path = if (dumbbellAvailable) "activeRequests" else "waitQueue"
         val bench = currentBench
@@ -174,40 +208,16 @@ class OrderFragment : Fragment() {
         requests[requestID] = newRequest
         requireActivity().toast("${requests.values}")
 
-
-        val formattedWeight = weightValue.replace(
-            '.',
-            '-',
-            true
-        ) //change the weight value from 4.0 to 4-0 for firebase
+        val formattedWeight = weightValue.replace('.', '-', true)
 
         if (dumbbellAvailable) requestReference.child(requestID).setValue(newRequest)
-//        else ref.child("demo2/waitQueue/$requestID").setValue("$bench, $formattedWeight")
 
         weightReference.child("$formattedWeight/$path/$requestID").setValue(bench)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-//                    todo - change if wait queue
-//                    todo - start listening if wait queue
-                    if (newWaitQueue != null) {
-                        weightReference.child(formattedWeight)
-                            .updateChildren(mapOf("waitQueue" to newWaitQueue)) { _, _ ->
-                                (activity as MainActivity).onSuccessfulOrder(weightValue)
-                                if (!dumbbellAvailable && !waitQueueListeners.containsKey(
-                                        weightValue.toDouble()
-                                    )
-                                ) {
-                                    listenToDumbbellWaitQueue(
-                                        weightValue.toDouble(),
-                                        formattedWeight
-                                    )
-                                }
-                            }
-                    } else {
-                        (activity as MainActivity).onSuccessfulOrder(weightValue)
-                        if (!dumbbellAvailable && !waitQueueListeners.containsKey(weightValue.toDouble())) {
-                            listenToDumbbellWaitQueue(weightValue.toDouble(), formattedWeight)
-                        }
+                    (activity as MainActivity).onSuccessfulOrder(weightValue)
+                    if (!dumbbellAvailable && !waitQueueListeners.containsKey(weightValue.toDouble())) {
+                        listenToDumbbellWaitQueue(weightValue.toDouble(), formattedWeight)
                     }
                 } else {
                     Log.w(fragTag, "Failed to send request $requestID", task.exception)
@@ -239,7 +249,32 @@ class OrderFragment : Fragment() {
                                 waitQueueListeners.remove(weight.weightValue)
                             }
 
-                            createRequest(true, weight.weightValue.toString(), weight.waitQueue)
+                            val newRequestId = createRequestID()
+
+                            weightReference.child(weightValue.toString().replace(".", "-", true))
+                                .runTransaction(object : Transaction.Handler {
+                                    override fun onComplete(
+                                        p0: DatabaseError?,
+                                        p1: Boolean,
+                                        p2: DataSnapshot?
+                                    ) {
+                                        createRequest(
+                                            true,
+                                            weight.weightValue.toString(),
+                                            newRequestId
+                                        )
+                                    }
+
+                                    override fun doTransaction(mutableData: MutableData): Transaction.Result {
+                                        val p = mutableData.getValue(Dumbbell::class.java)!!
+                                        p.waitQueue.remove(nextInQueue.key, nextInQueue.value)
+                                        p.activeRequests[newRequestId] = currentBench
+                                        mutableData.value = p
+                                        return Transaction.success(mutableData)
+
+                                    }
+
+                                })
 
                         }
                     }
@@ -272,7 +307,12 @@ class OrderFragment : Fragment() {
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             holder.orderButton.backgroundTintList =
-                ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.colorDumbbellAvailable))
+                ColorStateList.valueOf(
+                    ContextCompat.getColor(
+                        requireContext(),
+                        R.color.colorDumbbellAvailable
+                    )
+                )
 
             val requestedWeight = weights[position]
 
@@ -296,13 +336,18 @@ class OrderFragment : Fragment() {
                         currentStock,
                         requestedWeight.totalStock
                     )
-                    else Triple(R.string.wait_queue_info, requestedWeight.totalStock, requestedWeight.waitQueue.size)
+                    else Triple(
+                        R.string.wait_queue_info,
+                        requestedWeight.totalStock,
+                        requestedWeight.waitQueue.size
+                    )
 
                 weightValue.text =
                     getString(R.string.weight, decimalFormat.format(requestedWeight.weightValue))
                 available.text = getString(availableTextResId)
                 orderButton.text = getString(orderButtonTextResId)
-                availabilityInfo.text = getString(dumbbellDetails.first, dumbbellDetails.second, dumbbellDetails.third)
+                availabilityInfo.text =
+                    getString(dumbbellDetails.first, dumbbellDetails.second, dumbbellDetails.third)
                 orderButton.backgroundTintList =
                     ColorStateList.valueOf(
                         ContextCompat.getColor(
@@ -341,43 +386,6 @@ class OrderFragment : Fragment() {
                 //                        }
             }
         }
-
-
-
-
-        /*private fun createRequest(dumbbellAvailable: Boolean, weightValue: String) {
-
-            val now = LocalDateTime.now(ZoneOffset.UTC)
-            val seconds = now.atZone(ZoneOffset.UTC).toEpochSecond() //request time is always in seconds
-            val milliseconds = now.atZone(ZoneOffset.UTC)?.toInstant()?.toEpochMilli() //request ID is in milli seconds
-
-            val requestID = milliseconds.toString()
-            val status = if (dumbbellAvailable) "delivering" else "waiting"
-            val path = if (dumbbellAvailable) "activeRequests" else "waitQueue"
-            val bench = currentBench
-
-            val newRequest = Request(requestID, requestID, seconds, status, weightValue, bench)
-            requests[requestID] = newRequest
-            //requireActivity().toast("${requests.values}")
-            requestReference.child(requestID).setValue(newRequest)
-
-            val formattedWeight = weightValue.replace('.', '-', true) //change the weight value from 4.0 to 4-0 for firebase
-
-            weightReference.child("$formattedWeight/$path/$requestID").setValue(bench)
-                .addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        (activity as MainActivity).onSuccessfulOrder(weightValue)
-                    } else {
-                        Log.w(fragTag, "Failed to send request $requestID", task.exception)
-                        requireActivity().toast("There was an error sending your dumbbell request. Please try again later.")
-                    }
-                }
-
-            Log.d(fragTag,
-                "Sending request $requestID to server (deliver dumbbells of $weightValue kg to bench $currentBench)"
-            )
-        }*/
-
 
         inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             val weightValue: TextView = view.text_total_stock
