@@ -34,6 +34,10 @@
         android:title="@string/section_manager">
         <menu>
             <item
+                android:id="@+id/nav_overview"
+                android:icon="@drawable/ic_view_agenda_black_24dp"
+                android:title="@string/dumbot_overview" />
+            <item
                 android:id="@+id/nav_analytics"
                 android:icon="@drawable/ic_insert_chart"
                 android:title="@string/analytics" />
@@ -42,17 +46,13 @@
                 android:icon="@drawable/ic_view_list"
                 android:title="@string/dumbbell_inventory" />
             <item
-                android:id="@+id/nav_overview"
-                android:icon="@drawable/ic_view_agenda_black_24dp"
-                android:title="@string/dumbot_overview" />
+                android:id="@+id/nav_map"
+                android:icon="@drawable/ic_map"
+                android:title="@string/dumbot_map" />
             <item
                 android:id="@+id/nav_settings"
                 android:icon="@drawable/ic_menu_manage"
                 android:title="@string/app_settings" />
-            <item
-                android:id="@+id/nav_map"
-                android:icon="@drawable/ic_map"
-                android:title="@string/dumbot_map" />
             <item
                 android:id="@+id/nav_logout"
                 android:icon="@drawable/baseline_lock_black_18dp"

@@ -8,11 +8,12 @@
     <string name="nav_header_desc">Navigation header</string>
 
     <!--Dumbbell strings-->
-    <string name="title_analytics">Analytics</string>
+    <string name="title_analytics">Gym Analytics</string>
     <string name="storage_location">Storage Location: %1$s</string>
     <string name="current_stock">Currently Available: %1$d</string>
     <string name="total_stock">Total Stock: %1$d</string>
     <string name="weight">%1$s KG</string>
+    <string name="weight1">%1$s KG</string>
     <string name="dumbot">DumBot</string>
     <string name="text_change_station">Change Station</string>
     <string name="order">Order</string>
@@ -60,19 +61,19 @@
     </string>
     <string name="dumbbell_being_delivered">This dumbbell is being delivered now</string>
     <string name="dumbbell_being_collected">Dumbbell is being collected now</string>
-    <string name="current_dumbbell">Your current dumbbell. Press the button below to return.</string>
+    <string name="current_dumbbell">You are currently using this dumbbell</string>
     <string name="more_info">More Info</string>
     <string name="dumbbell">%1$s dumbbell</string>
     <string name="cancel_dumbbell">Are you sure you would like to cancel %1$s of the %2$s dumbbell?</string>
     <string name="section_user">User Section</string>
     <string name="order_dumbbells">Order Dumbbells</string>
     <string name="current_workout_session">Current Workout Session</string>
-    <string name="workout_timer">Workout Timer</string>
+    <string name="workout_timer">Stopwatch</string>
     <string name="switch_mode">Switch Mode</string>
     <string name="section_manager">Manager Section</string>
     <string name="analytics">Analytics</string>
     <string name="dumbbell_inventory">Dumbbell Inventory</string>
-    <string name="dumbot_overview">DumBot Overview</string>
+    <string name="dumbot_overview">DumBot Status</string>
     <string name="app_settings">App Settings</string>
     <string name="idle">Idle</string>
     <string name="timer_format">%1$d:%2$s</string>
@@ -86,7 +87,7 @@
         You do not have the permissions to enter this section. Please enter Manager Mode to use this feature.
     </string>
     <string name="return_dumbbell">Return Dumbbell</string>
-    <string name="not_in_queue">You are not in the queue for any dumbbells</string>
+    <string name="not_in_queue">You currently are not in the queue to receive any dumbbells. Any queued dumbbells shall appear here.</string>
     <string name="confirm">Confirm</string>
     <string name="leaving_the_queue_cannot_be_undone">Leaving the queue cannot be undone</string>
     <string name="register_manager_account">Register Manager Account</string>
@@ -98,7 +99,5 @@
     <string name="log_out">Log Out</string>
     <string name="dumbot_map">DumBot Map</string>
     <string name="message_delete_graph">
-        Are you sure you want to delete your entire graph? This action will delete all nodes your map.\nYour DumBot system will not be able to function until you have built another graph for it to traverse,and no orders will be able to be made in that time.\n <b>This action cannot be undone.</b>\n Please re-authenticate to continue.
-
-    </string>
+        Are you sure you want to delete your entire graph? This action will delete all nodes your map.\nYour DumBot system will not be able to function until you have built another graph for it to traverse,and no orders will be able to be made in that time.\n <b>This action cannot be undone.</b>\n Please re-authenticate to continue.</string>
 </resources>

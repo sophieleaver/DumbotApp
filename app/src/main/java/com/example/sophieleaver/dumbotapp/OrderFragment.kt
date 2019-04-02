@@ -18,6 +18,7 @@ import android.widget.TextView
 import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.fragment_order_weights.view.*
 import kotlinx.android.synthetic.main.item_order_dumbbell.view.*
+import org.jetbrains.anko.longToast
 import org.jetbrains.anko.toast
 import java.time.LocalDateTime
 import java.time.ZoneOffset
@@ -39,12 +40,8 @@ class OrderFragment : Fragment() {
     private var orderDumbbellRecyclerView: RecyclerView? = null
 
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ):
-            View? = inflater.inflate(R.layout.fragment_order_weights, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
+        inflater.inflate(R.layout.fragment_order_weights, container, false)
 
     @SuppressLint("InflateParams")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -56,7 +53,6 @@ class OrderFragment : Fragment() {
                 (activity as MainActivity).showCurrentOrdersFragment()
             }
         }
-
         setupRecyclerView()
 
         weightReference.addListenerForSingleValueEvent(object : ValueEventListener {
@@ -153,6 +149,7 @@ class OrderFragment : Fragment() {
             view!!.findViewById<TextView>(R.id.text_workout_station).text =
                 getString(R.string.workout_station, currentBench)
         }
+        setupRecyclerView()
     }
 
     private fun getWeightData() {
@@ -175,9 +172,18 @@ class OrderFragment : Fragment() {
         })
     }
 
-    private fun setupRecyclerView() {
+    fun setupRecyclerView() {
         orderDumbbellRecyclerView!!.layoutManager = LinearLayoutManager(requireContext())
         orderDumbbellRecyclerView!!.adapter = DumbbellRequestAdapter()
+
+        numberOfRequests = 0
+        for (request in requests.values) {
+            if (request.type == "delivering" || request.type == "current") {
+                numberOfRequests++
+
+            }
+        }
+
         getWeightData()
     }
 
@@ -206,7 +212,7 @@ class OrderFragment : Fragment() {
 
         val newRequest = Request(requestID, requestID, seconds, status, weightValue, bench)
         requests[requestID] = newRequest
-        requireActivity().toast("${requests.values}")
+//        requireActivity().toast("${requests.values}")
 
         val formattedWeight = weightValue.replace('.', '-', true)
 
@@ -215,7 +221,7 @@ class OrderFragment : Fragment() {
         weightReference.child("$formattedWeight/$path/$requestID").setValue(bench)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    (activity as MainActivity).onSuccessfulOrder(weightValue)
+                    (activity as MainActivity).onSuccessfulOrder(weightValue, status)
                     if (!dumbbellAvailable && !waitQueueListeners.containsKey(weightValue.toDouble())) {
                         listenToDumbbellWaitQueue(weightValue.toDouble(), formattedWeight)
                     }
@@ -229,6 +235,7 @@ class OrderFragment : Fragment() {
             fragTag,
             "Sending request $requestID to server (deliver dumbbells of $weightValue kg to bench $currentBench)"
         )
+        (activity as MainActivity).updateCurrentWorkout()
     }
 
     private fun listenToDumbbellWaitQueue(weightValue: Double, formattedWeight: String) {
@@ -243,6 +250,7 @@ class OrderFragment : Fragment() {
                     if (weight.waitQueue.isNotEmpty()) {
                         val nextInQueue = weight.waitQueue.toSortedMap().asIterable().first()
                         if (nextInQueue.value == currentBench) {
+                            requireActivity().longToast(requests.values.toString())
                             weight.waitQueue.remove(nextInQueue.key, nextInQueue.value)
 
                             if (!weight.waitQueue.containsValue(currentBench)) {
@@ -275,11 +283,17 @@ class OrderFragment : Fragment() {
                                     }
 
                                 })
-
+                            //todo change
+                            //remove from requests and update
+                            requests.remove(nextInQueue.key)
+                            requireActivity().toast("removing ${nextInQueue.key}")
+                            // requireActivity().longToast("Your queued ${weight.weightValue}kg dumbbells are now available and have been ordered!")
+                            (activity as MainActivity).updateCurrentWorkout()
                         }
                     }
 
                 }
+                setupRecyclerView() //check if there has been a change to the current number of dumbbells
             }
         }
 
@@ -292,6 +306,7 @@ class OrderFragment : Fragment() {
         @JvmStatic
         fun newInstance() = OrderFragment()
     }
+
 
     inner class DumbbellRequestAdapter : RecyclerView.Adapter<DumbbellRequestAdapter.ViewHolder>() {
 
@@ -327,7 +342,7 @@ class OrderFragment : Fragment() {
                 val dialogTitle = if (dumbbellAvailable) "Confirm Order" else "Join Wait Queue"
                 val dialogMessage =
                     if (dumbbellAvailable) "Are you sure you would like to order the ${holder.weightValue.text} dumbbells?"
-                    else "The ${holder.weightValue.text} dumbbells are currently unavailable. Would you like to join the wait queue?"
+                    else "The ${holder.weightValue.text} dumbbells are currently unavailable. Would you like to join the wait queue?" //todo change this
                 val orderButtonColorResId =
                     if (dumbbellAvailable) R.color.colorDumbbellAvailable else R.color.colorDumbbellUnavailable
                 val dumbbellDetails: Triple<Int, Int, Int> =
@@ -359,33 +374,85 @@ class OrderFragment : Fragment() {
                     val builder = AlertDialog.Builder(context)
                     builder.setTitle(dialogTitle)
                     builder.setMessage(dialogMessage)
-                    builder.setPositiveButton("CONFIRM") { _, _ ->
-                        createRequest(dumbbellAvailable, requestedWeight.weightValue.toString())
+                    builder.setPositiveButton("CONFIRM") { dialog, _ ->
+                        if (numberOfRequests >= 2) { //todo test if this works
+                            holder.orderButton.isEnabled = false
+                            dialog.cancel()
+                            val builder2 = AlertDialog.Builder(context)
+                            builder2.setMessage("Weight is now unavailable, please choose another weight")
+                            builder2.setPositiveButton("OKAY") { dialog, _ -> dialog.cancel() }
+                            builder.create().show()
+                        } else createRequest(
+                            dumbbellAvailable,
+                            requestedWeight.weightValue.toString()
+                        )
+                        (activity as MainActivity).checkRequestLimit()
+                        setupRecyclerView() //recheck to see if this changes the limit
                     }
                     builder.setNeutralButton("CANCEL") { dialog, _ -> dialog.cancel() }
 
                     val dialog = builder.create()
                     dialog.show()
                 }
-                //                if (dumbbellAvailable) {
-                //                                createRequest(
-                //                                    dumbbellAvailable,
-                //                                    requestedWeight.weightValue.toString()
-                //                                )
-                //                            } else {
-                //                                dialog.cancel()
-                //                                val innerBuilder = AlertDialog.Builder(context)
-                //                                innerBuilder.apply {
-                //                                    setTitle("Weight Unavailable")
-                //                                    setMessage("The weight you just ordered has now become unavailable - please choose another set of dumbbells from the list.")
-                //                                    setPositiveButton("OKAY") { dialog, _ ->
-                //                                        dialog.cancel()
-                //                                    }
-                //                                }
-                //                            }
-                //                        }
+            }
+
+            if (numberOfRequests >= 2) {
+                holder.orderButton.apply {
+                    isEnabled = false
+                    backgroundTintList = ColorStateList.valueOf(
+                        ContextCompat.getColor(
+                            requireContext(),
+                            R.color.material_grey_100
+                        )
+                    )
+                    text = "2 weight limit reached"
+                }
+            }
+
+
+
+
+            fun createRequest(dumbbellAvailable: Boolean, weightValue: String) {
+
+                val now = LocalDateTime.now(ZoneOffset.UTC)
+                val seconds =
+                    now.atZone(ZoneOffset.UTC).toEpochSecond() //request time is always in seconds
+                val milliseconds = now.atZone(ZoneOffset.UTC)?.toInstant()
+                    ?.toEpochMilli() //request ID is in milli seconds
+
+                val requestID = milliseconds.toString()
+                val status = if (dumbbellAvailable) "delivering" else "waiting"
+                val path = if (dumbbellAvailable) "activeRequests" else "waitQueue"
+                val bench = currentBench
+
+                val newRequest = Request(requestID, requestID, seconds, status, weightValue, bench)
+                requests[requestID] = newRequest
+                requireActivity().toast("${requests.values}")
+                requestReference.child(requestID).setValue(newRequest)
+
+                val formattedWeight = weightValue.replace(
+                    '.',
+                    '-',
+                    true
+                ) //change the weight value from 4.0 to 4-0 for firebase
+
+                weightReference.child("$formattedWeight/$path/$requestID").setValue(bench)
+                    .addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            (activity as MainActivity).onSuccessfulOrder(weightValue, status)
+                        } else {
+                            Log.w(fragTag, "Failed to send request $requestID", task.exception)
+                            requireActivity().toast("There was an error sending your dumbbell request. Please try again later.")
+                        }
+                    }
+
+                Log.d(
+                    fragTag,
+                    "Sending request $requestID to server (deliver dumbbells of $weightValue kg to bench $currentBench)"
+                )
             }
         }
+
 
         inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             val weightValue: TextView = view.text_total_stock
@@ -395,3 +462,4 @@ class OrderFragment : Fragment() {
         }
     }
 }
+

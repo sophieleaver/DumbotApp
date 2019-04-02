@@ -14,12 +14,13 @@
         android:layout_marginTop="8dp"
         android:fontFamily="@font/muli"
         android:gravity="center"
-        android:text="CURRENT ORDERS"
+        android:text="ORDERED AND CURRENT DUMBBELLS"
         android:textAlignment="center"
         android:textSize="20sp"
         android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/recyclerView_current_dumbbells"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -31,60 +32,59 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/button_reset_workout_session"
+        app:layout_constraintBottom_toTopOf="@+id/textView12"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView20"
-        app:layout_constraintVertical_bias="0.042"
         tools:listitem="@layout/item_current_dumbbell" />
 
     <!--&lt;!&ndash;REMOVED AS SHOULD NOT BE SEEN FOR DEMO 3&ndash;&gt;-->
-    <!--<android.support.v7.widget.RecyclerView-->
-            <!--android:id="@+id/recyclerView_queued_dumbbells"-->
-            <!--android:layout_width="0dp"-->
-            <!--android:layout_height="0dp"-->
-            <!--android:layout_marginEnd="8dp"-->
-            <!--android:layout_marginStart="8dp"-->
-            <!--android:layout_marginBottom="8dp"-->
-            <!--app:layout_constraintBottom_toTopOf="@+id/button_reset_workout_session"-->
-            <!--app:layout_constraintEnd_toEndOf="parent"-->
-            <!--app:layout_constraintHorizontal_bias="0.5"-->
-            <!--app:layout_constraintStart_toStartOf="parent"-->
-            <!--app:layout_constraintTop_toBottomOf="@+id/textView12" tools:listitem="@layout/item_queued_dumbbell"/>-->
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerView_queued_dumbbells"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/button_reset_workout_session"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView12"
+        tools:listitem="@layout/item_queued_dumbbell" />
 
-    <!--<TextView-->
-            <!--android:id="@+id/textView12"-->
-            <!--android:text="QUEUED DUMBBELLS"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:textSize="20sp"-->
-            <!--android:fontFamily="@font/muli"-->
-            <!--android:textStyle="bold"-->
-            <!--android:layout_marginEnd="8dp"-->
-            <!--android:layout_marginStart="8dp"-->
-            <!--android:layout_marginTop="8dp"-->
-            <!--android:textAlignment="center"-->
-            <!--android:gravity="center"-->
-            <!--android:layout_marginBottom="8dp"-->
-            <!--app:layout_constraintBottom_toTopOf="@+id/recyclerView_queued_dumbbells"-->
-            <!--app:layout_constraintEnd_toEndOf="parent"-->
-            <!--app:layout_constraintHorizontal_bias="0.5"-->
-            <!--app:layout_constraintStart_toStartOf="parent"-->
-            <!--app:layout_constraintTop_toBottomOf="@+id/recyclerView_current_dumbbells"/>-->
+    <TextView
+        android:id="@+id/textView12"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:fontFamily="@font/muli"
+        android:gravity="center"
+        android:text="DUMBBELLS IN WAIT QUEUE"
+        android:textAlignment="center"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/recyclerView_queued_dumbbells"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/recyclerView_current_dumbbells" />
 
     <Button
         android:id="@+id/button_reset_workout_session"
-        style="@style/Widget.AppCompat.Button"
-        android:layout_width="0dp"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_width="253dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
+        android:backgroundTint="@color/colorPrimary"
         android:fontFamily="@font/muli_light"
-        android:text="Reset Current Workout Session"
+        android:text="RETURN ALL DUMBBELLS"
         android:textAlignment="center"
-        android:textColor="@android:color/holo_red_dark"
         android:textSize="17sp"
         android:textStyle="bold"
         android:visibility="visible"
@@ -94,8 +94,8 @@
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_timer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="58dp"
+        android:layout_height="56dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="16dp"
         android:clickable="true"
@@ -103,6 +103,7 @@
         app:fabSize="normal"
         app:layout_constraintBottom_toTopOf="@+id/button_reset_workout_session"
         app:layout_constraintEnd_toEndOf="parent"
+        app:maxImageSize="@dimen/fab_size_mini"
         app:srcCompat="@drawable/ic_alarm" />
 
 </android.support.constraint.ConstraintLayout>
