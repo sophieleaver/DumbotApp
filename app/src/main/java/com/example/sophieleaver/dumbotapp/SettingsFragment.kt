@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import kotlinx.android.synthetic.main.change_bench_layout.view.*
 import kotlinx.android.synthetic.main.change_opening_hours.view.*
 import kotlinx.android.synthetic.main.change_opening_hours_spinners.view.*
+import kotlinx.android.synthetic.main.fragment_current_orders.*
 import kotlinx.android.synthetic.main.fragment_settings.*
 import kotlinx.android.synthetic.main.fragment_settings.view.*
 
@@ -84,6 +85,21 @@ class SettingsFragment : Fragment() {
 
             setText(i, openingHour, openingMinute, closingHour, closingMinute, view)
 
+        }
+
+        view.button_complete_reset.setOnClickListener {//removes all requests for robot in case for complete testing
+            val builder = AlertDialog.Builder(context)
+            builder.apply {
+                setTitle("Are you sure you would like to completely reset the app?")
+                setMessage("Completely resetting the app means all current dumbbells will be picked up and these requests will be hidden from the user")
+                setPositiveButton("CONFIRM"){dialog, which ->
+                    requests = HashMap<String,Request>()
+                    (activity as MainActivity).showOrderFragment()
+                    dialog.cancel()
+                }
+                setNegativeButton("CANCEL"){_,_ ->}
+                create().show()
+            }
         }
 
         return view

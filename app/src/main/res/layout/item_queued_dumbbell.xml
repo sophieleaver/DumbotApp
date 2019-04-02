@@ -15,7 +15,9 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:fontFamily="@font/muli"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Headline3"
+        android:textSize="36sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/divider_queued"
         app:layout_constraintHorizontal_bias="0.421"
@@ -69,7 +71,7 @@
         android:gravity="center"
         android:text="@string/not_in_queue"
         android:textAlignment="center"
-        android:textSize="24sp"
+        android:textSize="20sp"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -77,9 +79,9 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/button_cancel_que"
+        android:id="@+id/button_leave_que"
         style="@style/Widget.AppCompat.Button.Colored"
-        android:layout_width="0dp"
+        android:layout_width="164dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
@@ -87,13 +89,12 @@
         android:layout_marginTop="4dp"
         android:fontFamily="@font/muli"
         android:gravity="center"
-        android:text="@string/return_dumbbell"
+        android:text="LEAVE QUEUE"
         android:textAlignment="gravity"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.658"
         app:layout_constraintStart_toEndOf="@+id/divider_queued"
         app:layout_constraintTop_toBottomOf="@+id/textView_queued_dumbbell_status"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintVertical_bias="0.0" />
 </android.support.constraint.ConstraintLayout>

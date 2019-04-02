@@ -32,6 +32,7 @@ import java.util.*
 var currentBench: String = "B7"
 var isManagerMode: Boolean = false
 var requests: MutableMap<String, Request> = HashMap() // id and request
+var numberOfRequests = 0
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -96,25 +97,16 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                                 it.type = "current"
                                 it.time =
                                     LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneOffset.UTC)?.toEpochSecond()!!
-                                currentOrdersFragment.setUpRecyclerViews()
-                                currentOrdersFragment.currentDBRecyclerView.adapter!!.notifyDataSetChanged()
-                                //todo fix updating of ordered dumbbells
+                                updateCurrentWorkout()
 
                             }
                             "collecting" -> { //detects when collection has been completed by the dumbot
                                 Log.d("MainActivity", it.id)
                                 requests.remove(it.id) //remove from hashmap
                                 //increase availability on firebase
-                                val formattedWeight = it.weight.replace(
-                                    '.',
-                                    '-',
-                                    true
-                                ) //change the weight value from 4.0 to 4-0 for firebase
-                                ref.child("demo2/weights/$formattedWeight/activeRequests/${it.ogID}")
-                                    .removeValue()
-
-                                currentOrdersFragment.setUpRecyclerViews()
-                                currentOrdersFragment.currentDBRecyclerView.adapter!!.notifyDataSetChanged()
+                                val formattedWeight = it.weight.replace('.', '-', true) //change the weight value from 4.0 to 4-0 for firebase
+                                ref.child("demo2/weights/$formattedWeight/activeRequests/${it.ogID}").removeValue()
+                                updateCurrentWorkout()
 
                             }
                         }
@@ -258,17 +250,18 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         when (item.itemId) {
             R.id.nav_order -> {
                 newFragment = orderFragment
-                mainToolbar.title = "Order Weights"
+                mainToolbar.title = "Order Dumbbells"
             }
             R.id.nav_current_sessions -> {
                 //
-                val currentWorkout = CurrentOrdersFragment.newInstance()
-                newFragment = currentWorkout //pls do not remove it means we refresh when you go back onto it which is good for demo disasters
-                supportFragmentManager.beginTransaction().add(R.id.content_frame, currentWorkout, "fragment_current").commit()
-                supportFragmentManager.beginTransaction().show(currentWorkout).hide(activeFragment!!).commit()
-                activeFragment = currentWorkout
-//                newFragment = currentOrdersFragment
-//                mainToolbar.title = "Current Workout"
+                val tempWorkout = CurrentOrdersFragment.newInstance()
+                newFragment = tempWorkout //pls do not remove it means we refresh when you go back onto it which is good for demo disasters
+                supportFragmentManager.beginTransaction().add(R.id.content_frame, tempWorkout, "fragment_current").commit()
+                supportFragmentManager.beginTransaction().show(tempWorkout).commit()
+                supportFragmentManager.beginTransaction().hide(activeFragment!!).commit()
+                activeFragment = tempWorkout
+                currentOrdersFragment = tempWorkout
+                mainToolbar.title = "Current Workout"
             }
             R.id.nav_timer -> {
                 newFragment = timerFragment
@@ -278,7 +271,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.nav_overview -> {
                 if (isManagerMode) {
                     newFragment = overviewFragment
-                    mainToolbar.title = "DumBot Overview"
+                    mainToolbar.title = "DumBot Status and Overview"
                 } else newFragment = restrictedFragment
             }
 
@@ -299,14 +292,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.nav_map -> {
                 if (isManagerMode) {
                     newFragment = mapFragment
-                    mainToolbar.title = "DumBot Map"
+                    mainToolbar.title = "Edit Gym Layout"
                 } else newFragment = restrictedFragment
             }
 
             R.id.nav_settings -> {
                 if (isManagerMode) {
                     newFragment = settingsFragment
-                    mainToolbar.title = "Gym Settings"
+                    mainToolbar.title = "App Settings"
                 } else newFragment = restrictedFragment
             }
 
@@ -360,11 +353,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     fun showCurrentOrdersFragment() {
         mainToolbar.title = "Current Workout"
-        val currentWorkout = CurrentOrdersFragment.newInstance()
-        supportFragmentManager.beginTransaction().add(R.id.content_frame, currentWorkout, "fragment_current").commit()
-        supportFragmentManager.beginTransaction().show(currentWorkout).commit()
+        val tempWorkout = CurrentOrdersFragment.newInstance()
+        supportFragmentManager.beginTransaction().add(R.id.content_frame, tempWorkout, "fragment_current").commit()
+        supportFragmentManager.beginTransaction().show(tempWorkout).commit()
         supportFragmentManager.beginTransaction().hide(activeFragment!!).commit()
-        activeFragment = currentWorkout
+        activeFragment = tempWorkout
+        currentOrdersFragment = tempWorkout
 //        showNewFragment(currentOrdersFragment)
     }
 
@@ -381,13 +375,21 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         mainLayout.snackbar("Switched to ${modeText.text}")
     }
 
-    fun onSuccessfulOrder(weightValue: String) {
+    fun onSuccessfulOrder(weightValue: String, status : String) {
         getSharedPreferences("prefs", Context.MODE_PRIVATE).edit()
             .putStringSet("requests", requests.keys).apply()
 
-        mainLayout.longSnackbar("Successfully ordered $weightValue kg Dumbbells", "View") {
-            mainToolbar.title = "Current Workout Session"
-            showNewFragment(currentOrdersFragment)
+        if (status == "delivering") {
+            mainLayout.longSnackbar("Successfully ordered $weightValue kg Dumbbells", "View") {
+                mainToolbar.title = "Current Workout Session"
+                showNewFragment(currentOrdersFragment)
+            }
+        }
+        if (status == "waiting"){
+            mainLayout.longSnackbar("Successfully joined the queue for $weightValue kg Dumbbells", "View") {
+                mainToolbar.title = "Current Workout Session"
+                showNewFragment(currentOrdersFragment)
+            }
         }
     }
 
@@ -434,14 +436,28 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             dialog.setCanceledOnTouchOutside(false)
         }
     }
+
+    fun checkRequestLimit() {
+        numberOfRequests = 0
+        for (request in requests.values){
+            if (request.type == "delivering" || request.type == "current"){
+                numberOfRequests++
+
+            }
+            //add queued weights
+        }
+       orderFragment.setupRecyclerView()
+    }
+
+    fun updateCurrentWorkout(){
+        currentOrdersFragment.currentDBRecyclerView.adapter!!.notifyDataSetChanged()
+        currentOrdersFragment.queuedDBRecyclerView.adapter!!.notifyDataSetChanged()
+        currentOrdersFragment.setUpRecyclerViews()
+    }
 }
 
 data class Request(
-    var id: String = "",
-    val ogID: String = "",
-    var time: Long = 0L,
-    var type: String = "",
-    val weight: String = "",
+    var id: String = "", var ogID:String = "", var time: Long = 0L, var type: String = "", val weight: String = "",
     val bench: String = ""
 )
 
