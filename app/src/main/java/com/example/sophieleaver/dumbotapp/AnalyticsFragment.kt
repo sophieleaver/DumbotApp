@@ -453,6 +453,9 @@ class AnalyticsFragment : Fragment() {
                         it.viewport.setMaxX(10.0)
                     }
                 }
+
+
+
             }
             "This Year" -> {
                 val spc = getSpacingAccordingToSize(weightUsageYear.keys.size)
