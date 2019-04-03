@@ -489,6 +489,10 @@ class AnalyticsFragment : Fragment() {
                         it.viewport.setMaxX(10.0)
                     }
                 }
+
+
+
+
             }
         }
 
