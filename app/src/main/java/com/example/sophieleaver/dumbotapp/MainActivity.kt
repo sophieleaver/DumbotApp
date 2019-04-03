@@ -78,31 +78,31 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             loadRequests(getStringSet("requests", null)?.toMutableList())
         }
 
-//        for (i in 1..40){
-//            val id = 1554131400000 + (i * 700000)
-//            val randomDB = (1..5).random()
-//            var weight = ""
-//            when (randomDB) {
-//                1 -> weight = "1.0"
-//                2 -> weight = "1.5"
-//                3 -> weight = "2.0"
-//                4 -> weight = "2.5"
-//                5 -> weight = "10"
-//            }
-//
-//            val randomBench = (1..5).random()
-//            var bench = ""
-//            when (randomBench) {
-//                1 -> bench = "B7"
-//                2 -> bench = "B9"
-//                3 -> bench = "B10"
-//                4 -> bench = "B12"
-//                5 -> bench = "B13"
-//            }
-//            val newRequest = LoggedRequest(id.toString(),id/1000, "delivering", weight, bench, "SA1")
-//            //toast("$id added")
-//            ref.child("demo2/log/$id").setValue(newRequest)
-//        }
+        for (i in 1..50){
+            val id = 1549188300000 + (i * 1600000)
+            val randomDB = (1..5).random()
+            var weight = ""
+            when (randomDB) {
+                1 -> weight = "1.0"
+                2 -> weight = "1.5"
+                3 -> weight = "2.0"
+                4 -> weight = "2.5"
+                5 -> weight = "10"
+            }
+
+            val randomBench = (1..5).random()
+            var bench = ""
+            when (randomBench) {
+                1 -> bench = "B7"
+                2 -> bench = "B9"
+                3 -> bench = "B10"
+                4 -> bench = "B12"
+                5 -> bench = "B13"
+            }
+            val newRequest = LoggedRequest(id.toString(),id/1000, "delivering", weight, bench, "SA1")
+            //toast("$id added")
+            ref.child("demo2/log/$id").setValue(newRequest)
+        }
 
 
     }
@@ -337,10 +337,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 mainToolbar.title = "Manager Log In"
             }
 
-            R.id.nav_test -> {
-                newFragment = testFragment
-                mainToolbar.title = "Generate Log Requests"
-            }
+//            R.id.nav_test -> {
+//                newFragment = testFragment
+//                mainToolbar.title = "Generate Log Requests"
+//            }
 
             else -> newFragment = modeChangeFragment
 
