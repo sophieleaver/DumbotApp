@@ -16,7 +16,6 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.jjoe64.graphview.*
-import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter
 import com.jjoe64.graphview.helper.StaticLabelsFormatter
 import com.jjoe64.graphview.series.BarGraphSeries
 import com.jjoe64.graphview.series.DataPoint
@@ -381,7 +380,7 @@ class AnalyticsFragment : Fragment() {
 
                 if (!weightUsageToday.isEmpty()) {
                     graph1.viewport.isXAxisBoundsManual = true
-                    graph1.viewport.setMaxX(weightUsageToday.keys.max()!!.toDouble() + 2)
+                    graph1.viewport.setMaxX(8.0)
                     graph1.viewport.setMaxY(weightUsageToday.values.max()!!.toDouble() + 5)
                 }else {
                     graph1.let {
@@ -413,7 +412,8 @@ class AnalyticsFragment : Fragment() {
 
                 if (!weightUsageWeek.isEmpty()) {
                     graph1.viewport.isXAxisBoundsManual = true
-                    graph1.viewport.setMaxX(weightUsageWeek.keys.max()!!.toDouble() + 2)
+                    //graph1.viewport.setMaxX(weightUsageWeek.keys.max()!!.toDouble() + 2)
+                    graph1.viewport.setMaxX(8.0)
                     graph1.viewport.setMaxY(weightUsageWeek.values.max()!!.toDouble() + 5)
                 }else{
                     graph1.let {
@@ -445,7 +445,8 @@ class AnalyticsFragment : Fragment() {
                 }
                 if (!weightUsageMonth.isEmpty()) {
                     graph1.viewport.isXAxisBoundsManual = true
-                    graph1.viewport.setMaxX(weightUsageMonth.keys.max()!!.toDouble() + 2)
+                    //graph1.viewport.setMaxX(weightUsageMonth.keys.max()!!.toDouble() + 2)
+                    graph1.viewport.setMaxX(8.0)
                     graph1.viewport.setMaxY(weightUsageMonth.values.max()!!.toDouble() + 5)
                 }else{
                     graph1.let {
@@ -479,7 +480,8 @@ class AnalyticsFragment : Fragment() {
                 }
                 if (!weightUsageYear.isEmpty()) {
                     graph1.viewport.isXAxisBoundsManual = true
-                    graph1.viewport.setMaxX(weightUsageYear.keys.max()!!.toDouble() + 2)
+                    //graph1.viewport.setMaxX(weightUsageYear.keys.max()!!.toDouble() + 2)
+                    graph1.viewport.setMaxX(6.0)
                     graph1.viewport.setMaxY(weightUsageYear.values.max()!!.toDouble() + 5)
                 }else{
                     graph1.let {
@@ -494,10 +496,7 @@ class AnalyticsFragment : Fragment() {
         graph1.let {
             it.viewport.setMinY(0.0)
             it.viewport.setMinX(0.0)
-            it.viewport.isScalable = true
             it.viewport.isScrollable = true
-            it.viewport.setScalableY(true)
-            it.viewport.setScalableY(true)
         }
     }
 
