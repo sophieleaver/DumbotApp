@@ -285,9 +285,9 @@ class CurrentOrdersFragment : Fragment() {
                             currentSessionView.button_return_cur.setOnClickListener {dialog.cancel()}
 
                             currentSessionView.button_end_workout.setOnClickListener {
-                                val formattedWeight = request.weight.replace(".","-")
-                                ref.child("demo2/weights/${formattedWeight}/activeRequests/${request.id}").removeValue()
-                                //requireActivity().toast("demo2/weights/${request.weight.toInt()}/activeRequests/${request.id}")
+                                ref.child("demo2/weights/${request.weight.toInt()}/activeRequests/${request.id}").removeValue()
+                                requireActivity().toast("demo2/weights/${request.weight.toInt()}/activeRequests/${request.id}")
+
 
                                 //set entry in request hashmap to collecting
                                 val now3 = LocalDateTime.now(ZoneOffset.UTC)
@@ -424,7 +424,7 @@ class CurrentOrdersFragment : Fragment() {
                         if (request.key == id){
                             place = index
                             Log.d("currentorders", "YES, $place")
-                            createPersonalisedDialog(id, weightValue, place+1)
+                            createPersonalisedDialog(id, weightValue, place)
                         }
                         index++
                     }

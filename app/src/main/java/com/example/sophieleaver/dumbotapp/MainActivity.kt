@@ -78,7 +78,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             loadRequests(getStringSet("requests", null)?.toMutableList())
         }
 
-        for (i in 1..50){
+        /*for (i in 1..50){
             val id = 1549188300000 + (i * 1600000)
             val randomDB = (1..5).random()
             var weight = ""
@@ -103,7 +103,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             //toast("$id added")
             ref.child("demo2/log/$id").setValue(newRequest)
         }
-
+*/
 
     }
 
@@ -337,10 +337,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 mainToolbar.title = "Manager Log In"
             }
 
-//            R.id.nav_test -> {
-//                newFragment = testFragment
-//                mainToolbar.title = "Generate Log Requests"
-//            }
+            R.id.nav_test -> {
+                newFragment = testFragment
+                mainToolbar.title = "Generate Log Requests"
+            }
 
             else -> newFragment = modeChangeFragment
 

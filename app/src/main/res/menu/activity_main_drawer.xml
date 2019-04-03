@@ -27,11 +27,11 @@
                 android:icon="@drawable/ic_lock_outline"
                 android:title="@string/manager_login" />
 
-            <!--<item-->
-                <!--android:id="@+id/nav_test"-->
-                <!--android:icon="@drawable/ic_lock_outline"-->
-                <!--android:title="Generate Requests - HIDE BEFORE PRESENTING!!!"-->
-                <!--tools:ignore="HardcodedText" />-->
+            <item
+                android:id="@+id/nav_test"
+                android:icon="@drawable/ic_lock_outline"
+                android:title="Generate Requests - HIDE BEFORE PRESENTING!!!"
+                tools:ignore="HardcodedText" />
         </menu>
     </item>
 
