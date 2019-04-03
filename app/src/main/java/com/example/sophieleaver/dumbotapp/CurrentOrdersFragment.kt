@@ -7,7 +7,6 @@ import android.graphics.Color
 import android.icu.text.DecimalFormat
 import android.os.Bundle
 import android.os.SystemClock
-import android.renderscript.Sampler
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -57,8 +56,8 @@ class CurrentOrdersFragment : Fragment() {
         view.fab_timer.setOnClickListener { (requireActivity() as MainActivity).showTimeFragment() }
 
 
-        val cancelButton: Button = view.findViewById(R.id.button_reset_workout_session)
-        cancelButton.setOnClickListener {
+        val resetButton: Button = view.findViewById(R.id.button_reset_workout_session)
+        resetButton.setOnClickListener {
             val builder = AlertDialog.Builder(context)
             val warningView = layoutInflater.inflate(R.layout.reset_warning_view, null)
             builder.setView(warningView)
@@ -91,6 +90,16 @@ class CurrentOrdersFragment : Fragment() {
                     newRequest.child("time").setValue(unixSeconds)
                     newRequest.child("type").setValue("collecting")
                     newRequest.child("weight").setValue(currentDumbbellReq.weight)
+                }
+
+                requests.filter { it.value.type == "waiting" }.forEach {
+                    val req = it.value
+
+                    requests.remove(req.id) //remove the request with the delivering id
+                    queuedDBRecyclerView.adapter!!.notifyDataSetChanged()
+
+                    val formattedWeight = req.weight.replace(".", "-")
+                    ref.child("demo2/weights/$formattedWeight/waitQueue/${req.id}").removeValue()
                 }
 
                 dialog.cancel()
@@ -131,7 +140,7 @@ class CurrentOrdersFragment : Fragment() {
                 )
             )
 
-        override fun getItemCount(): Int = if (requests.size == 1 && getWaitSize() == 1) 1 else requests.size + 1
+        override fun getItemCount(): Int = if (requests.size == getWaitSize()) 1 else requests.size + 1
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             if (itemCount == 1) {
@@ -197,7 +206,6 @@ class CurrentOrdersFragment : Fragment() {
 
                                 //delete request from recyclerview
 
-                                requireActivity().toast("${request.id} and key ${requests[request.id]}")
                                 requests.remove(request.id)
                                 currentDBRecyclerView.adapter!!.notifyDataSetChanged()
                                 //                                currentDBRecyclerView.removeViewAt(position)
@@ -378,31 +386,10 @@ class CurrentOrdersFragment : Fragment() {
                         }
                         holder.current_description.text = "Currently in wait queue."
 
-                        val currentPosition = findPlaceInWaitQueue(request.id, request.weight)
+                       // val currentPosition = findPlaceInWaitQueue(request.id, request.weight)
 
                         holder.button.setOnClickListener {
-                            val builder = AlertDialog.Builder(context)
-                            builder.apply {
-                                setTitle("Are you sure you would like to leave the queue?")
-                                setMessage(
-                                    "Leaving the queue for the ${request.weight}kg dumbbells cannot be undone.\n" +
-                                            "You are currently ${currentPosition} line for this dumbbell."
-                                )
-                                setPositiveButton("CONFIRM") { _, _ ->
-                                    //remove from queue
-                                    val formattedWeight = request.weight.replace('.', '-', false)
-                                    ref.child("demo2/weights/$formattedWeight/waitQueue/${request.id}")
-                                        .removeValue()
-
-                                    requests.remove(request.id)
-                                    notifyDataSetChanged()
-                                    setUpRecyclerViews()
-                                }
-                                setNegativeButton("CANCEL") { _, _ -> }
-                            }
-
-                            val dialog = builder.create()
-                            dialog.show()
+                            findPlaceInWaitQueue(request.id, request.weight)
                         }
                     }
                     else {
@@ -424,7 +411,7 @@ class CurrentOrdersFragment : Fragment() {
             return size
         }
 
-        private fun findPlaceInWaitQueue(id : String, weightValue : String): Int { //TODO DO THIS
+        private fun findPlaceInWaitQueue(id : String, weightValue : String){ //TODO DO THIS
             var index = 0
             var place = 0
             val formattedWeightPath = weightValue.replace(".", "-")
@@ -436,6 +423,7 @@ class CurrentOrdersFragment : Fragment() {
                         if (request.key == id){
                             place = index
                             Log.d("currentorders", "YES, $place")
+                            createPersonalisedDialog(id, weightValue, place)
                         }
                         index++
                     }
@@ -447,7 +435,32 @@ class CurrentOrdersFragment : Fragment() {
 
             ref.child("demo2/weights/$formattedWeightPath").addListenerForSingleValueEvent(listener)
             Log.d("currentorders", "return $place")
-            return place
+            //return place
+        }
+
+        fun createPersonalisedDialog(id : String, weightValue: String, position : Int){
+            val builder = AlertDialog.Builder(context)
+            builder.apply {
+                setTitle("Are you sure you would like to leave the queue?")
+                setMessage(
+                    "Leaving the queue for the ${weightValue}kg dumbbells cannot be undone.\n" +
+                            "You are currently ${position} line for this dumbbell."
+                )
+                setPositiveButton("CONFIRM") { _, _ ->
+                    //remove from queue
+                    val formattedWeight = weightValue.replace('.', '-', false)
+                    ref.child("demo2/weights/$formattedWeight/waitQueue/${id}")
+                        .removeValue()
+
+                    requests.remove(id)
+                    notifyDataSetChanged()
+                    setUpRecyclerViews()
+                }
+                setNegativeButton("CANCEL") { _, _ -> }
+            }
+
+            val dialog = builder.create()
+            dialog.show()
         }
 
         inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {

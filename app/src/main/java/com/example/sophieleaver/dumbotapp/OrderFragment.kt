@@ -140,7 +140,6 @@ class OrderFragment : Fragment() {
 
         })
 
-
     }
 
     override fun onHiddenChanged(hidden: Boolean) {
@@ -250,7 +249,6 @@ class OrderFragment : Fragment() {
                     if (weight.waitQueue.isNotEmpty()) {
                         val nextInQueue = weight.waitQueue.toSortedMap().asIterable().first()
                         if (nextInQueue.value == currentBench) {
-                            requireActivity().longToast(requests.values.toString())
                             weight.waitQueue.remove(nextInQueue.key, nextInQueue.value)
 
                             if (!weight.waitQueue.containsValue(currentBench)) {
@@ -286,8 +284,6 @@ class OrderFragment : Fragment() {
                             //todo change
                             //remove from requests and update
                             requests.remove(nextInQueue.key)
-                            requireActivity().toast("removing ${nextInQueue.key}")
-                            // requireActivity().longToast("Your queued ${weight.weightValue}kg dumbbells are now available and have been ordered!")
                             (activity as MainActivity).updateCurrentWorkout()
                         }
                     }
@@ -427,7 +423,6 @@ class OrderFragment : Fragment() {
 
                 val newRequest = Request(requestID, requestID, seconds, status, weightValue, bench)
                 requests[requestID] = newRequest
-                requireActivity().toast("${requests.values}")
                 requestReference.child(requestID).setValue(newRequest)
 
                 val formattedWeight = weightValue.replace(
