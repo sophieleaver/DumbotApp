@@ -18,7 +18,6 @@ import android.widget.TextView
 import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.fragment_order_weights.view.*
 import kotlinx.android.synthetic.main.item_order_dumbbell.view.*
-import org.jetbrains.anko.longToast
 import org.jetbrains.anko.toast
 import java.time.LocalDateTime
 import java.time.ZoneOffset
@@ -179,7 +178,6 @@ class OrderFragment : Fragment() {
         for (request in requests.values) {
             if (request.type == "delivering" || request.type == "current") {
                 numberOfRequests++
-
             }
         }
 
@@ -316,6 +314,7 @@ class OrderFragment : Fragment() {
 
         override fun getItemCount(): Int = weights.size
 
+        @SuppressLint("PrivateResource")
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             holder.orderButton.backgroundTintList =
                 ColorStateList.valueOf(
@@ -376,7 +375,7 @@ class OrderFragment : Fragment() {
                             dialog.cancel()
                             val builder2 = AlertDialog.Builder(context)
                             builder2.setMessage("Weight is now unavailable, please choose another weight")
-                            builder2.setPositiveButton("OKAY") { dialog, _ -> dialog.cancel() }
+                            builder2.setPositiveButton("OKAY") { innerDialog, _ -> innerDialog.cancel() }
                             builder.create().show()
                         } else createRequest(
                             dumbbellAvailable,
@@ -396,56 +395,13 @@ class OrderFragment : Fragment() {
                 holder.orderButton.apply {
                     isEnabled = false
                     backgroundTintList = ColorStateList.valueOf(
-                        ContextCompat.getColor(
-                            requireContext(),
-                            R.color.material_grey_100
-                        )
+                        ContextCompat.getColor(requireContext(), R.color.material_grey_100)
                     )
-                    text = "2 weight limit reached"
+                    text = getString(R.string.weight_limit_reached)
                 }
             }
 
 
-
-
-            fun createRequest(dumbbellAvailable: Boolean, weightValue: String) {
-
-                val now = LocalDateTime.now(ZoneOffset.UTC)
-                val seconds =
-                    now.atZone(ZoneOffset.UTC).toEpochSecond() //request time is always in seconds
-                val milliseconds = now.atZone(ZoneOffset.UTC)?.toInstant()
-                    ?.toEpochMilli() //request ID is in milli seconds
-
-                val requestID = milliseconds.toString()
-                val status = if (dumbbellAvailable) "delivering" else "waiting"
-                val path = if (dumbbellAvailable) "activeRequests" else "waitQueue"
-                val bench = currentBench
-
-                val newRequest = Request(requestID, requestID, seconds, status, weightValue, bench)
-                requests[requestID] = newRequest
-                requestReference.child(requestID).setValue(newRequest)
-
-                val formattedWeight = weightValue.replace(
-                    '.',
-                    '-',
-                    true
-                ) //change the weight value from 4.0 to 4-0 for firebase
-
-                weightReference.child("$formattedWeight/$path/$requestID").setValue(bench)
-                    .addOnCompleteListener { task ->
-                        if (task.isSuccessful) {
-                            (activity as MainActivity).onSuccessfulOrder(weightValue, status)
-                        } else {
-                            Log.w(fragTag, "Failed to send request $requestID", task.exception)
-                            requireActivity().toast("There was an error sending your dumbbell request. Please try again later.")
-                        }
-                    }
-
-                Log.d(
-                    fragTag,
-                    "Sending request $requestID to server (deliver dumbbells of $weightValue kg to bench $currentBench)"
-                )
-            }
         }
 
 

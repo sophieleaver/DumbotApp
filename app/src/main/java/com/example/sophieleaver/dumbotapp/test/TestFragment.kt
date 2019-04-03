@@ -8,8 +8,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import com.example.sophieleaver.dumbotapp.LoggedRequest
 import com.example.sophieleaver.dumbotapp.R
-import com.example.sophieleaver.dumbotapp.Request
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.fragment_test.view.*
 import java.time.LocalDateTime
@@ -17,10 +17,6 @@ import java.time.ZoneOffset
 import java.util.*
 import kotlin.random.Random
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
 /**
  * A simple [Fragment] subclass.
@@ -29,25 +25,15 @@ private const val ARG_PARAM2 = "param2"
  *
  */
 class TestFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
-
     private val random: Random = Random(20081998)
     private val benches: List<String> = listOf("B7", "B9", "B10", "B12", "B13", "B15")
-    private val timer = Timer()
+    private val storages: List<String> = listOf("SA1", "SA2", "SA3")
+    private var timer: Timer? = Timer()
 
     private lateinit var requestDesc: TextView
     private lateinit var createRequestButton: Button
     private lateinit var stopRequestButton: Button
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -66,20 +52,13 @@ class TestFragment : Fragment() {
 
 
         createRequestButton.setOnClickListener {
-            timer.scheduleAtFixedRate(
-                object : TimerTask() {
-                    override fun run() {
-                        createRequest()
-                    }
-
-                },
-                0, 10000
-            )
+            timer?.schedule(MyTimerTask(timer!!, random), random.nextLong(10000L))
         }
 
 
         stopRequestButton.setOnClickListener {
-            timer.cancel()
+            timer?.cancel()
+            timer = null
             requestDesc.text = getString(R.string.timer_stopped)
         }
 
@@ -87,7 +66,7 @@ class TestFragment : Fragment() {
     }
 
 
-    private fun createRequest() {
+    private fun createRequest(): LoggedRequest {
 
         val now = LocalDateTime.now(ZoneOffset.UTC)
         val seconds = now.atZone(ZoneOffset.UTC).toEpochSecond() //request time is always in seconds
@@ -96,16 +75,35 @@ class TestFragment : Fragment() {
         val weightValue = (random.nextInt(1, 20) * 2.5).toString()
         val status = if (random.nextBoolean()) "delivering" else "collecting"
         val bench = benches[random.nextInt(benches.size)]
-
-        val newRequest = Request(requestID, requestID, seconds, status, weightValue, bench)
-
-        FirebaseDatabase.getInstance().reference.child("demo2/log/$requestID").setValue(newRequest)
-            .addOnCompleteListener {
-                requestDesc.text =
-                    if (it.isSuccessful) newRequest.toString() else "Error adding request $requestID"
-            }
+        val storage = storages[random.nextInt(storages.size)]
 
 
+        return if (status == "delivering") LoggedRequest(
+            requestID,
+            seconds,
+            status,
+            weightValue,
+            bench,
+            storage
+        )
+        else LoggedRequest(requestID, seconds, status, weightValue, storage, bench)
+
+    }
+
+    inner class MyTimerTask(private val timer: Timer, private val random: Random) : TimerTask() {
+
+        override fun run() {
+            val newRequest = createRequest()
+            FirebaseDatabase.getInstance().reference.child("demo2/log/${newRequest.id}")
+                .setValue(newRequest)
+                .addOnCompleteListener {
+                    val nextTime = random.nextLong(10000L, 25000L)
+                    requestDesc.text =
+                        if (it.isSuccessful) newRequest.toString() + "\n next Request in ${nextTime / 1000}"
+                        else "Error adding request ${newRequest.id}"
+                    timer.schedule(MyTimerTask(timer, random), nextTime)
+                }
+        }
     }
 
 

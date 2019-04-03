@@ -140,8 +140,6 @@ class TimerFragment : Fragment() {
         if (timerState == TimerState.Running) {
             timer.cancel()
             setAlarm(nowSeconds, secondsRemaining)
-        } else if (timerState == TimerState.Paused) {
-//            todo(Unfinished) - ?
         }
 
     }

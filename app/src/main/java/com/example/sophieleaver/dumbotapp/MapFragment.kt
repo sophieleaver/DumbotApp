@@ -76,14 +76,16 @@ class MapFragment : Fragment() {
         with(fabMenuDeleteNode) {
             fabDeleteNode.setOnClickListener {
                 when {
-                    currentNode == null ->
-                        Snackbar.make(graphView, "No node selected", Snackbar.LENGTH_SHORT)
-                    currentNode!!.connectedNodes.size > 1 ->
-                        Snackbar.make(
-                            graphView,
-                            "Can only delete leaf nodes",
-                            Snackbar.LENGTH_SHORT
-                        )
+                    currentNode == null -> Snackbar.make(
+                        graphView,
+                        "No node selected",
+                        Snackbar.LENGTH_SHORT
+                    )
+                    currentNode!!.connectedNodes.size > 1 -> Snackbar.make(
+                        graphView,
+                        "Can only delete leaf nodes",
+                        Snackbar.LENGTH_SHORT
+                    )
                     else -> showRemoveNodeDialog()
                 }
             }
@@ -147,8 +149,22 @@ class MapFragment : Fragment() {
     private fun deleteNode() {
         with(graphView.adapter.graph) {
             removeNode(nodes.find { it == currentNode }!!)
+
+            when (currentNode!!.connectedNodes[0]) {
+                currentNode!!.leftNode -> (nodes.find { currentNode!!.leftNode == it }!! as PerpendicularChildrenNode).rightNode =
+                    null
+                currentNode!!.rightNode -> (nodes.find { currentNode!!.rightNode == it }!! as PerpendicularChildrenNode).leftNode =
+                    null
+                currentNode!!.topNode -> (nodes.find { currentNode!!.topNode == it }!! as PerpendicularChildrenNode).bottomNode =
+                    null
+                currentNode!!.bottomNode -> (nodes.find { currentNode!!.bottomNode == it }!! as PerpendicularChildrenNode).topNode =
+                    null
+            }
+
+            this@MapFragment.nodes = nodes as List<PerpendicularChildrenNode>
+            this@MapFragment.currentNode = null
         }
-        currentNode = null
+
     }
 
     private fun setupAdapter(graph: Graph) {
