@@ -241,49 +241,53 @@ class OrderFragment : Fragment() {
                 Log.w(fragTag, "Something happened :)", databaseError.toException())
             }
 
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
+            override fun onDataChange(dataSnapshot: DataSnapshot){
                 val weight = dataSnapshot.getValue(Dumbbell::class.java)!!
                 if ((weight.totalStock - weight.activeRequests.size) > 0) {
                     if (weight.waitQueue.isNotEmpty()) {
                         val nextInQueue = weight.waitQueue.toSortedMap().asIterable().first()
                         if (nextInQueue.value == currentBench) {
-                            weight.waitQueue.remove(nextInQueue.key, nextInQueue.value)
+                                weight.waitQueue.remove(nextInQueue.key, nextInQueue.value)
 
-                            if (!weight.waitQueue.containsValue(currentBench)) {
-                                waitQueueListeners.remove(weight.weightValue)
+                                if (!weight.waitQueue.containsValue(currentBench)) {
+                                    waitQueueListeners.remove(weight.weightValue)
+                                }
+
+                                val newRequestId = createRequestID()
+
+                                weightReference.child(
+                                    weightValue.toString().replace(
+                                        ".",
+                                        "-",
+                                        true
+                                    )
+                                )
+                                    .runTransaction(object : Transaction.Handler {
+                                        override fun onComplete(
+                                            p0: DatabaseError?,
+                                            p1: Boolean,
+                                            p2: DataSnapshot?
+                                        ) {
+                                            createRequest(
+                                                true,
+                                                weight.weightValue.toString(),
+                                                newRequestId
+                                            )
+                                        }
+
+                                        override fun doTransaction(mutableData: MutableData): Transaction.Result {
+                                            val p = mutableData.getValue(Dumbbell::class.java)!!
+                                            p.waitQueue.remove(nextInQueue.key, nextInQueue.value)
+                                            p.activeRequests[newRequestId] = currentBench
+                                            mutableData.value = p
+                                            return Transaction.success(mutableData)
+
+                                        }
+
+                                    })
+                                requests.remove(nextInQueue.key)
+                                (activity as MainActivity).updateCurrentWorkout()
                             }
-
-                            val newRequestId = createRequestID()
-
-                            weightReference.child(weightValue.toString().replace(".", "-", true))
-                                .runTransaction(object : Transaction.Handler {
-                                    override fun onComplete(
-                                        p0: DatabaseError?,
-                                        p1: Boolean,
-                                        p2: DataSnapshot?
-                                    ) {
-                                        createRequest(
-                                            true,
-                                            weight.weightValue.toString(),
-                                            newRequestId
-                                        )
-                                    }
-
-                                    override fun doTransaction(mutableData: MutableData): Transaction.Result {
-                                        val p = mutableData.getValue(Dumbbell::class.java)!!
-                                        p.waitQueue.remove(nextInQueue.key, nextInQueue.value)
-                                        p.activeRequests[newRequestId] = currentBench
-                                        mutableData.value = p
-                                        return Transaction.success(mutableData)
-
-                                    }
-
-                                })
-                            //todo change
-                            //remove from requests and update
-                            requests.remove(nextInQueue.key)
-                            (activity as MainActivity).updateCurrentWorkout()
-                        }
                     }
 
                 }
@@ -325,10 +329,9 @@ class OrderFragment : Fragment() {
                 )
 
             val requestedWeight = weights[position]
-
+            val currentStock = requestedWeight.totalStock - requestedWeight.activeRequests.size
+            val dumbbellAvailable = currentStock > 0
             holder.apply {
-                val currentStock = requestedWeight.totalStock - requestedWeight.activeRequests.size
-                val dumbbellAvailable = currentStock > 0
 
                 val availableTextResId =
                     if (dumbbellAvailable) R.string.available else R.string.unavailable
@@ -370,14 +373,7 @@ class OrderFragment : Fragment() {
                     builder.setTitle(dialogTitle)
                     builder.setMessage(dialogMessage)
                     builder.setPositiveButton("CONFIRM") { dialog, _ ->
-                        if (numberOfRequests >= 2) { //todo test if this works
-                            holder.orderButton.isEnabled = false
-                            dialog.cancel()
-                            val builder2 = AlertDialog.Builder(context)
-                            builder2.setMessage("Weight is now unavailable, please choose another weight")
-                            builder2.setPositiveButton("OKAY") { innerDialog, _ -> innerDialog.cancel() }
-                            builder.create().show()
-                        } else createRequest(
+                       createRequest(
                             dumbbellAvailable,
                             requestedWeight.weightValue.toString()
                         )
@@ -391,7 +387,7 @@ class OrderFragment : Fragment() {
                 }
             }
 
-            if (numberOfRequests >= 2) {
+            if (dumbbellAvailable && numberOfRequests >= 1) {
                 holder.orderButton.apply {
                     isEnabled = false
                     backgroundTintList = ColorStateList.valueOf(
@@ -400,6 +396,7 @@ class OrderFragment : Fragment() {
                     text = getString(R.string.weight_limit_reached)
                 }
             }
+            if (!dumbbellAvailable) holder.orderButton.isEnabled = true
 
 
         }

@@ -337,10 +337,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 mainToolbar.title = "Manager Log In"
             }
 
-            R.id.nav_test -> {
-                newFragment = testFragment
-                mainToolbar.title = "Generate Log Requests"
-            }
+//            R.id.nav_test -> {
+//                newFragment = testFragment
+//                mainToolbar.title = "Generate Log Requests"
+//            }
 
             else -> newFragment = modeChangeFragment
 

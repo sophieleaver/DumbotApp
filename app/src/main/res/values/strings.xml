@@ -100,7 +100,7 @@
         Are you sure you want to delete your entire graph? This action will delete all nodes your map.\nYour DumBot system will not be able to function until you have built another graph for it to traverse,and no orders will be able to be made in that time.\n <b>This action cannot be undone.</b>\n Please re-authenticate to continue.
     </string>
     <string name="timer_stopped">Timer Stopped</string>
-    <string name="weight_limit_reached">2 weight limit reached</string>
+    <string name="weight_limit_reached">1 weight limit reached</string>
     <string name="return_dumbbell">Return Dumbbell</string>
     <string name="currently_have_dumbbell">You currently have this dumbbell.</string>
     <string name="leave_queue">Leave Queue</string>
