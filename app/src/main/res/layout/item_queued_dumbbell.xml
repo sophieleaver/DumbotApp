@@ -20,7 +20,6 @@
         android:textSize="36sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/divider_queued"
-        app:layout_constraintHorizontal_bias="0.421"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="10KG" />
@@ -53,8 +52,9 @@
         android:textAlignment="center"
         android:textSize="19sp"
         android:visibility="visible"
+        app:layout_constraintBottom_toTopOf="@+id/button_leave_queue"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.8"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/divider_queued"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="You are currently 4th in queue for this dumbbell " />
@@ -79,7 +79,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/button_leave_que"
+        android:id="@+id/button_leave_queue"
         style="@style/Widget.AppCompat.Button.Colored"
         android:layout_width="164dp"
         android:layout_height="wrap_content"
@@ -89,12 +89,12 @@
         android:layout_marginTop="4dp"
         android:fontFamily="@font/muli"
         android:gravity="center"
-        android:text="LEAVE QUEUE"
+        android:text="@string/leave_queue"
         android:textAlignment="gravity"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/divider_queued"
-        app:layout_constraintTop_toBottomOf="@+id/textView_queued_dumbbell_status"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintTop_toBottomOf="@+id/textView_queued_dumbbell_status" />
 </android.support.constraint.ConstraintLayout>

@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import com.example.sophieleaver.dumbotapp.javafiles.PerpendicularChildrenNode
 import com.example.sophieleaver.dumbotapp.javafiles.PerpendicularLinesAlgorithm
 import com.github.clans.fab.FloatingActionMenu
@@ -40,6 +41,7 @@ class MapFragment : Fragment() {
     private lateinit var fabMenuAddNode: FloatingActionMenu
     private lateinit var fabMenuDeleteNode: FloatingActionMenu
     private lateinit var graphView: GraphView
+    private lateinit var mapFrame: View
     private lateinit var adapter: BaseGraphAdapter<ViewHolder>
 
     private var nodes: List<PerpendicularChildrenNode> = mutableListOf()
@@ -47,6 +49,7 @@ class MapFragment : Fragment() {
 
     private var currentNode: PerpendicularChildrenNode? = null
 
+//    todo - fix menu open/close
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -59,6 +62,7 @@ class MapFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        mapFrame = view.map_frame
         graphView = view.graph
         fabMenuAddNode = view.fabAddNode
         fabMenuDeleteNode = view.fabDeleteMenu
@@ -77,12 +81,12 @@ class MapFragment : Fragment() {
             fabDeleteNode.setOnClickListener {
                 when {
                     currentNode == null -> Snackbar.make(
-                        graphView,
+                        mapFrame,
                         "No node selected",
                         Snackbar.LENGTH_SHORT
                     )
                     currentNode!!.connectedNodes.size > 1 -> Snackbar.make(
-                        graphView,
+                        mapFrame,
                         "Can only delete leaf nodes",
                         Snackbar.LENGTH_SHORT
                     )
@@ -215,7 +219,7 @@ class MapFragment : Fragment() {
                 currentNode = it as PerpendicularChildrenNode
                 fabMenuAddNode.run { if (isOpened) close(true) }
                 updateFAB()
-//                Snackbar.make(graphView, "Current Node is ${it.data}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Selected ${it.data}", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -264,8 +268,6 @@ class MapFragment : Fragment() {
                 addEdge(getNode(currentNode!!.data), newNode)
                 this@MapFragment.nodes = nodes as List<PerpendicularChildrenNode>
             }
-
-//            notifyNodeAdded(newNode)
             graphView.zoomTo(1f, true)
             graphView.setAlignment(Alignment.CENTER)
         }
@@ -634,10 +636,6 @@ class MapFragment : Fragment() {
     private fun buildEdge(sourceId: String, destId: String): Edge =
         with(nodes) { Edge(find { it.data == sourceId }, find { it.data == destId }) }
 
-    private fun findEdge(sourceId: String, destId: String): Edge =
-        edges.find { (it.source.data == sourceId) and (it.destination.data == destId) }!!
-
-
     private fun writeToFirebase() {
         val nodeString = "[${nodes.joinToString { "'${it.data}'" }}]"
         val edgeString =
@@ -702,7 +700,6 @@ class MapFragment : Fragment() {
 
                             }
                         (listOf(backwardsEdge) + otherEdges.toList().toMutableList().filterNotNull()).joinToString()
-//                        connectedNodes.map { Pair(this.data as String, it.data as String) }
                     }
                 val destEdges =
                     with((destination as PerpendicularChildrenNode)) {
@@ -749,7 +746,6 @@ class MapFragment : Fragment() {
 
                             }
                         otherEdges.toList().toMutableList().filterNotNull().joinToString()
-//                        connectedNodes.map { Pair(this.data as String, it.data as String) }
                     }
                 "{ ${sourceEdges.removePrefix(",")} ${if (destEdges.isNotBlank()) "," else ""} ${destEdges.removePrefix(
                     ","

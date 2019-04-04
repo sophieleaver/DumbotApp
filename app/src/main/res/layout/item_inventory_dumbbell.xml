@@ -16,7 +16,7 @@
         android:layout_marginTop="8dp"
         android:textAppearance="@style/TextAppearance.AppCompat.Headline"
         android:fontFamily="@font/muli_light"
-        app:layout_constraintBottom_toTopOf="@+id/img_remove_weight"
+        app:layout_constraintBottom_toTopOf="@+id/img_edit_weight"
         app:layout_constraintEnd_toStartOf="@+id/divider"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
@@ -78,7 +78,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
-        android:id="@+id/img_remove_weight"
+        android:id="@+id/img_edit_weight"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"

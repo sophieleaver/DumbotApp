@@ -16,12 +16,11 @@
         android:gravity="center"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Headline3"
         android:textSize="36sp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/text_dumbbell_timer"
         app:layout_constraintEnd_toStartOf="@+id/divider_current"
-        app:layout_constraintHorizontal_bias="0.45"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.321"
         tools:text="10 KG" />
 
     <View
@@ -38,19 +37,18 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.408"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/textView_current_dumbbell_status"
         android:layout_width="0dp"
-        android:layout_height="56dp"
+        android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:fontFamily="@font/muli_light"
         android:gravity="center"
-        android:text="You currently have this dumbbell."
+        android:text="@string/currently_have_dumbbell"
         android:textAlignment="center"
         android:textSize="19sp"
         app:layout_constraintEnd_toEndOf="@+id/text_no_current_dumbbells"
@@ -59,15 +57,15 @@
 
     <TextView
         android:id="@+id/textView_delivered_collected_dumbell"
-        android:layout_width="226dp"
-        android:layout_height="79dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:fontFamily="@font/muli_light"
         android:gravity="center"
-        android:text="Dumbbell is being collected. "
+        android:text="@string/dumbbell_being_collected"
         android:textAlignment="center"
         android:textSize="24sp"
         android:visibility="invisible"
@@ -86,7 +84,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="4dp"
         android:fontFamily="@font/muli"
-        android:text="return dumbbell"
+        android:text="@string/return_dumbbell"
         android:textAlignment="center"
         android:textSize="14sp"
         android:textStyle="bold"
@@ -99,7 +97,7 @@
     <TextView
         android:id="@+id/text_no_current_dumbbells"
         android:layout_width="wrap_content"
-        android:layout_height="100dp"
+        android:layout_height="0dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
@@ -117,20 +115,19 @@
 
     <Chronometer
         android:id="@+id/text_dumbbell_timer"
-        android:layout_width="106dp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
         android:countDown="false"
         android:fontFamily="@font/muli_light"
         android:gravity="center"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/textView_current_dumbbell_weight"
-        app:layout_constraintHorizontal_bias="0.6"
-        app:layout_constraintStart_toStartOf="@+id/textView_current_dumbbell_weight"
-        app:layout_constraintTop_toBottomOf="@+id/textView_current_dumbbell_weight"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintEnd_toStartOf="@+id/divider_current"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView_current_dumbbell_weight" />
 
 </android.support.constraint.ConstraintLayout>

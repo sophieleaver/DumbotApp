@@ -126,7 +126,7 @@ class WeightsFragment : Fragment() {
             val currentStock: TextView = view.text_current_stock
             val totalStock: TextView = view.text_weight_value
             val storageLocation: TextView = view.text_storage_location
-            val editDumbbellButton: ImageView = view.img_remove_weight
+            val editDumbbellButton: ImageView = view.img_edit_weight
         }
     }
 }

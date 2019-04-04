@@ -385,7 +385,8 @@ class CurrentOrdersFragment : Fragment() {
                         } else {
                             "${request.weight} KG"
                         }
-                        holder.current_description.text = "Currently in wait queue."
+                        holder.current_description.text =
+                            getString(R.string.currently_in_wait_queue)
 
                        // val currentPosition = findPlaceInWaitQueue(request.id, request.weight)
 
@@ -469,7 +470,7 @@ class CurrentOrdersFragment : Fragment() {
             var id : String = ""
             val current_description : TextView = view.textView_queued_dumbbell_status
             val emptyText = view.text_no_queued_dumbbells
-            val button : Button = view.button_leave_que
+            val button: Button = view.button_leave_queue
             val divider = view.divider_queued
             val background = view
         }

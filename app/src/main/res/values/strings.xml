@@ -85,7 +85,6 @@
     <string name="permission_denied_detail">
         You do not have the permissions to enter this section. Please enter Manager Mode to use this feature.
     </string>
-    <string name="return_dumbbell">Return Dumbbell</string>
     <string name="not_in_queue">You currently are not in the queue to receive any dumbbells. Any queued dumbbells shall appear here.</string>
     <string name="confirm">Confirm</string>
     <string name="leaving_the_queue_cannot_be_undone">Leaving the queue cannot be undone</string>
@@ -102,4 +101,8 @@
     </string>
     <string name="timer_stopped">Timer Stopped</string>
     <string name="weight_limit_reached">2 weight limit reached</string>
+    <string name="return_dumbbell">Return Dumbbell</string>
+    <string name="currently_have_dumbbell">You currently have this dumbbell.</string>
+    <string name="leave_queue">Leave Queue</string>
+    <string name="currently_in_wait_queue">Currently in wait queue.</string>
 </resources>
